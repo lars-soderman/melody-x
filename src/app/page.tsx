@@ -1,101 +1,217 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+
+type Box = {
+  id: string;
+  letter: string | null;
+  // onClick: () => void;
+  row: number;
+  col: number;
+};
+
+const Box = ({ letter, onClick, id }: Box) => {
+  return (
+    <button
+      key={id}
+      onClick={onClick}
+      className="border-2 border-black w-16 h-16 text-black text-center flex items-center text-4xl justify-center"
+    >
+      <p>{letter}</p>
+    </button>
+  );
+};
+
+const existingIds = new Set<string>();
+
+const createBox = (letter: string | null) => {
+  let id;
+  do {
+    id = generateGUID();
+  } while (existingIds.has(id));
+  existingIds.add(id);
+
+  return {
+    letter,
+    onClick: () => {},
+    id,
+  };
+};
+
+const generateGUID = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+const initialBox: Box = {
+  letter: null,
+  onClick: () => {},
+  id: generateGUID(),
+};
+
+type Grid = Box[][];
+
+const gridSize = (grid: Grid) => ({
+  rows: grid.length,
+  columns: grid[0].length,
+});
+
+const getGridColumnsClass = (columns: number) => {
+  return `grid-cols-${columns}`;
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [grid, setGrid] = useState<Grid>([[initialBox]]);
+  const [editingBox, setEditingBox] = useState<Box | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const addRow = () => {
+    const newRow = Array.from({ length: gridSize(grid).columns }, () =>
+      createBox(null)
+    );
+    setGrid([...grid, newRow]); // Add the new row at the bottom
+  };
+
+  const addRowTop = () => {
+    const newRow = Array.from({ length: gridSize(grid).columns }, () =>
+      createBox(null)
+    );
+    setGrid((prevGrid) => [newRow, ...prevGrid]); // Add the new row at the top
+  };
+
+  const addColumn = () => {
+    setGrid(grid.map((row) => [...row, createBox(null)])); // Add a new box to the right of each row
+  };
+
+  const addColumnLeft = () => {
+    setGrid(grid.map((row) => [createBox(null), ...row])); // Add a new box to the left of each row
+  };
+
+  const updateBoxLetter = (id: string, newLetter: string) => {
+    setGrid((prevGrid) => {
+      const newGrid = [...prevGrid];
+      const boxToUpdate = newGrid.flat().find((box) => box?.id === id);
+      if (boxToUpdate) {
+        boxToUpdate.letter = newLetter.toUpperCase(); // Convert to uppercase before saving
+      }
+      return newGrid;
+    });
+    setEditingBox(null);
+  };
+
+  type BoxInputProps = { letter: string | null; id: string };
+
+  const BoxInput = ({ letter, id }: BoxInputProps) => {
+    return (
+      <input
+        autoFocus
+        key={id}
+        onFocus={(e) => e.target.select()} // Automatically select the text on focus
+        onChange={(e) => updateBoxLetter(id, e.target.value)}
+        className="border-2 border-black w-16 h-16 text-black text-center flex items-center justify-center text-3xl"
+        value={letter ?? ""}
+      />
+    );
+  };
+
+  const addRowAndColumnTopLeft = () => {
+    addRowTop(); // Add a row at the top
+    addColumnLeft(); // Add a column to the left
+  };
+
+  const addRowAndColumnTopRight = () => {
+    addRowTop(); // Add a row at the top
+    addColumn(); // Add a column to the right
+  };
+
+  const addRowAndColumnBottomLeft = () => {
+    addRow(); // Add a row at the bottom
+    addColumnLeft(); // Add a column to the left
+  };
+
+  const addRowAndColumnBottomRight = () => {
+    addRow(); // Add a row at the bottom
+    addColumn(); // Add a column to the right
+  };
+
+  return (
+    <main className="absolute inset-0 bg-white text-black flex flex-col items-center justify-center">
+      <div className="flex relative">
+        <div
+          className={`grid w-full ${getGridColumnsClass(
+            gridSize(grid).columns
+          )} gap-0 border-collapse border-2 border-black`}
+        >
+          {grid.map((row) =>
+            row.map((box) =>
+              editingBox?.id === box.id ? (
+                <BoxInput key={box.id} id={box.id} letter={box.letter} />
+              ) : (
+                <Box
+                  key={box.id}
+                  id={box.id}
+                  letter={box.letter}
+                  onClick={() => setEditingBox(box)}
+                />
+              )
+            )
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* Individual Buttons */}
+        <button
+          onClick={addRowTop} // Add row at the top
+          className="absolute text-2xl bg-slate-50 -translate-x-1/2 left-1/2 h-10 -top-12 rounded w-full opacity-0 hover:opacity-100 p-2 transition-opacity"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          +
+        </button>
+        <button
+          onClick={addColumnLeft} // Add column to the left
+          className="absolute text-2xl bg-slate-50 top-1/2 -translate-y-1/2 w-10 -left-12 rounded h-full opacity-0 hover:opacity-100 p-2 transition-opacity"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          +
+        </button>
+        <button
+          onClick={addRow} // Add row at the bottom
+          className="absolute text-2xl bg-slate-50 -translate-x-1/2 left-1/2 h-10 -bottom-12 rounded w-full opacity-0 hover:opacity-100 p-2 transition-opacity"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          +
+        </button>
+        <button
+          onClick={addColumn} // Add column to the right
+          className="absolute text-2xl bg-slate-50 top-1/2 -translate-y-1/2 w-10 -right-12 rounded h-full opacity-0 hover:opacity-100 p-2 transition-opacity"
+        >
+          +
+        </button>
+
+        {/* Corner Buttons */}
+        <button
+          onClick={addRowAndColumnTopLeft} // Add row at the top and column to the left
+          className="absolute text-2xl bg-slate-50 -left-12 h-10 -top-12 rounded w-10 opacity-0 hover:opacity-100 p-2 transition-opacity"
+        >
+          +
+        </button>
+        <button
+          onClick={addRowAndColumnTopRight} // Add row at the top and column to the right
+          className="absolute text-2xl bg-slate-50 -right-12 h-10 -top-12 rounded w-10 opacity-0 hover:opacity-100 p-2 transition-opacity"
+        >
+          +
+        </button>
+        <button
+          onClick={addRowAndColumnBottomLeft} // Add row at the bottom and column to the left
+          className="absolute text-2xl bg-slate-50 -left-12 h-10 -bottom-12 rounded w-10 opacity-0 hover:opacity-100 p-2 transition-opacity"
+        >
+          +
+        </button>
+        <button
+          onClick={addRowAndColumnBottomRight} // Add row at the bottom and column to the right
+          className="absolute text-2xl bg-slate-50 -right-12 h-10 -bottom-12 rounded w-10 opacity-0 hover:opacity-100 p-2 transition-opacity"
+        >
+          +
+        </button>
+      </div>
+    </main>
   );
 }

@@ -15,5 +15,10 @@ const config: Config = {
     },
   },
   plugins: [],
+  safelist: [
+    {
+      pattern: /grid-cols-(\d+)/, // This will safelist all grid-cols-1, grid-cols-2, etc.
+    },
+  ],
 };
 export default config;
