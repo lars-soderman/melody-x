@@ -21,3 +21,12 @@ export const createEmptyGrid = (rows: number, cols: number): Box[][] => {
 export const isValidLetter = (key: string): boolean => {
   return /^[a-zA-Z]$/.test(key);
 };
+
+export const createInitialBoxes = (rows: number, cols: number): Box[] =>
+  Array.from({ length: rows }, (_, row) =>
+    Array.from({ length: cols }, (_, col) => ({
+      letter: null,
+      row,
+      col,
+    }))
+  ).flat();

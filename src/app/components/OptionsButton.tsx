@@ -51,7 +51,7 @@ export function OptionsButton(props: OptionsButtonProps) {
   return (
     <>
       <button
-        className="rounded-2 absolute right-1 top-1 flex h-6 w-6 cursor-pointer items-center justify-center border-none bg-transparent text-xl font-bold hover:bg-gray-100 active:bg-gray-200"
+        className="rounded-2 absolute right-[2px] top-[2px] z-10 flex h-6 w-6 cursor-pointer items-center justify-center border-none bg-transparent text-xl font-bold hover:bg-gray-100 active:bg-gray-200"
         onClick={() => setShowPopover(!showPopover)}
         aria-label="Show options"
       >

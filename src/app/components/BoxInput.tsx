@@ -1,6 +1,7 @@
 'use client';
 
 import { OptionsButton } from '@components/OptionsButton';
+import { useRef } from 'react';
 
 type BoxInputProps = {
   letter: string | null;
@@ -23,9 +24,12 @@ export function BoxInput({
   isSelected,
   id,
 }: BoxInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <>
       <input
+        ref={inputRef}
         autoFocus
         type="text"
         value={letter || ''}
@@ -35,7 +39,12 @@ export function BoxInput({
             onLetterChange(id, value.toUpperCase());
           }
         }}
-        className={`h-16 w-16 cursor-pointer border border-black text-center uppercase ${
+        onFocus={(e) => {
+          if (letter) {
+            e.currentTarget.select();
+          }
+        }}
+        className={`z-10 h-16 w-16 cursor-pointer border-2 border-black text-center text-4xl uppercase text-gray-500 ${
           black ? 'bg-black text-white' : 'bg-white'
         } focus:outline-none focus:ring-2 focus:ring-blue-500`}
         maxLength={1}

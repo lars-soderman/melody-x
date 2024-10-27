@@ -21,7 +21,7 @@ export function ShowBox({
   return (
     <>
       <button
-        className={`h-16 w-16 cursor-pointer border border-black text-center text-3xl uppercase ${
+        className={`h-16 w-16 cursor-pointer border-2 border-black text-center text-4xl uppercase ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
         onClick={onClick}

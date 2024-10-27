@@ -1,18 +1,11 @@
 'use client';
+
 import { BoxInput } from '@components/BoxInput';
 import { Box } from '@types';
 import { getId } from '@utils/grid';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useGridReducer } from '../hooks/useGridReducer';
 import { ShowBox } from './components/ShowBox';
-
-const createInitialBoxes = (rows: number, cols: number): Box[] =>
-  Array.from({ length: rows }, (_, row) =>
-    Array.from({ length: cols }, (_, col) => ({
-      letter: null,
-      row,
-      col,
-    }))
-  ).flat();
 
 // Utility to get minimum and maximum rows and columns
 const getMaxRow = (boxes: Box[]) => Math.max(...boxes.map((box) => box.row));
@@ -56,8 +49,24 @@ const getGridColumnsClass = (numColumns: number) => {
 const BOX_SIZE = 64;
 
 export default function Home() {
-  const [boxes, setBoxes] = useState<Box[]>(createInitialBoxes(9, 10));
+  const {
+    boxes,
+    addRow,
+    addColumn,
+    updateLetter,
+    updateArrow,
+    updateBlack,
+    removeRow,
+    removeColumn,
+    reset,
+  } = useGridReducer();
   const [editingBox, setEditingBox] = useState<Box | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [isConfirmingReset, setIsConfirmingReset] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const minRow = getMinRow(boxes);
   const maxRow = getMaxRow(boxes);
@@ -66,91 +75,38 @@ export default function Home() {
 
   const grid = toGrid(boxes, minRow, maxRow, minCol, maxCol);
 
-  const addRow = (position: 'top' | 'bottom') => {
-    if (position === 'top') {
-      setBoxes((prevBoxes) =>
-        prevBoxes.map((box) => ({ ...box, row: box.row + 1 }))
-      );
-    }
-
-    const newRowIndex = position === 'top' ? minRow : maxRow + 1;
-    const newRow = Array.from(
-      { length: stepsBetween(maxCol, minCol) },
-      (_, colIndex) => ({
-        letter: null,
-        row: newRowIndex,
-        col: colIndex + minCol,
-      })
+  // Render a loading state or nothing during server-side rendering
+  if (!isClient) {
+    return (
+      <main className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black" />
     );
-    setBoxes((prevBoxes) => [...prevBoxes, ...newRow]);
-  };
-
-  const addColumn = (position: 'left' | 'right') => {
-    if (position === 'left') {
-      setBoxes((prevBoxes) =>
-        prevBoxes.map((box) => ({ ...box, col: box.col + 1 }))
-      );
-    }
-
-    const newColIndex = position === 'left' ? minCol : maxCol + 1;
-    const newCol = Array.from(
-      { length: stepsBetween(maxRow, minRow) },
-      (_, rowIndex) => ({
-        letter: null,
-        row: rowIndex + minRow,
-        col: newColIndex,
-      })
-    );
-    setBoxes((prevBoxes) => [...prevBoxes, ...newCol]);
-  };
-
-  const updateBoxLetter = (id: string, newLetter: string) => {
-    setBoxes((prevBoxes) =>
-      prevBoxes.map((box) =>
-        getId(box) === id ? { ...box, letter: newLetter.toUpperCase() } : box
-      )
-    );
-    setEditingBox(null);
-  };
-
-  const removeRow = (rowIndex: number) => {
-    setBoxes((prevBoxes) => {
-      // First remove the target row
-      const filtered = prevBoxes.filter((box) => box.row !== rowIndex);
-      // Then shift all rows above the removed row down by 1
-      return filtered.map((box) => ({
-        ...box,
-        row: box.row > rowIndex ? box.row - 1 : box.row,
-      }));
-    });
-  };
-
-  const removeColumn = (colIndex: number) => {
-    setBoxes((prevBoxes) => {
-      // First remove the target column
-      const filtered = prevBoxes.filter((box) => box.col !== colIndex);
-      // Then shift all columns to the right of the removed column left by 1
-      return filtered.map((box) => ({
-        ...box,
-        col: box.col > colIndex ? box.col - 1 : box.col,
-      }));
-    });
-  };
-
-  const updateBoxArrow = (id: string, arrow: Box['arrow']) => {
-    setBoxes((prevBoxes) =>
-      prevBoxes.map((box) => (getId(box) === id ? { ...box, arrow } : box))
-    );
-  };
-
-  const updateBoxBlack = (id: string, black: boolean) => {
-    setBoxes((prevBoxes) =>
-      prevBoxes.map((box) => (getId(box) === id ? { ...box, black } : box))
-    );
-  };
+  }
 
   return (
-    <main className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black">
+    <main
+      className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black"
+      onClick={() => isConfirmingReset && setIsConfirmingReset(false)}
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          if (isConfirmingReset) {
+            reset();
+            setIsConfirmingReset(false);
+          } else {
+            setIsConfirmingReset(true);
+          }
+        }}
+        className="absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full text-xl text-gray-400 transition-colors hover:bg-gray-200"
+        aria-label={
+          isConfirmingReset
+            ? 'Confirm reset grid'
+            : 'Reset grid to initial state'
+        }
+      >
+        {isConfirmingReset ? '×' : '⟲'}
+      </button>
+
       <div className="relative flex">
         <div
           className={`grid w-full ${getGridColumnsClass(
@@ -166,10 +122,10 @@ export default function Home() {
                       id={getId(box)}
                       letter={box.letter}
                       isSelected={editingBox === box}
-                      onLetterChange={updateBoxLetter}
-                      onArrowDown={() => updateBoxArrow(getId(box), 'down')}
-                      onArrowRight={() => updateBoxArrow(getId(box), 'right')}
-                      onBlack={() => updateBoxBlack(getId(box), !box.black)}
+                      onLetterChange={updateLetter}
+                      onArrowDown={() => updateArrow(getId(box), 'down')}
+                      onArrowRight={() => updateArrow(getId(box), 'right')}
+                      onBlack={() => updateBlack(getId(box), !box.black)}
                       black={box.black}
                     />
                   ) : (
@@ -191,9 +147,10 @@ export default function Home() {
                   <button
                     onClick={() => removeRow(box.row)}
                     style={{
-                      top: `${(box.row - minRow) * BOX_SIZE + BOX_SIZE / 4}px`,
+                      top: `${(box.row - minRow) * BOX_SIZE + BOX_SIZE / 4 + 6}px`,
+                      right: '-10px',
                     }}
-                    className="absolute -right-1 flex h-10 w-4 items-center justify-center rounded border-2 border-black bg-slate-50 text-2xl opacity-0 transition-opacity duration-200 hover:opacity-100"
+                    className="absolute flex h-6 w-6 items-center justify-center rounded border-4 border-white bg-slate-200 text-2xl opacity-0 transition-opacity duration-200 hover:opacity-100"
                   >
                     -
                   </button>
@@ -203,9 +160,9 @@ export default function Home() {
                   <button
                     onClick={() => removeColumn(box.col)}
                     style={{
-                      left: `${(box.col - minCol) * BOX_SIZE + BOX_SIZE / 4}px`,
+                      left: `${(box.col - minCol) * BOX_SIZE + BOX_SIZE / 4 + 6}px`,
                     }}
-                    className="absolute -bottom-1 flex h-4 w-10 items-center justify-center rounded border-2 border-black bg-slate-50 text-2xl opacity-0 transition-opacity duration-200 hover:opacity-100"
+                    className="absolute -bottom-2 flex h-6 w-6 items-center justify-center rounded border-4 border-white bg-slate-200 text-2xl opacity-0 transition-opacity duration-200 hover:opacity-100"
                   >
                     -
                   </button>
