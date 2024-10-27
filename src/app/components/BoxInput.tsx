@@ -7,6 +7,7 @@ type BoxInputProps = {
   onLetterChange: (id: string, letter: string) => void;
   onArrowDown: () => void;
   onArrowRight: () => void;
+  onBlack: () => void;
   black?: boolean;
   isSelected?: boolean;
   id: string;
@@ -17,6 +18,7 @@ export function BoxInput({
   onLetterChange,
   onArrowDown,
   onArrowRight,
+  onBlack,
   black,
   isSelected,
   id,
@@ -42,7 +44,7 @@ export function BoxInput({
         <OptionsButton
           onArrowDown={onArrowDown}
           onArrowRight={onArrowRight}
-          onBlack={() => console.log('Black')}
+          onBlack={onBlack}
           onHint={() => console.log('Hint')}
           onStop={() => console.log('Stop')}
         />

@@ -143,6 +143,12 @@ export default function Home() {
     );
   };
 
+  const updateBoxBlack = (id: string, black: boolean) => {
+    setBoxes((prevBoxes) =>
+      prevBoxes.map((box) => (getId(box) === id ? { ...box, black } : box))
+    );
+  };
+
   return (
     <main className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black">
       <div className="relative flex">
@@ -163,6 +169,8 @@ export default function Home() {
                       onLetterChange={updateBoxLetter}
                       onArrowDown={() => updateBoxArrow(getId(box), 'down')}
                       onArrowRight={() => updateBoxArrow(getId(box), 'right')}
+                      onBlack={() => updateBoxBlack(getId(box), !box.black)}
+                      black={box.black}
                     />
                   ) : (
                     <ShowBox
