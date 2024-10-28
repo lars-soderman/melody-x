@@ -1,5 +1,6 @@
 'use client';
 
+import { INITIAL_GRID_SIZE } from '@/constants';
 import { Box } from '@types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useReducer } from 'react';
@@ -126,8 +127,10 @@ function gridReducer(state: GridState, action: GridAction): GridState {
     case 'RESET':
       newState = {
         version: STORAGE_VERSION,
-        // TODO: Make this dynamic
-        boxes: createInitialBoxes(10, 10),
+        boxes: createInitialBoxes(
+          INITIAL_GRID_SIZE.rows,
+          INITIAL_GRID_SIZE.cols
+        ),
       };
       break;
 
@@ -176,7 +179,7 @@ const getInitialState = (): GridState => {
   }
   return {
     version: STORAGE_VERSION,
-    boxes: createInitialBoxes(10, 10), // or []
+    boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
   };
 };
 

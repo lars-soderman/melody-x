@@ -30,3 +30,12 @@ export const createInitialBoxes = (rows: number, cols: number): Box[] =>
       col,
     }))
   ).flat();
+
+export const getMaxRow = (boxes: Box[]) =>
+  Math.max(...boxes.map((box) => box.row));
+export const getMaxCol = (boxes: Box[]) =>
+  Math.max(...boxes.map((box) => box.col));
+export const getMinRow = (boxes: Box[]) =>
+  Math.min(...boxes.map((box) => box.row));
+export const getMinCol = (boxes: Box[]) =>
+  Math.min(...boxes.map((box) => box.col));

@@ -1,17 +1,14 @@
 'use client';
 
 import { BoxInput } from '@components/BoxInput';
+import { ExportButton } from '@components/ExportButton';
 import { Box } from '@types';
-import { getId } from '@utils/grid';
+import { getId, getMaxCol, getMaxRow, getMinCol, getMinRow } from '@utils/grid';
 import React, { useEffect, useState } from 'react';
 import { useGridReducer } from '../hooks/useGridReducer';
 import { ShowBox } from './components/ShowBox';
 
 // Utility to get minimum and maximum rows and columns
-const getMaxRow = (boxes: Box[]) => Math.max(...boxes.map((box) => box.row));
-const getMaxCol = (boxes: Box[]) => Math.max(...boxes.map((box) => box.col));
-const getMinRow = (boxes: Box[]) => Math.min(...boxes.map((box) => box.row));
-const getMinCol = (boxes: Box[]) => Math.min(...boxes.map((box) => box.col));
 
 const stepsBetween = (num1: number, num2: number) => {
   return Math.abs(num1 - num2) + 1;
@@ -106,8 +103,15 @@ export default function Home() {
       >
         {isConfirmingReset ? '×' : '⟲'}
       </button>
+      <ExportButton
+        boxes={boxes}
+        minRow={minRow}
+        maxRow={maxRow}
+        minCol={minCol}
+        maxCol={maxCol}
+      />
 
-      <div className="relative flex">
+      <div id="crossword-grid" className="relative flex">
         <div
           className={`grid w-full ${getGridColumnsClass(
             maxCol - minCol + 1
