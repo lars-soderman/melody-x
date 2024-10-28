@@ -12,6 +12,7 @@ type BoxInputProps = {
   black?: boolean;
   isSelected?: boolean;
   id: string;
+  onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
 };
 
 export function BoxInput({
@@ -23,8 +24,30 @@ export function BoxInput({
   black,
   isSelected,
   id,
+  onNavigate,
 }: BoxInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        onNavigate('up');
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        onNavigate('down');
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        onNavigate('left');
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        onNavigate('right');
+        break;
+    }
+  };
 
   return (
     <>
@@ -39,6 +62,7 @@ export function BoxInput({
             onLetterChange(id, value.toUpperCase());
           }
         }}
+        onKeyDown={handleKeyDown}
         onFocus={(e) => {
           if (letter) {
             e.currentTarget.select();

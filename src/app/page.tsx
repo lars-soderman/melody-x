@@ -60,6 +60,12 @@ export default function Home() {
   const [editingBox, setEditingBox] = useState<Box | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
+  // Add new confirmation states
+  const [confirmingRemove, setConfirmingRemove] = useState<{
+    type: 'row' | 'column';
+    index: number;
+  } | null>(null);
+  const [lastTwoInputs, setLastTwoInputs] = useState<Box[]>([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -72,6 +78,70 @@ export default function Home() {
 
   const grid = toGrid(boxes, minRow, maxRow, minCol, maxCol);
 
+  const handleNavigate = (
+    currentBox: Box,
+    direction: 'up' | 'down' | 'left' | 'right'
+  ) => {
+    const nextPosition = {
+      row:
+        currentBox.row +
+        (direction === 'up' ? -1 : direction === 'down' ? 1 : 0),
+      col:
+        currentBox.col +
+        (direction === 'left' ? -1 : direction === 'right' ? 1 : 0),
+    };
+
+    // Find the next box at the calculated position
+    const nextBox = boxes.find(
+      (box) => box.row === nextPosition.row && box.col === nextPosition.col
+    );
+
+    if (!nextBox) {
+      // Hit bottom edge - try moving right
+      if (direction === 'down') {
+        const rightBox = boxes.find(
+          (box) => box.row === currentBox.row && box.col === currentBox.col + 1
+        );
+        if (rightBox) {
+          setEditingBox(rightBox);
+        }
+      }
+      // Hit right edge - try moving down
+      else if (direction === 'right') {
+        const downBox = boxes.find(
+          (box) => box.col === currentBox.col && box.row === currentBox.row + 1
+        );
+        if (downBox) {
+          setEditingBox(downBox);
+        }
+      }
+    } else {
+      setEditingBox(nextBox);
+    }
+  };
+
+  const handleLetterChange = (id: string, letter: string) => {
+    updateLetter(id, letter);
+
+    const currentBox = boxes.find((box) => getId(box) === id);
+    if (!currentBox) return;
+
+    // Update last two inputs
+    setLastTwoInputs((prev) => [currentBox, ...prev].slice(0, 2));
+
+    // Only auto-navigate if a letter was actually input
+    if (letter) {
+      // Check if the last two inputs were vertical
+      const isVertical =
+        lastTwoInputs.length === 2 &&
+        lastTwoInputs[0].col === lastTwoInputs[1].col &&
+        Math.abs(lastTwoInputs[0].row - lastTwoInputs[1].row) === 1;
+
+      // Navigate down if vertical, right otherwise
+      handleNavigate(currentBox, isVertical ? 'down' : 'right');
+    }
+  };
+
   // Render a loading state or nothing during server-side rendering
   if (!isClient) {
     return (
@@ -79,10 +149,44 @@ export default function Home() {
     );
   }
 
+  const handleRemoveRow = (rowIndex: number) => {
+    if (
+      confirmingRemove?.type === 'row' &&
+      confirmingRemove.index === rowIndex
+    ) {
+      removeRow(rowIndex);
+      setConfirmingRemove(null);
+    } else {
+      setConfirmingRemove({ type: 'row', index: rowIndex });
+      // Clear other confirmation states
+      setIsConfirmingReset(false);
+    }
+  };
+
+  const handleRemoveColumn = (colIndex: number) => {
+    if (
+      confirmingRemove?.type === 'column' &&
+      confirmingRemove.index === colIndex
+    ) {
+      removeColumn(colIndex);
+      setConfirmingRemove(null);
+    } else {
+      setConfirmingRemove({ type: 'column', index: colIndex });
+      // Clear other confirmation states
+      setIsConfirmingReset(false);
+    }
+  };
+
+  // Clear confirmations when clicking outside
+  const handleMainClick = () => {
+    setIsConfirmingReset(false);
+    setConfirmingRemove(null);
+  };
+
   return (
     <main
       className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black"
-      onClick={() => isConfirmingReset && setIsConfirmingReset(false)}
+      onClick={handleMainClick}
     >
       <button
         onClick={(e) => {
@@ -126,11 +230,12 @@ export default function Home() {
                       id={getId(box)}
                       letter={box.letter}
                       isSelected={editingBox === box}
-                      onLetterChange={updateLetter}
+                      onLetterChange={handleLetterChange}
                       onArrowDown={() => updateArrow(getId(box), 'down')}
                       onArrowRight={() => updateArrow(getId(box), 'right')}
                       onBlack={() => updateBlack(getId(box), !box.black)}
                       black={box.black}
+                      onNavigate={(direction) => handleNavigate(box, direction)}
                     />
                   ) : (
                     <ShowBox
@@ -146,30 +251,107 @@ export default function Home() {
                     />
                   )}
                 </div>
-                {/* Row remove buttons - show at the end of each row */}
+                {/* Row remove buttons - show on hover at the edge of each row */}
                 {box.col === maxCol && (
-                  <button
-                    onClick={() => removeRow(box.row)}
+                  <div
+                    className="group absolute right-0 h-16 w-6 hover:bg-gray-50"
                     style={{
-                      top: `${(box.row - minRow) * BOX_SIZE + BOX_SIZE / 4 + 6}px`,
-                      right: '-10px',
+                      top: `${(box.row - minRow) * BOX_SIZE}px`,
                     }}
-                    className="absolute flex h-6 w-6 items-center justify-center rounded border-4 border-white bg-slate-200 text-2xl opacity-0 transition-opacity duration-200 hover:opacity-100"
                   >
-                    -
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveRow(box.row);
+                      }}
+                      className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:visible ${
+                        confirmingRemove?.type === 'row' &&
+                        confirmingRemove.index === box.row
+                          ? 'text-red-500'
+                          : 'text-gray-400'
+                      } hover:bg-gray-200`}
+                      aria-label="Remove row"
+                    >
+                      -
+                    </button>
+                  </div>
                 )}
-                {/* Column remove buttons - show at the bottom of each column */}
-                {box.row === maxRow && (
-                  <button
-                    onClick={() => removeColumn(box.col)}
+                {/* Left edge - row remove buttons */}
+                {box.col === minCol && (
+                  <div
+                    className="group absolute left-0 h-16 w-6 hover:bg-gray-50"
                     style={{
-                      left: `${(box.col - minCol) * BOX_SIZE + BOX_SIZE / 4 + 6}px`,
+                      top: `${(box.row - minRow) * BOX_SIZE}px`,
+                      left: '-24px',
                     }}
-                    className="absolute -bottom-2 flex h-6 w-6 items-center justify-center rounded border-4 border-white bg-slate-200 text-2xl opacity-0 transition-opacity duration-200 hover:opacity-100"
                   >
-                    -
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveRow(box.row);
+                      }}
+                      className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:visible ${
+                        confirmingRemove?.type === 'row' &&
+                        confirmingRemove.index === box.row
+                          ? 'text-red-500'
+                          : 'text-gray-400'
+                      } hover:bg-gray-200`}
+                      aria-label="Remove row"
+                    >
+                      -
+                    </button>
+                  </div>
+                )}
+                {/* Column remove buttons - show on hover at the bottom of each column */}
+                {box.row === maxRow && (
+                  <div
+                    className="group absolute bottom-0 h-6 w-16 hover:bg-gray-50"
+                    style={{
+                      left: `${(box.col - minCol) * BOX_SIZE}px`,
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveColumn(box.col);
+                      }}
+                      className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:visible ${
+                        confirmingRemove?.type === 'column' &&
+                        confirmingRemove.index === box.col
+                          ? 'text-red-500'
+                          : 'text-gray-400'
+                      } hover:bg-gray-200`}
+                      aria-label="Remove column"
+                    >
+                      -
+                    </button>
+                  </div>
+                )}
+                {/* Top edge - column remove buttons */}
+                {box.row === minRow && (
+                  <div
+                    className="group absolute top-0 h-6 w-16 hover:bg-gray-50"
+                    style={{
+                      left: `${(box.col - minCol) * BOX_SIZE}px`,
+                      top: '-24px',
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveColumn(box.col);
+                      }}
+                      className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:visible ${
+                        confirmingRemove?.type === 'column' &&
+                        confirmingRemove.index === box.col
+                          ? 'text-red-500'
+                          : 'text-gray-400'
+                      } hover:bg-gray-200`}
+                      aria-label="Remove column"
+                    >
+                      -
+                    </button>
+                  </div>
                 )}
               </React.Fragment>
             ))

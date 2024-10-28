@@ -19,7 +19,7 @@ export const createEmptyGrid = (rows: number, cols: number): Box[][] => {
 };
 
 export const isValidLetter = (key: string): boolean => {
-  return /^[a-zA-Z]$/.test(key);
+  return /^[a-zA-ZåäöÅÄÖéèêëÉÈÊËæøÆØ\u00C0-\u00FF]$/.test(key);
 };
 
 export const createInitialBoxes = (rows: number, cols: number): Box[] =>
