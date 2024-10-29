@@ -14,6 +14,7 @@ type CrosswordGridProps = {
   onLetterChange: (id: string, letter: string) => void;
   onUpdateArrow: (id: string, direction: 'down' | 'right') => void;
   onUpdateBlack: (id: string, isBlack: boolean) => void;
+  onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
   handleRemoveRow: (rowIndex: number) => void;
@@ -33,6 +34,7 @@ export function CrosswordGrid({
   onLetterChange,
   onUpdateArrow,
   onUpdateBlack,
+  onUpdateStop,
   onNavigate,
   onSetEditingBox,
   handleRemoveRow,
@@ -56,6 +58,7 @@ export function CrosswordGrid({
             onNavigate={onNavigate}
             onSetEditingBox={onSetEditingBox}
             boxSize={boxSize}
+            onUpdateStop={onUpdateStop}
           />
         ))
       )}

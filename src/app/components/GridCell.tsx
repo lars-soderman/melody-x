@@ -11,6 +11,7 @@ type GridCellProps = {
   onUpdateBlack: (id: string, isBlack: boolean) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
+  onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
   boxSize: number;
 };
 
@@ -22,6 +23,7 @@ export function GridCell({
   onUpdateBlack,
   onNavigate,
   onSetEditingBox,
+  onUpdateStop,
   boxSize,
 }: GridCellProps) {
   return (
@@ -38,6 +40,8 @@ export function GridCell({
           onBlack={() => onUpdateBlack(getId(box), !box.black)}
           black={box.black}
           onNavigate={(direction) => onNavigate(box, direction)}
+          onStopBottom={() => onUpdateStop(getId(box), 'bottom')}
+          onStopRight={() => onUpdateStop(getId(box), 'right')}
         />
       ) : (
         <ShowBox
