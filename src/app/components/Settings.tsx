@@ -63,7 +63,9 @@ export function Settings({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Grid Size</span>
-            <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
+            {typeof boxSize === 'number' && !isNaN(boxSize) && (
+              <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
+            )}
           </div>
 
           <div className="flex items-center justify-between">
