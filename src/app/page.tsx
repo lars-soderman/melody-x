@@ -30,11 +30,11 @@ export default function Home() {
     removeRow,
     removeColumn,
     reset,
+    updateStop,
   } = useGridReducer();
   const [editingBox, setEditingBox] = useState<Box | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
-  // Add new confirmation states
   const [confirmingRemove, setConfirmingRemove] = useState<{
     type: 'row' | 'column';
     index: number;
@@ -179,7 +179,7 @@ export default function Home() {
         <div
           className={`grid w-full ${getGridColumnsClass(
             maxCol - minCol + 1
-          )} border-collapse gap-0 border-2 border-black`}
+          )} border-collapse gap-0 rounded border-2 border-black`}
         >
           {grid.map((row) =>
             row.map((box) => (
@@ -197,6 +197,8 @@ export default function Home() {
                       onBlack={() => updateBlack(getId(box), !box.black)}
                       black={box.black}
                       onNavigate={(direction) => handleNavigate(box, direction)}
+                      onStopBottom={() => updateStop(getId(box), 'bottom')}
+                      onStopRight={() => updateStop(getId(box), 'right')}
                     />
                   ) : (
                     <ShowBox

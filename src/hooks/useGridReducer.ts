@@ -23,7 +23,8 @@ type GridAction =
   | { type: 'ADD_ROW'; position: 'top' | 'bottom' }
   | { type: 'ADD_COLUMN'; position: 'left' | 'right' }
   | { type: 'UPDATE_BOX_SIZE'; size: number }
-  | { type: 'RESET' };
+  | { type: 'RESET' }
+  | { type: 'UPDATE_STOP'; id: string; stop: Box['stop'] };
 
 function loadFromStorage(): GridState | null {
   try {
@@ -180,6 +181,16 @@ function gridReducer(state: GridState, action: GridAction): GridState {
       break;
     }
 
+    case 'UPDATE_STOP': {
+      newState = {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, stop: action.stop } : box
+        ),
+      };
+      break;
+    }
+
     default:
       return state;
   }
@@ -229,5 +240,7 @@ export function useGridReducer() {
     reset: () => dispatch({ type: 'RESET' }),
     addColumn: (position: 'left' | 'right') =>
       dispatch({ type: 'ADD_COLUMN', position }),
+    updateStop: (id: string, stop: Box['stop']) =>
+      dispatch({ type: 'UPDATE_STOP', id, stop }),
   };
 }

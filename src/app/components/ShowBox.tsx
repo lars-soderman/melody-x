@@ -20,6 +20,7 @@ export function ShowBox({
   black,
   isSelected,
   arrow,
+  stop,
   boxSize,
 }: ShowBoxProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -47,7 +48,7 @@ export function ShowBox({
     <>
       <button
         style={{ height: `${boxSize}px`, width: `${boxSize}px` }}
-        className={`cursor-pointer border-2 border-black text-center text-4xl uppercase ${
+        className={`relative cursor-pointer border-2 border-black text-center text-4xl uppercase ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
         onClick={onClick}
@@ -55,6 +56,12 @@ export function ShowBox({
         tabIndex={0}
       >
         {letter}
+        {stop === 'bottom' && (
+          <div className="absolute bottom-0 left-0 h-[3px] w-full bg-black" />
+        )}
+        {stop === 'right' && (
+          <div className="absolute right-0 top-0 h-full w-[3px] bg-black" />
+        )}
       </button>
       {arrow === 'right' && (
         <div className="absolute bottom-1 left-1">

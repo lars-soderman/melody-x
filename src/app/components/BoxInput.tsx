@@ -14,6 +14,8 @@ type BoxInputProps = {
   id: string;
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
   boxSize: number;
+  onStopBottom: () => void;
+  onStopRight: () => void;
 };
 
 export function BoxInput({
@@ -27,6 +29,8 @@ export function BoxInput({
   id,
   onNavigate,
   boxSize,
+  onStopBottom,
+  onStopRight,
 }: BoxInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -85,6 +89,8 @@ export function BoxInput({
           onArrowDown={onArrowDown}
           onArrowRight={onArrowRight}
           onBlack={onBlack}
+          onStopBottom={onStopBottom}
+          onStopRight={onStopRight}
           onHint={() => console.log('Hint')}
           onStop={() => console.log('Stop')}
         />
