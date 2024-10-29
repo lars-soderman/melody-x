@@ -1,6 +1,6 @@
 'use client';
 
-import { INITIAL_GRID_SIZE } from '@/constants';
+import { BOX_SIZE, INITIAL_GRID_SIZE } from '@/constants';
 import { Box } from '@types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useReducer } from 'react';
@@ -133,7 +133,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
           INITIAL_GRID_SIZE.rows,
           INITIAL_GRID_SIZE.cols
         ),
-        boxSize: 64,
+        boxSize: BOX_SIZE,
       };
       break;
 
@@ -168,7 +168,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
     case 'UPDATE_BOX_SIZE': {
       newState = {
         ...state,
-        boxSize: Math.max(32, Math.min(96, action.size)),
+        boxSize: Math.max(action.size, 4),
       };
       break;
     }
@@ -184,15 +184,28 @@ function gridReducer(state: GridState, action: GridAction): GridState {
 
 // Get initial state safely (works on client-side only)
 const getInitialState = (): GridState => {
-  if (typeof window !== 'undefined') {
-    const saved = loadFromStorage();
-    if (saved) return saved;
-  }
-  return {
+  const defaultState = {
     version: STORAGE_VERSION,
     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
-    boxSize: 64,
+    boxSize: BOX_SIZE,
   };
+
+  if (typeof window === 'undefined') {
+    return defaultState;
+  }
+
+  try {
+    const saved = loadFromStorage();
+    if (saved) {
+      return {
+        ...saved,
+        boxSize: saved.boxSize || BOX_SIZE,
+      };
+    }
+    return defaultState;
+  } catch {
+    return defaultState;
+  }
 };
 
 export function useGridReducer() {
