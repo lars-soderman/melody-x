@@ -31,6 +31,9 @@ function loadFromStorage(): GridState | null {
     if (!saved) return null;
 
     const parsed = JSON.parse(saved) as GridState;
+    if (!parsed.boxSize || isNaN(parsed.boxSize)) {
+      parsed.boxSize = BOX_SIZE;
+    }
     return parsed.version === STORAGE_VERSION ? parsed : null;
   } catch {
     return null;
@@ -38,7 +41,11 @@ function loadFromStorage(): GridState | null {
 }
 
 function saveToStorage(state: GridState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const stateToSave = {
+    ...state,
+    boxSize: state.boxSize || BOX_SIZE,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
 }
 
 function gridReducer(state: GridState, action: GridAction): GridState {
@@ -177,12 +184,10 @@ function gridReducer(state: GridState, action: GridAction): GridState {
       return state;
   }
 
-  // Automatically save to storage after each action
   saveToStorage(newState);
   return newState;
 }
 
-// Get initial state safely (works on client-side only)
 const getInitialState = (): GridState => {
   const defaultState = {
     version: STORAGE_VERSION,
@@ -194,24 +199,13 @@ const getInitialState = (): GridState => {
     return defaultState;
   }
 
-  try {
-    const saved = loadFromStorage();
-    if (saved) {
-      return {
-        ...saved,
-        boxSize: saved.boxSize || BOX_SIZE,
-      };
-    }
-    return defaultState;
-  } catch {
-    return defaultState;
-  }
+  const saved = loadFromStorage();
+  return saved || defaultState;
 };
 
 export function useGridReducer() {
   const [state, dispatch] = useReducer(gridReducer, getInitialState());
 
-  // Save to localStorage on each state change
   if (typeof window !== 'undefined' && state.boxes.length > 0) {
     localStorage.setItem('boxes', JSON.stringify(state.boxes));
   }
