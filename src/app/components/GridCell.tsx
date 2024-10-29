@@ -11,6 +11,7 @@ type GridCellProps = {
   onUpdateBlack: (id: string, isBlack: boolean) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
+  boxSize: number;
 };
 
 export function GridCell({
@@ -21,6 +22,7 @@ export function GridCell({
   onUpdateBlack,
   onNavigate,
   onSetEditingBox,
+  boxSize,
 }: GridCellProps) {
   return (
     <div className="relative flex">
@@ -28,6 +30,7 @@ export function GridCell({
         <BoxInput
           id={getId(box)}
           letter={box.letter}
+          boxSize={boxSize}
           isSelected={editingBox === box}
           onLetterChange={onLetterChange}
           onArrowDown={() => onUpdateArrow(getId(box), 'down')}
@@ -47,6 +50,8 @@ export function GridCell({
           stop={box.stop}
           black={box.black}
           hint={box.hint}
+          boxSize={boxSize}
+          onNavigate={(direction) => onNavigate(box, direction)}
         />
       )}
     </div>

@@ -19,6 +19,7 @@ type CrosswordGridProps = {
   handleRemoveRow: (rowIndex: number) => void;
   handleRemoveColumn: (colIndex: number) => void;
   confirmingRemove: { type: 'row' | 'column'; index: number } | null;
+  boxSize: number;
 };
 
 export function CrosswordGrid({
@@ -37,6 +38,7 @@ export function CrosswordGrid({
   handleRemoveRow,
   handleRemoveColumn,
   confirmingRemove,
+  boxSize,
 }: CrosswordGridProps) {
   return (
     <div
@@ -53,6 +55,7 @@ export function CrosswordGrid({
             onUpdateBlack={onUpdateBlack}
             onNavigate={onNavigate}
             onSetEditingBox={onSetEditingBox}
+            boxSize={boxSize}
           />
         ))
       )}
