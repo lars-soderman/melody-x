@@ -11,6 +11,7 @@ const STORAGE_VERSION = 1;
 type GridState = {
   version: number;
   boxes: Box[];
+  boxSize: number;
 };
 
 type GridAction =
@@ -20,8 +21,9 @@ type GridAction =
   | { type: 'REMOVE_ROW'; rowIndex: number }
   | { type: 'REMOVE_COLUMN'; colIndex: number }
   | { type: 'ADD_ROW'; position: 'top' | 'bottom' }
-  | { type: 'RESET' }
-  | { type: 'ADD_COLUMN'; position: 'left' | 'right' };
+  | { type: 'ADD_COLUMN'; position: 'left' | 'right' }
+  | { type: 'UPDATE_BOX_SIZE'; size: number }
+  | { type: 'RESET' };
 
 function loadFromStorage(): GridState | null {
   try {
@@ -131,6 +133,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
           INITIAL_GRID_SIZE.rows,
           INITIAL_GRID_SIZE.cols
         ),
+        boxSize: 64,
       };
       break;
 
@@ -162,6 +165,14 @@ function gridReducer(state: GridState, action: GridAction): GridState {
       break;
     }
 
+    case 'UPDATE_BOX_SIZE': {
+      newState = {
+        ...state,
+        boxSize: Math.max(32, Math.min(96, action.size)),
+      };
+      break;
+    }
+
     default:
       return state;
   }
@@ -180,6 +191,7 @@ const getInitialState = (): GridState => {
   return {
     version: STORAGE_VERSION,
     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
+    boxSize: 64,
   };
 };
 
@@ -193,6 +205,9 @@ export function useGridReducer() {
 
   return {
     boxes: state.boxes,
+    boxSize: state.boxSize,
+    updateBoxSize: (size: number) =>
+      dispatch({ type: 'UPDATE_BOX_SIZE', size }),
     updateLetter: (id: string, letter: string) =>
       dispatch({ type: 'UPDATE_LETTER', id, letter }),
     updateArrow: (id: string, arrow: Box['arrow']) =>

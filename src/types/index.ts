@@ -7,3 +7,9 @@ export type Box = {
   black?: boolean;
   hint?: number;
 };
+
+export type GridState = {
+  version: number;
+  boxes: Box[];
+  boxSize: number;
+};

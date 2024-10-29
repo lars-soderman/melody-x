@@ -5,26 +5,54 @@ import { ArrowRight } from '../icons/arrowRight';
 
 type ShowBoxProps = Box & {
   onClick: () => void;
+  onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
   id: string;
   isSelected?: boolean;
   black?: boolean;
+  boxSize: number;
 };
 
 export function ShowBox({
   id,
   letter,
   onClick,
+  onNavigate,
   black,
   isSelected,
   arrow,
+  boxSize,
 }: ShowBoxProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        onNavigate('up');
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        onNavigate('down');
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        onNavigate('left');
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        onNavigate('right');
+        break;
+    }
+  };
+
   return (
     <>
       <button
-        className={`h-16 w-16 cursor-pointer border-2 border-black text-center text-4xl uppercase ${
+        style={{ height: `${boxSize}px`, width: `${boxSize}px` }}
+        className={`cursor-pointer border-2 border-black text-center text-4xl uppercase ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
         onClick={onClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
       >
         {letter}
       </button>

@@ -13,6 +13,7 @@ type BoxInputProps = {
   isSelected?: boolean;
   id: string;
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
+  boxSize: number;
 };
 
 export function BoxInput({
@@ -25,11 +26,16 @@ export function BoxInput({
   isSelected,
   id,
   onNavigate,
+  boxSize,
 }: BoxInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
+      case 'Enter':
+        e.preventDefault();
+        onNavigate('right');
+        break;
       case 'ArrowUp':
         e.preventDefault();
         onNavigate('up');
@@ -68,9 +74,10 @@ export function BoxInput({
             e.currentTarget.select();
           }
         }}
-        className={`z-10 h-16 w-16 cursor-pointer border-2 border-black text-center text-4xl uppercase text-gray-500 ${
+        className={`z-10 cursor-pointer border-2 border-black text-center text-4xl uppercase text-gray-500 ${
           black ? 'bg-black text-white' : 'bg-white'
         } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        style={{ height: `${boxSize}px`, width: `${boxSize}px` }}
         maxLength={1}
       />
       {isSelected && (

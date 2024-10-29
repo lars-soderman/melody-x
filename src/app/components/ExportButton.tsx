@@ -97,7 +97,7 @@ export function ExportButton({
       ref={buttonRef}
       onClick={() => void exportToPDF()}
       disabled={isExporting}
-      className="absolute right-4 top-12 flex h-6 w-6 items-center justify-center rounded-full text-xl text-gray-400 transition-colors hover:bg-gray-200 disabled:opacity-50"
+      className="h-6 w-6 rounded text-gray-400 transition-colors hover:bg-gray-200 disabled:opacity-50"
       aria-label="Export to PDF"
     >
       ⬇
