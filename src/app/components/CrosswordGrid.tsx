@@ -44,7 +44,7 @@ export function CrosswordGrid({
 }: CrosswordGridProps) {
   return (
     <div
-      className={`grid w-full grid-cols-${maxCol - minCol + 1} border-collapse gap-0 border-2 border-black`}
+      className={`grid grid-cols-${maxCol - minCol + 1} border-collapse gap-0 border-2 border-black`}
     >
       {grid.map((row) =>
         row.map((box) => (
