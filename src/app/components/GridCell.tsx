@@ -27,7 +27,16 @@ export function GridCell({
   boxSize,
 }: GridCellProps) {
   return (
-    <div className="relative flex">
+    <div
+      className="relative flex"
+      style={{
+        width: `${boxSize}px`,
+        height: `${boxSize}px`,
+        borderWidth: `${boxSize * 0.03}px`,
+        borderStyle: 'solid',
+        borderColor: 'black',
+      }}
+    >
       {editingBox === box ? (
         <BoxInput
           id={getId(box)}

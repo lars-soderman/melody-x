@@ -78,10 +78,10 @@ export function BoxInput({
             e.currentTarget.select();
           }
         }}
-        className={`z-10 cursor-pointer border-2 border-black text-center text-4xl uppercase text-gray-500 ${
+        className={`z-10 w-full cursor-pointer text-center text-4xl uppercase text-gray-500 ${
           black ? 'bg-black text-white' : 'bg-white'
-        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-        style={{ height: `${boxSize}px`, width: `${boxSize}px` }}
+        } focus:outline-blue-500 focus:ring-blue-500 focus-visible:outline-8`}
+        // style={{ height: `${boxSize}px`, width: `${boxSize}px` }}
         maxLength={1}
       />
       {isSelected && (

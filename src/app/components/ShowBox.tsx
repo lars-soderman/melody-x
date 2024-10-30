@@ -47,11 +47,11 @@ export function ShowBox({
   return (
     <>
       <button
-        style={{
-          width: `${Math.max(boxSize, 40)}px`,
-          height: `${Math.max(boxSize, 40)}px`, // Minimum height of 40px
-        }}
-        className={`relative cursor-pointer border-2 border-black text-center text-2xl uppercase md:text-4xl ${
+        // style={{
+        //   width: `${Math.max(boxSize, 40)}px`,
+        //   height: `${Math.max(boxSize, 40)}px`, // Minimum height of 40px
+        // }}
+        className={`relative w-full cursor-pointer text-center text-2xl uppercase md:text-4xl ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
         onClick={onClick}
