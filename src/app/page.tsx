@@ -14,6 +14,7 @@ import { useGridNavigation } from '../hooks/useGridNavigation';
 import { useGridReducer } from '../hooks/useGridReducer';
 import { AddGridButtons } from './components/AddGridButtons';
 import { CrosswordGrid } from './components/CrosswordGrid';
+import { RemoveButtons } from './components/RemoveButtons';
 import { Settings } from './components/Settings';
 
 export default function Home() {
@@ -153,6 +154,16 @@ export default function Home() {
           confirmingRemove={confirmingRemove}
         />
         <AddGridButtons onAddRow={addRow} onAddColumn={addColumn} />
+        <RemoveButtons
+          grid={grid}
+          minRow={minRow}
+          minCol={minCol}
+          maxRow={maxRow}
+          maxCol={maxCol}
+          handleRemoveRow={handleRemoveRow}
+          handleRemoveColumn={handleRemoveColumn}
+          confirmingRemove={confirmingRemove}
+        />
       </div>
     </main>
   );

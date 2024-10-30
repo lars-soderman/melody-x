@@ -1,7 +1,6 @@
 import { Box } from '@/types';
 import { getId } from '@/utils/grid';
 import { GridCell } from './GridCell';
-import { RemoveButtons } from './RemoveButtons';
 
 type CrosswordGridProps = {
   grid: Box[][];
@@ -62,16 +61,6 @@ export function CrosswordGrid({
           />
         ))
       )}
-      <RemoveButtons
-        grid={grid}
-        minRow={minRow}
-        minCol={minCol}
-        maxRow={maxRow}
-        maxCol={maxCol}
-        handleRemoveRow={handleRemoveRow}
-        handleRemoveColumn={handleRemoveColumn}
-        confirmingRemove={confirmingRemove}
-      />
     </div>
   );
 }
