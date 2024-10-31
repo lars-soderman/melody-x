@@ -34,3 +34,19 @@ body {
     transform-origin: center;
   }
 } */
+
+/* Add to your existing styles */
+.hover-trigger .hover-target {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hover-trigger:hover .hover-target {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Optional: fade effect when grid is hovered */
+#crossword-grid:hover .hover-trigger .hover-target {
+  transition-delay: 150ms;
+}

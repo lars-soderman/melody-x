@@ -4,12 +4,12 @@ import { ArrowDown } from '../icons/arrowDown';
 import { ArrowRight } from '../icons/arrowRight';
 
 type ShowBoxProps = Box & {
-  onClick: () => void;
-  onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
-  id: string;
-  isSelected?: boolean;
   black?: boolean;
   boxSize: number;
+  id: string;
+  isSelected?: boolean;
+  onClick: () => void;
+  onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
 };
 
 export function ShowBox({
@@ -45,12 +45,12 @@ export function ShowBox({
   return (
     <>
       <button
+        tabIndex={0}
         className={`relative w-full cursor-pointer text-center text-2xl uppercase md:text-4xl ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
         onClick={onClick}
         onKeyDown={handleKeyDown}
-        tabIndex={0}
       >
         {letter}
         {stop === 'bottom' && (

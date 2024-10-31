@@ -7,10 +7,10 @@ import { useRef, useState } from 'react';
 
 type ExportButtonProps = {
   boxes: Box[];
-  minRow: number;
+  maxCol: number;
   maxRow: number;
   minCol: number;
-  maxCol: number;
+  minRow: number;
 };
 
 export function ExportButton({
@@ -95,10 +95,10 @@ export function ExportButton({
   return (
     <button
       ref={buttonRef}
-      onClick={() => void exportToPDF()}
-      disabled={isExporting}
-      className="h-6 w-6 rounded text-gray-400 transition-colors hover:bg-gray-200 disabled:opacity-50"
       aria-label="Export to PDF"
+      className="h-6 w-6 rounded text-gray-400 transition-colors hover:bg-gray-200 disabled:opacity-50"
+      disabled={isExporting}
+      onClick={() => void exportToPDF()}
     >
       ⬇
     </button>

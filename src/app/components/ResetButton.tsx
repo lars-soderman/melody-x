@@ -2,8 +2,8 @@
 
 type ResetButtonProps = {
   isConfirming: boolean;
-  onReset: () => void;
   onConfirmingChange: (isConfirming: boolean) => void;
+  onReset: () => void;
 };
 
 export function ResetButton({
@@ -13,6 +13,10 @@ export function ResetButton({
 }: ResetButtonProps) {
   return (
     <button
+      className="w-6 rounded text-2xl text-gray-400 transition-colors hover:bg-gray-200"
+      aria-label={
+        isConfirming ? 'Confirm reset grid' : 'Reset grid to initial state'
+      }
       onClick={(e) => {
         e.stopPropagation();
         if (isConfirming) {
@@ -22,10 +26,6 @@ export function ResetButton({
           onConfirmingChange(true);
         }
       }}
-      className="w-6 rounded text-2xl text-gray-400 transition-colors hover:bg-gray-200"
-      aria-label={
-        isConfirming ? 'Confirm reset grid' : 'Reset grid to initial state'
-      }
     >
       {isConfirming ? '×' : '⟲'}
     </button>

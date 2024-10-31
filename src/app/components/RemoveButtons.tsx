@@ -29,14 +29,16 @@ export function RemoveButtons({
             {/* Left edge - row remove buttons */}
             {box.col === minCol && (
               <div
-                className="group absolute -left-10 flex h-16 w-10 items-center justify-center"
+                className="hover-trigger absolute h-16"
                 style={{
                   top: `${(box.row - minRow) * BOX_SIZE}px`,
+                  left: 0,
+                  width: `${BOX_SIZE * 0.2}px`, // Thin strip on the edge
                 }}
               >
                 <button
                   aria-label="Remove row"
-                  className={`flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg text-gray-400 opacity-0 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 ${
+                  className={`hover-target absolute left-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white text-lg text-gray-400 opacity-0 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-500 ${
                     confirmingRemove?.type === 'row' &&
                     confirmingRemove.index === box.row
                       ? 'bg-red-50 text-red-500 opacity-100'
@@ -58,14 +60,16 @@ export function RemoveButtons({
             {/* Top edge - column remove buttons */}
             {box.row === minRow && (
               <div
-                className="group absolute -top-10 flex h-10 w-16 items-center justify-center"
+                className="hover-trigger absolute w-16"
                 style={{
                   left: `${(box.col - minCol) * BOX_SIZE}px`,
+                  top: 0,
+                  height: `${BOX_SIZE * 0.2}px`, // Thin strip on the edge
                 }}
               >
                 <button
                   aria-label="Remove column"
-                  className={`flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg text-gray-400 opacity-0 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 ${
+                  className={`hover-target absolute left-1/2 top-1 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full bg-white text-lg text-gray-400 opacity-0 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-500 ${
                     confirmingRemove?.type === 'column' &&
                     confirmingRemove.index === box.col
                       ? 'bg-red-50 text-red-500 opacity-100'
