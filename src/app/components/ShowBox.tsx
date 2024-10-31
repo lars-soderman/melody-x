@@ -13,15 +13,13 @@ type ShowBoxProps = Box & {
 };
 
 export function ShowBox({
-  id,
   letter,
   onClick,
   onNavigate,
   black,
-  isSelected,
   arrow,
   stop,
-  boxSize,
+  hint,
 }: ShowBoxProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
@@ -47,10 +45,6 @@ export function ShowBox({
   return (
     <>
       <button
-        // style={{
-        //   width: `${Math.max(boxSize, 40)}px`,
-        //   height: `${Math.max(boxSize, 40)}px`, // Minimum height of 40px
-        // }}
         className={`relative w-full cursor-pointer text-center text-2xl uppercase md:text-4xl ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
@@ -74,6 +68,11 @@ export function ShowBox({
       {arrow === 'down' && (
         <div className="absolute right-1 top-1">
           <ArrowDown className="h-4 w-4 text-black" />
+        </div>
+      )}
+      {hint && (
+        <div className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-sm font-bold ring-1 ring-black">
+          {hint}
         </div>
       )}
     </>

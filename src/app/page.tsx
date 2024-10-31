@@ -21,7 +21,10 @@ export default function Home() {
   const {
     boxes,
     boxSize,
+    rows,
+    cols,
     updateBoxSize,
+    updateGridSize,
     addRow,
     addColumn,
     updateLetter,
@@ -31,6 +34,7 @@ export default function Home() {
     removeColumn,
     reset,
     updateStop,
+    toggleHint,
   } = useGridReducer();
 
   const { editingBox, setEditingBox, handleNavigate } =
@@ -39,8 +43,8 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
   const [confirmingRemove, setConfirmingRemove] = useState<{
-    type: 'row' | 'column';
     index: number;
+    type: 'row' | 'column';
   } | null>(null);
   const [lastTwoInputs, setLastTwoInputs] = useState<Box[]>([]);
 
@@ -118,8 +122,8 @@ export default function Home() {
     <main className="h-full overflow-scroll" onClick={handleMainClick}>
       <Settings
         boxSize={boxSize}
-        onBoxSizeChange={updateBoxSize}
-        onReset={reset}
+        cols={cols}
+        rows={rows}
         exportProps={{
           boxes,
           minRow,
@@ -127,42 +131,46 @@ export default function Home() {
           minCol,
           maxCol,
         }}
+        onBoxSizeChange={updateBoxSize}
+        onGridSizeChange={updateGridSize}
+        onReset={reset}
       />
 
       <div
-        id="crossword-grid"
         className="relative mx-auto mt-44 w-fit"
+        id="crossword-grid"
         style={{ width: `${(maxCol - minCol + 1) * boxSize}px` }}
       >
         <CrosswordGrid
+          boxes={boxes}
+          boxSize={boxSize}
+          confirmingRemove={confirmingRemove}
+          editingBox={editingBox}
           grid={grid}
-          minRow={minRow}
+          handleRemoveColumn={handleRemoveColumn}
+          handleRemoveRow={handleRemoveRow}
+          maxCol={maxCol}
           maxRow={maxRow}
           minCol={minCol}
-          maxCol={maxCol}
-          editingBox={editingBox}
-          onSetEditingBox={setEditingBox}
-          onNavigate={handleNavigate}
+          minRow={minRow}
+          toggleHint={toggleHint}
           onLetterChange={handleLetterChange}
+          onNavigate={handleNavigate}
+          onSetEditingBox={setEditingBox}
           onUpdateArrow={updateArrow}
           onUpdateBlack={updateBlack}
           onUpdateStop={updateStop}
-          boxes={boxes}
-          handleRemoveRow={handleRemoveRow}
-          handleRemoveColumn={handleRemoveColumn}
-          boxSize={boxSize}
-          confirmingRemove={confirmingRemove}
         />
-        <AddGridButtons onAddRow={addRow} onAddColumn={addColumn} />
+        <AddGridButtons onAddColumn={addColumn} onAddRow={addRow} />
         <RemoveButtons
-          grid={grid}
-          minRow={minRow}
-          minCol={minCol}
-          maxRow={maxRow}
-          maxCol={maxCol}
-          handleRemoveRow={handleRemoveRow}
-          handleRemoveColumn={handleRemoveColumn}
           confirmingRemove={confirmingRemove}
+          grid={grid}
+          handleRemoveColumn={handleRemoveColumn}
+          handleRemoveRow={handleRemoveRow}
+          maxCol={maxCol}
+          maxRow={maxRow}
+          minCol={minCol}
+          minRow={minRow}
         />
       </div>
     </main>

@@ -4,18 +4,22 @@ import { OptionsButton } from '@components/OptionsButton';
 import { useRef } from 'react';
 
 type BoxInputProps = {
+  black?: boolean;
+  boxSize: number;
+  hint?: number;
+  id: string;
+  isSelected?: boolean;
   letter: string | null;
-  onLetterChange: (id: string, letter: string) => void;
   onArrowDown: () => void;
   onArrowRight: () => void;
+
   onBlack: () => void;
-  black?: boolean;
-  isSelected?: boolean;
-  id: string;
+  onLetterChange: (id: string, letter: string) => void;
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
-  boxSize: number;
   onStopBottom: () => void;
   onStopRight: () => void;
+  toggleHint: (id: string) => void;
+  // onHintChange: (hint: number) => void;
 };
 
 export function BoxInput({
@@ -26,11 +30,14 @@ export function BoxInput({
   onBlack,
   black,
   isSelected,
+  hint,
   id,
   onNavigate,
+
   boxSize,
   onStopBottom,
   onStopRight,
+  toggleHint,
 }: BoxInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -64,35 +71,34 @@ export function BoxInput({
       <input
         ref={inputRef}
         autoFocus
+        maxLength={1}
         type="text"
         value={letter || ''}
+        className={`z-10 w-full cursor-pointer text-center text-4xl uppercase text-gray-500 ${
+          black ? 'bg-black text-white' : 'bg-white'
+        } focus:outline-blue-500 focus:ring-blue-500 focus-visible:outline-8`}
+        onKeyDown={handleKeyDown}
         onChange={(e) => {
           const value = e.target.value;
           if (value.length <= 1) {
             onLetterChange(id, value.toUpperCase());
           }
         }}
-        onKeyDown={handleKeyDown}
         onFocus={(e) => {
           if (letter) {
             e.currentTarget.select();
           }
         }}
-        className={`z-10 w-full cursor-pointer text-center text-4xl uppercase text-gray-500 ${
-          black ? 'bg-black text-white' : 'bg-white'
-        } focus:outline-blue-500 focus:ring-blue-500 focus-visible:outline-8`}
-        // style={{ height: `${boxSize}px`, width: `${boxSize}px` }}
-        maxLength={1}
       />
       {isSelected && (
         <OptionsButton
+          toggleHint={() => toggleHint(id)}
           onArrowDown={onArrowDown}
           onArrowRight={onArrowRight}
           onBlack={onBlack}
+          onStop={() => console.log('Stop')}
           onStopBottom={onStopBottom}
           onStopRight={onStopRight}
-          onHint={() => console.log('Hint')}
-          onStop={() => console.log('Stop')}
         />
       )}
     </>

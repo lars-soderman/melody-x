@@ -1,12 +1,12 @@
 import { ReactNode, useEffect, useRef } from 'react';
 
 type PopoverProps = {
+  children: ReactNode;
+  focusTrap?: boolean;
   isOpen: boolean;
   onClose: () => void;
-  children: ReactNode;
-  trigger: ReactNode;
   position?: 'top' | 'right';
-  focusTrap?: boolean;
+  trigger: ReactNode;
 };
 
 export function Popover({
@@ -63,8 +63,8 @@ export function Popover({
 
   return (
     <div
-      className="relative"
       ref={menuRef}
+      className="relative"
       onBlur={(e) => {
         if (!focusTrap && !menuRef.current?.contains(e.relatedTarget as Node)) {
           onClose();
@@ -74,7 +74,7 @@ export function Popover({
       {trigger}
       {isOpen && (
         <div
-          className={`absolute z-20 min-w-[200px] rounded-lg border border-gray-200 bg-white p-4 shadow-lg ${
+          className={`absolute z-20 min-w-[300px] rounded-lg border border-gray-200 bg-white p-4 shadow-lg ${
             position === 'top' ? 'right-0 top-8' : 'left-8 top-0'
           }`}
         >

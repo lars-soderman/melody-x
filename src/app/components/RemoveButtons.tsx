@@ -1,26 +1,15 @@
 import { BOX_SIZE } from '@/constants';
 import { Box } from '@/types';
-
 type RemoveButtonsProps = {
+  confirmingRemove: { index: number; type: 'row' | 'column' } | null;
   grid: Box[][];
-  minRow: number;
-  minCol: number;
-  maxRow: number;
-  maxCol: number;
-  handleRemoveRow: (rowIndex: number) => void;
   handleRemoveColumn: (colIndex: number) => void;
-  confirmingRemove: { type: 'row' | 'column'; index: number } | null;
+  handleRemoveRow: (rowIndex: number) => void;
+  maxCol: number;
+  maxRow: number;
+  minCol: number;
+  minRow: number;
 };
-
-function getButtonSymbol(
-  confirmingRemove: { type: 'row' | 'column'; index: number } | null,
-  type: 'row' | 'column',
-  index: number
-): string {
-  return confirmingRemove?.type === type && confirmingRemove.index === index
-    ? '×'
-    : '-';
-}
 
 export function RemoveButtons({
   grid,
@@ -36,46 +25,32 @@ export function RemoveButtons({
     <>
       {grid.map((row) =>
         row.map((box) => (
-          <>
-            {/* Right edge - row remove buttons */}
-            {box.col === maxCol && (
-              <div
-                className="group absolute right-0 h-16 w-6 hover:bg-gray-50"
-                style={{
-                  top: `${(box.row - minRow) * BOX_SIZE}px`,
-                }}
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveRow(box.row);
-                  }}
-                  className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-200 group-hover:visible`}
-                  aria-label="Remove row"
-                >
-                  {getButtonSymbol(confirmingRemove, 'row', box.row)}
-                </button>
-              </div>
-            )}
-
+          <div key={`remove-${box.row}-${box.col}`}>
             {/* Left edge - row remove buttons */}
             {box.col === minCol && (
               <div
-                className="group absolute left-0 h-16 w-6 hover:bg-gray-50"
+                className="group absolute -left-10 flex h-16 w-10 items-center justify-center"
                 style={{
                   top: `${(box.row - minRow) * BOX_SIZE}px`,
-                  left: '-24px',
                 }}
               >
                 <button
+                  aria-label="Remove row"
+                  className={`flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg text-gray-400 opacity-0 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 ${
+                    confirmingRemove?.type === 'row' &&
+                    confirmingRemove.index === box.row
+                      ? 'bg-red-50 text-red-500 opacity-100'
+                      : ''
+                  } `}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveRow(box.row);
                   }}
-                  className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-200 group-hover:visible`}
-                  aria-label="Remove row"
                 >
-                  {getButtonSymbol(confirmingRemove, 'row', box.row)}
+                  {confirmingRemove?.type === 'row' &&
+                  confirmingRemove.index === box.row
+                    ? '×'
+                    : '−'}
                 </button>
               </div>
             )}
@@ -83,45 +58,32 @@ export function RemoveButtons({
             {/* Top edge - column remove buttons */}
             {box.row === minRow && (
               <div
-                className="group absolute top-0 h-6 w-16 hover:bg-gray-50"
+                className="group absolute -top-10 flex h-10 w-16 items-center justify-center"
                 style={{
                   left: `${(box.col - minCol) * BOX_SIZE}px`,
                 }}
               >
                 <button
+                  aria-label="Remove column"
+                  className={`flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg text-gray-400 opacity-0 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 ${
+                    confirmingRemove?.type === 'column' &&
+                    confirmingRemove.index === box.col
+                      ? 'bg-red-50 text-red-500 opacity-100'
+                      : ''
+                  } `}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveColumn(box.col);
                   }}
-                  className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-200 group-hover:visible`}
-                  aria-label="Remove column"
                 >
-                  {getButtonSymbol(confirmingRemove, 'column', box.col)}
+                  {confirmingRemove?.type === 'column' &&
+                  confirmingRemove.index === box.col
+                    ? '×'
+                    : '−'}
                 </button>
               </div>
             )}
-
-            {/* Bottom edge - column remove buttons */}
-            {box.row === maxRow && (
-              <div
-                className="group absolute bottom-0 h-6 w-16 hover:bg-gray-50"
-                style={{
-                  left: `${(box.col - minCol) * BOX_SIZE}px`,
-                }}
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveColumn(box.col);
-                  }}
-                  className={`invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-200 group-hover:visible`}
-                  aria-label="Remove column"
-                >
-                  {getButtonSymbol(confirmingRemove, 'column', box.col)}
-                </button>
-              </div>
-            )}
-          </>
+          </div>
         ))
       )}
     </>

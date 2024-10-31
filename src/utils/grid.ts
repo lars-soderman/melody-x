@@ -23,14 +23,19 @@ export const isValidLetter = (key: string): boolean => {
   return /^[a-zA-ZåäöÅÄÖéèêëÉÈÊËæøÆØ\u00C0-\u00FF]$/.test(key);
 };
 
-export const createInitialBoxes = (rows: number, cols: number): Box[] =>
-  Array.from({ length: rows }, (_, row) =>
+export const createInitialBoxes = (rows: number, cols: number): Box[] => {
+  const result = Array.from({ length: rows }, (_, row) =>
     Array.from({ length: cols }, (_, col) => ({
       letter: null,
       row,
       col,
     }))
-  ).flat();
+  )
+    .flat()
+    .flat();
+
+  return result;
+};
 
 export const getMaxRow = (boxes: Box[]) =>
   Math.max(...boxes.map((box) => box.row));

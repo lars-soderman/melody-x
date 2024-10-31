@@ -6,24 +6,30 @@ import { Popover } from './Popover';
 import { ResetButton } from './ResetButton';
 
 interface ExportProps {
-  isExporting?: boolean;
   boxes: Box[];
-  minRow: number;
+  isExporting?: boolean;
+  maxCol: number;
   maxRow: number;
   minCol: number;
-  maxCol: number;
+  minRow: number;
 }
 
 interface SettingsProps {
   boxSize: number;
-  onBoxSizeChange: (size: number) => void;
-  onReset: () => void;
+  cols: number;
   exportProps: ExportProps;
+  onBoxSizeChange: (size: number) => void;
+  onGridSizeChange: (rows: number, cols: number) => void;
+  onReset: () => void;
+  rows: number;
 }
 
 export function Settings({
   boxSize,
+  rows,
+  cols,
   onBoxSizeChange,
+  onGridSizeChange,
   onReset,
   exportProps,
 }: SettingsProps) {
@@ -46,34 +52,59 @@ export function Settings({
     <div className="absolute right-4 top-4">
       <Popover
         isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-          setIsConfirmingReset(false);
-        }}
         trigger={
           <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-3xl text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
             aria-label="Settings"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-3xl text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
+            onClick={() => setIsOpen(!isOpen)}
           >
             ⚙
           </button>
         }
+        onClose={() => {
+          setIsOpen(false);
+          setIsConfirmingReset(false);
+        }}
       >
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Grid Size</span>
-            {typeof boxSize === 'number' && !isNaN(boxSize) && (
-              <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
-            )}
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-sm text-gray-500">Grid Size:</label>
+            <div className="flex items-center gap-2">
+              <input
+                className="w-12 rounded border border-gray-300 p-1 text-sm"
+                max="20"
+                min="1"
+                type="number"
+                value={rows}
+                onChange={(e) =>
+                  onGridSizeChange(parseInt(e.target.value), cols)
+                }
+              />
+              <span className="text-sm text-gray-500">×</span>
+              <input
+                className="w-12 rounded border border-gray-300 p-1 text-sm"
+                max="20"
+                min="1"
+                type="number"
+                value={cols}
+                onChange={(e) =>
+                  onGridSizeChange(rows, parseInt(e.target.value))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-sm text-gray-500">Box Size:</label>
+            <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Reset Grid</span>
             <ResetButton
               isConfirming={isConfirmingReset}
-              onReset={onReset}
               onConfirmingChange={setIsConfirmingReset}
+              onReset={onReset}
             />
           </div>
 

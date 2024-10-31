@@ -3,23 +3,24 @@ import { getId } from '@/utils/grid';
 import { GridCell } from './GridCell';
 
 type CrosswordGridProps = {
-  grid: Box[][];
-  editingBox: Box | null;
+  boxSize: number;
   boxes: Box[];
-  minRow: number;
-  minCol: number;
-  maxRow: number;
+  confirmingRemove: { index: number; type: 'row' | 'column' } | null;
+  editingBox: Box | null;
+  grid: Box[][];
+  handleRemoveColumn: (colIndex: number) => void;
+  handleRemoveRow: (rowIndex: number) => void;
   maxCol: number;
+  maxRow: number;
+  minCol: number;
+  minRow: number;
   onLetterChange: (id: string, letter: string) => void;
+  onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
+  onSetEditingBox: (box: Box) => void;
   onUpdateArrow: (id: string, direction: 'down' | 'right') => void;
   onUpdateBlack: (id: string, isBlack: boolean) => void;
   onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
-  onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
-  onSetEditingBox: (box: Box) => void;
-  handleRemoveRow: (rowIndex: number) => void;
-  handleRemoveColumn: (colIndex: number) => void;
-  confirmingRemove: { type: 'row' | 'column'; index: number } | null;
-  boxSize: number;
+  toggleHint: (id: string) => void;
 };
 
 export function CrosswordGrid({
@@ -40,6 +41,7 @@ export function CrosswordGrid({
   handleRemoveColumn,
   confirmingRemove,
   boxSize,
+  toggleHint,
 }: CrosswordGridProps) {
   return (
     <div
@@ -50,13 +52,14 @@ export function CrosswordGrid({
           <GridCell
             key={getId(box)}
             box={box}
+            boxSize={boxSize}
             editingBox={editingBox}
+            toggleHint={toggleHint}
             onLetterChange={onLetterChange}
-            onUpdateArrow={onUpdateArrow}
-            onUpdateBlack={onUpdateBlack}
             onNavigate={onNavigate}
             onSetEditingBox={onSetEditingBox}
-            boxSize={boxSize}
+            onUpdateArrow={onUpdateArrow}
+            onUpdateBlack={onUpdateBlack}
             onUpdateStop={onUpdateStop}
           />
         ))

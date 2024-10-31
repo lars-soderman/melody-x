@@ -1,21 +1,23 @@
 import { Box } from '@/types';
 import { getId } from '@/utils/grid';
+import { memo } from 'react';
 import { BoxInput } from './BoxInput';
 import { ShowBox } from './ShowBox';
 
 type GridCellProps = {
   box: Box;
+  boxSize: number;
   editingBox: Box | null;
   onLetterChange: (id: string, letter: string) => void;
-  onUpdateArrow: (id: string, direction: 'down' | 'right') => void;
-  onUpdateBlack: (id: string, isBlack: boolean) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
+  onUpdateArrow: (id: string, direction: 'down' | 'right') => void;
+  onUpdateBlack: (id: string, isBlack: boolean) => void;
   onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
-  boxSize: number;
+  toggleHint: (id: string) => void;
 };
 
-export function GridCell({
+export const GridCell = memo(function GridCell({
   box,
   editingBox,
   onLetterChange,
@@ -25,6 +27,7 @@ export function GridCell({
   onSetEditingBox,
   onUpdateStop,
   boxSize,
+  toggleHint,
 }: GridCellProps) {
   return (
     <div
@@ -39,34 +42,35 @@ export function GridCell({
     >
       {editingBox === box ? (
         <BoxInput
-          id={getId(box)}
-          letter={box.letter}
+          black={box.black}
           boxSize={boxSize}
+          id={getId(box)}
           isSelected={editingBox === box}
-          onLetterChange={onLetterChange}
+          letter={box.letter}
+          toggleHint={toggleHint}
           onArrowDown={() => onUpdateArrow(getId(box), 'down')}
           onArrowRight={() => onUpdateArrow(getId(box), 'right')}
           onBlack={() => onUpdateBlack(getId(box), !box.black)}
-          black={box.black}
+          onLetterChange={onLetterChange}
           onNavigate={(direction) => onNavigate(box, direction)}
           onStopBottom={() => onUpdateStop(getId(box), 'bottom')}
           onStopRight={() => onUpdateStop(getId(box), 'right')}
         />
       ) : (
         <ShowBox
+          arrow={box.arrow}
+          black={box.black}
+          boxSize={boxSize}
+          col={box.col}
+          hint={box.hint}
           id={getId(box)}
           letter={box.letter}
-          onClick={() => onSetEditingBox(box)}
           row={box.row}
-          col={box.col}
-          arrow={box.arrow}
           stop={box.stop}
-          black={box.black}
-          hint={box.hint}
-          boxSize={boxSize}
+          onClick={() => onSetEditingBox(box)}
           onNavigate={(direction) => onNavigate(box, direction)}
         />
       )}
     </div>
   );
-}
+});
