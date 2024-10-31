@@ -52,199 +52,252 @@ function saveToStorage(state: GridState) {
 function gridReducer(state: GridState, action: GridAction): GridState {
   let newState: GridState;
 
-  switch (action.type) {
-    case 'UPDATE_LETTER':
-      newState = {
-        ...state,
-        boxes: state.boxes.map((box) =>
-          getId(box) === action.id
-            ? { ...box, letter: action.letter.toUpperCase() }
-            : box
-        ),
-      };
-      saveToStorage(newState);
-      return newState;
+  try {
+    switch (action.type) {
+      case 'UPDATE_LETTER':
+        newState = {
+          ...state,
+          boxes: state.boxes.map((box) =>
+            getId(box) === action.id
+              ? { ...box, letter: action.letter.toUpperCase() }
+              : box
+          ),
+        };
+        saveToStorage(newState);
+        return newState;
 
-    case 'UPDATE_ARROW':
-      newState = {
-        ...state,
-        boxes: state.boxes.map((box) =>
-          getId(box) === action.id ? { ...box, arrow: action.arrow } : box
-        ),
-      };
-      saveToStorage(newState);
-      return newState;
+      case 'UPDATE_ARROW':
+        newState = {
+          ...state,
+          boxes: state.boxes.map((box) =>
+            getId(box) === action.id ? { ...box, arrow: action.arrow } : box
+          ),
+        };
+        saveToStorage(newState);
+        return newState;
 
-    case 'UPDATE_BLACK':
-      newState = {
-        ...state,
-        boxes: state.boxes.map((box) =>
-          getId(box) === action.id ? { ...box, black: action.black } : box
-        ),
-      };
-      saveToStorage(newState);
-      return newState;
+      case 'UPDATE_BLACK':
+        newState = {
+          ...state,
+          boxes: state.boxes.map((box) =>
+            getId(box) === action.id ? { ...box, black: action.black } : box
+          ),
+        };
+        saveToStorage(newState);
+        return newState;
 
-    case 'REMOVE_ROW': {
-      return {
-        ...state,
-        boxes: state.boxes.filter((box) => box.row !== action.rowIndex),
-        rows: state.rows - 1, // Update rows count
-      };
-    }
+      case 'REMOVE_ROW': {
+        const newBoxes = state.boxes
+          .filter((box) => box.row !== action.rowIndex)
+          .map((box) => ({
+            ...box,
+            row: box.row > action.rowIndex ? box.row - 1 : box.row,
+          }));
 
-    case 'REMOVE_COLUMN': {
-      return {
-        ...state,
-        boxes: state.boxes.filter((box) => box.col !== action.colIndex),
-        cols: state.cols - 1, // Update cols count
-      };
-    }
+        if (newBoxes.length === state.boxes.length) {
+          console.warn(
+            'No boxes were removed when removing row:',
+            action.rowIndex
+          );
+        }
 
-    case 'ADD_ROW': {
-      const newBoxes = [...state.boxes];
-      const currentMaxRow = Math.max(...newBoxes.map((box) => box.row));
-      const newRow = action.position === 'top' ? 0 : currentMaxRow + 1;
-
-      for (
-        let col = 0;
-        col <= Math.max(...newBoxes.map((box) => box.col));
-        col++
-      ) {
-        newBoxes.push({
-          row: newRow,
-          col,
-          letter: null,
-        });
+        newState = {
+          ...state,
+          boxes: newBoxes,
+          rows: state.rows - 1,
+        };
+        break;
       }
 
-      if (action.position === 'top') {
-        newBoxes.forEach((box) => {
-          if (box.row !== newRow) {
-            box.row += 1;
-          }
-        });
+      case 'REMOVE_COLUMN': {
+        const newBoxes = state.boxes
+          .filter((box) => box.col !== action.colIndex)
+          .map((box) => ({
+            ...box,
+            col: box.col > action.colIndex ? box.col - 1 : box.col,
+          }));
+
+        if (newBoxes.length === state.boxes.length) {
+          console.warn(
+            'No boxes were removed when removing column:',
+            action.colIndex
+          );
+        }
+
+        newState = {
+          ...state,
+          boxes: newBoxes,
+          cols: state.cols - 1,
+        };
+        break;
       }
 
-      return {
-        ...state,
-        boxes: newBoxes,
-        rows: state.rows + 1, // Update rows count
-      };
-    }
+      case 'ADD_ROW': {
+        const newBoxes = [...state.boxes];
+        const currentMaxRow = Math.max(...newBoxes.map((box) => box.row));
+        const newRow = action.position === 'top' ? 0 : currentMaxRow + 1;
 
-    case 'ADD_COLUMN': {
-      const newBoxes = [...state.boxes];
-      const currentMaxCol = Math.max(...newBoxes.map((box) => box.col));
-      const newCol = action.position === 'left' ? 0 : currentMaxCol + 1;
+        for (
+          let col = 0;
+          col <= Math.max(...newBoxes.map((box) => box.col));
+          col++
+        ) {
+          newBoxes.push({
+            row: newRow,
+            col,
+            letter: null,
+          });
+        }
 
-      // Add new boxes for the new column
-      for (
-        let row = 0;
-        row <= Math.max(...newBoxes.map((box) => box.row));
-        row++
-      ) {
-        newBoxes.push({
-          row,
-          col: newCol,
-          letter: null,
-        });
+        if (action.position === 'top') {
+          newBoxes.forEach((box) => {
+            if (box.row !== newRow) {
+              box.row += 1;
+            }
+          });
+        }
+
+        newState = {
+          ...state,
+          boxes: newBoxes,
+          rows: state.rows + 1,
+        };
+        break;
       }
 
-      // If adding at left, shift all existing boxes right
-      if (action.position === 'left') {
-        newBoxes.forEach((box) => {
-          if (box.col !== newCol) {
-            box.col += 1;
-          }
-        });
+      case 'ADD_COLUMN': {
+        const newBoxes = [...state.boxes];
+        const currentMaxCol = Math.max(...newBoxes.map((box) => box.col));
+        const newCol = action.position === 'left' ? 0 : currentMaxCol + 1;
+
+        // Add new boxes for the new column
+        for (
+          let row = 0;
+          row <= Math.max(...newBoxes.map((box) => box.row));
+          row++
+        ) {
+          newBoxes.push({
+            row,
+            col: newCol,
+            letter: null,
+          });
+        }
+
+        // If adding at left, shift all existing boxes right
+        if (action.position === 'left') {
+          newBoxes.forEach((box) => {
+            if (box.col !== newCol) {
+              box.col += 1;
+            }
+          });
+        }
+
+        newState = {
+          ...state,
+          boxes: newBoxes,
+          cols: state.cols + 1,
+        };
+        break;
       }
 
-      return {
-        ...state,
-        boxes: newBoxes,
-        cols: state.cols + 1, // Update cols count
-      };
-    }
+      case 'UPDATE_BOX_SIZE':
+        newState = {
+          ...state,
+          boxSize: Math.max(action.size, 4),
+        };
+        saveToStorage(newState);
+        return newState;
 
-    case 'UPDATE_BOX_SIZE':
-      newState = {
-        ...state,
-        boxSize: Math.max(action.size, 4),
-      };
-      saveToStorage(newState);
-      return newState;
+      case 'UPDATE_STOP':
+        newState = {
+          ...state,
+          boxes: state.boxes.map((box) =>
+            getId(box) === action.id ? { ...box, stop: action.stop } : box
+          ),
+        };
+        saveToStorage(newState);
+        return newState;
 
-    case 'UPDATE_STOP':
-      newState = {
-        ...state,
-        boxes: state.boxes.map((box) =>
-          getId(box) === action.id ? { ...box, stop: action.stop } : box
-        ),
-      };
-      saveToStorage(newState);
-      return newState;
+      case 'SET_HINT':
+        newState = {
+          ...state,
+          boxes: state.boxes.map((box) =>
+            getId(box) === action.id ? { ...box, hint: action.hint } : box
+          ),
+        };
+        saveToStorage(newState);
+        return newState;
 
-    case 'SET_HINT':
-      newState = {
-        ...state,
-        boxes: state.boxes.map((box) =>
-          getId(box) === action.id ? { ...box, hint: action.hint } : box
-        ),
-      };
-      saveToStorage(newState);
-      return newState;
+      case 'RESET':
+        localStorage.removeItem(STORAGE_KEY);
+        newState = getInitialState();
+        return newState;
 
-    case 'RESET':
-      localStorage.removeItem(STORAGE_KEY);
-      newState = getInitialState();
-      return newState;
-
-    case 'UPDATE_GRID_SIZE': {
-      const updatedBoxes = state.boxes
-        .map((box) => ({
-          ...box,
-          row: Math.min(box.row, action.rows - 1),
-          col: Math.min(box.col, action.cols - 1),
-        }))
-        .filter(
-          (box, index, self) =>
-            self.findIndex((b) => b.row === box.row && b.col === box.col) ===
-            index
-        );
-
-      // Add new boxes for expanded areas
-      for (let row = 0; row < action.rows; row++) {
-        for (let col = 0; col < action.cols; col++) {
-          const existingBox = updatedBoxes.find(
-            (box) => box.row === row && box.col === col
+      case 'UPDATE_GRID_SIZE': {
+        const updatedBoxes = state.boxes
+          .map((box) => ({
+            ...box,
+            row: Math.min(box.row, action.rows - 1),
+            col: Math.min(box.col, action.cols - 1),
+          }))
+          .filter(
+            (box, index, self) =>
+              self.findIndex((b) => b.row === box.row && b.col === box.col) ===
+              index
           );
 
-          if (!existingBox) {
-            updatedBoxes.push({
-              row,
-              col,
-              letter: null,
-            });
+        // Add new boxes for expanded areas
+        for (let row = 0; row < action.rows; row++) {
+          for (let col = 0; col < action.cols; col++) {
+            const existingBox = updatedBoxes.find(
+              (box) => box.row === row && box.col === col
+            );
+
+            if (!existingBox) {
+              updatedBoxes.push({
+                row,
+                col,
+                letter: null,
+              });
+            }
           }
         }
+
+        newState = {
+          ...state,
+          rows: action.rows,
+          cols: action.cols,
+          boxes: updatedBoxes,
+        };
+        break;
       }
 
-      return {
-        ...state,
-        rows: action.rows,
-        cols: action.cols,
-        boxes: updatedBoxes,
-      };
+      default:
+        throw new Error(
+          `Unhandled action type: ${(action as { type: string }).type}`
+        );
     }
 
-    default:
-      return state;
+    // Validate the new state
+    if (!newState.boxes || !Array.isArray(newState.boxes)) {
+      throw new Error('Invalid state: boxes must be an array');
+    }
+    if (newState.rows < 1 || newState.cols < 1) {
+      throw new Error(
+        `Invalid dimensions: rows=${newState.rows}, cols=${newState.cols}`
+      );
+    }
+
+    return newState;
+  } catch (error) {
+    console.error('Error in grid reducer:', error);
+    console.error('Action:', action);
+    console.error('Current state:', state);
+    return state; // Return unchanged state on error
   }
 }
 
 const getInitialState = (): GridState => {
-  console.log('getInitialState');
   const defaultState = {
     version: STORAGE_VERSION,
     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
@@ -272,8 +325,6 @@ export function useGridReducer() {
 
   function getNextHintNumber(): number {
     const usedHints = state.boxes.map((box) => box.hint);
-
-    console.log('usedHints', usedHints);
 
     let nextHint = 1;
     while (usedHints.includes(nextHint)) {

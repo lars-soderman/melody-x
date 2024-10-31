@@ -1,5 +1,6 @@
 import { Box } from '@/types';
 import React from 'react';
+
 type RemoveButtonsProps = {
   boxSize: number;
   confirmingRemove: { index: number; type: 'row' | 'column' } | null;
@@ -28,7 +29,6 @@ export function RemoveButtons({
       {grid.map((row) =>
         row.map((box) => (
           <React.Fragment key={`remove-${box.row}-${box.col}`}>
-            {/* <div key={`remove-${box.row}-${box.col}`}> */}
             {/* Left edge - row remove buttons */}
             {box.col === minCol && (
               <div
@@ -154,7 +154,6 @@ export function RemoveButtons({
                 </button>
               </div>
             )}
-            {/* </div> */}
           </React.Fragment>
         ))
       )}
