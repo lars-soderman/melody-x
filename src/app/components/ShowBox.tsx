@@ -45,6 +45,7 @@ export function ShowBox({
   return (
     <>
       <button
+        data-letter={letter ? 'true' : undefined}
         tabIndex={0}
         className={`relative w-full cursor-pointer text-center text-2xl uppercase md:text-4xl ${
           black ? 'bg-black text-white' : 'bg-white'
@@ -53,13 +54,32 @@ export function ShowBox({
         onKeyDown={handleKeyDown}
       >
         {letter}
-        {stop === 'bottom' && (
-          <div className="absolute bottom-0 left-0 h-[3px] w-full bg-black" />
-        )}
-        {stop === 'right' && (
-          <div className="absolute right-0 top-0 h-full w-[3px] bg-black" />
-        )}
       </button>
+      {stop === 'bottom' && (
+        <div
+          className="absolute bottom-0 left-0 h-[3px] w-full bg-black"
+          data-stop="bottom"
+        />
+      )}
+      {stop === 'right' && (
+        <div
+          className="absolute right-0 top-0 h-full w-[3px] bg-black"
+          data-stop="right"
+        />
+      )}
+      {hint && (
+        <div
+          className="absolute flex h-5 w-5 items-center justify-center rounded-full"
+          data-hint="true"
+          style={{
+            left: '3px',
+            top: '3px',
+            border: '2px solid black',
+          }}
+        >
+          <span className="text-xs">{hint}</span>
+        </div>
+      )}
       {arrow === 'right' && (
         <div className="absolute bottom-1 left-1">
           <ArrowRight className="h-4 w-4 text-black" />
@@ -68,11 +88,6 @@ export function ShowBox({
       {arrow === 'down' && (
         <div className="absolute right-1 top-1">
           <ArrowDown className="h-4 w-4 text-black" />
-        </div>
-      )}
-      {hint && (
-        <div className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-sm font-bold ring-1 ring-black">
-          {hint}
         </div>
       )}
     </>

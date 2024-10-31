@@ -41,7 +41,7 @@ export default function Home() {
     useGridNavigation(boxes);
 
   const [isClient, setIsClient] = useState(false);
-  const [isConfirmingReset, setIsConfirmingReset] = useState(false);
+  const [_, setIsConfirmingReset] = useState(false);
   const [confirmingRemove, setConfirmingRemove] = useState<{
     index: number;
     type: 'row' | 'column';
@@ -163,6 +163,7 @@ export default function Home() {
         />
         <AddGridButtons onAddColumn={addColumn} onAddRow={addRow} />
         <RemoveButtons
+          boxSize={boxSize}
           confirmingRemove={confirmingRemove}
           grid={grid}
           handleRemoveColumn={handleRemoveColumn}

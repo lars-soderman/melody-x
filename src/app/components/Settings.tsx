@@ -71,7 +71,7 @@ export function Settings({
             <label className="text-sm text-gray-500">Grid Size:</label>
             <div className="flex items-center gap-2">
               <input
-                className="w-12 rounded border border-gray-300 p-1 text-sm"
+                className="w-10 rounded border border-gray-300 p-1 text-sm"
                 max="20"
                 min="1"
                 type="number"
@@ -82,7 +82,7 @@ export function Settings({
               />
               <span className="text-sm text-gray-500">×</span>
               <input
-                className="w-12 rounded border border-gray-300 p-1 text-sm"
+                className="w-10 rounded border border-gray-300 p-1 text-sm"
                 max="20"
                 min="1"
                 type="number"
@@ -104,7 +104,11 @@ export function Settings({
             <ResetButton
               isConfirming={isConfirmingReset}
               onConfirmingChange={setIsConfirmingReset}
-              onReset={onReset}
+              onReset={() => {
+                onReset();
+                setIsOpen(false);
+                setIsConfirmingReset(false);
+              }}
             />
           </div>
 

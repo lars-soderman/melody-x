@@ -1,6 +1,6 @@
 'use client';
 
-import { BOX_SIZE, INITIAL_GRID_SIZE } from '@/constants';
+import { INITIAL_BOX_SIZE, INITIAL_GRID_SIZE } from '@/constants';
 import { Box } from '@types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useCallback, useEffect, useReducer } from 'react';
@@ -37,7 +37,7 @@ function loadFromStorage(): GridState | null {
 
     const parsed = JSON.parse(saved) as GridState;
     if (!parsed.boxSize || isNaN(parsed.boxSize)) {
-      parsed.boxSize = BOX_SIZE;
+      parsed.boxSize = INITIAL_BOX_SIZE;
     }
     return parsed.version === STORAGE_VERSION ? parsed : null;
   } catch {
@@ -85,83 +85,86 @@ function gridReducer(state: GridState, action: GridAction): GridState {
       saveToStorage(newState);
       return newState;
 
-    case 'REMOVE_ROW':
-      const filtered = state.boxes.filter((box) => box.row !== action.rowIndex);
-      newState = {
+    case 'REMOVE_ROW': {
+      return {
         ...state,
-        boxes: filtered.map((box) => ({
-          ...box,
-          row: box.row > action.rowIndex ? box.row - 1 : box.row,
-        })),
+        boxes: state.boxes.filter((box) => box.row !== action.rowIndex),
+        rows: state.rows - 1, // Update rows count
       };
-      saveToStorage(newState);
-      return newState;
+    }
 
-    case 'REMOVE_COLUMN':
-      const filteredCols = state.boxes.filter(
-        (box) => box.col !== action.colIndex
-      );
-      newState = {
+    case 'REMOVE_COLUMN': {
+      return {
         ...state,
-        boxes: filteredCols.map((box) => ({
-          ...box,
-          col: box.col > action.colIndex ? box.col - 1 : box.col,
-        })),
+        boxes: state.boxes.filter((box) => box.col !== action.colIndex),
+        cols: state.cols - 1, // Update cols count
       };
-      saveToStorage(newState);
-      return newState;
+    }
 
     case 'ADD_ROW': {
-      const minRow = Math.min(...state.boxes.map((box) => box.row));
-      const maxRow = Math.max(...state.boxes.map((box) => box.row));
-      const minCol = Math.min(...state.boxes.map((box) => box.col));
-      const maxCol = Math.max(...state.boxes.map((box) => box.col));
+      const newBoxes = [...state.boxes];
+      const currentMaxRow = Math.max(...newBoxes.map((box) => box.row));
+      const newRow = action.position === 'top' ? 0 : currentMaxRow + 1;
 
-      const newRowIndex = action.position === 'top' ? minRow - 1 : maxRow + 1;
-      const newRow = Array.from(
-        { length: maxCol - minCol + 1 },
-        (_, colIndex) => ({
+      for (
+        let col = 0;
+        col <= Math.max(...newBoxes.map((box) => box.col));
+        col++
+      ) {
+        newBoxes.push({
+          row: newRow,
+          col,
           letter: null,
-          row: newRowIndex,
-          col: colIndex + minCol,
-        })
-      );
+        });
+      }
 
-      newState = {
+      if (action.position === 'top') {
+        newBoxes.forEach((box) => {
+          if (box.row !== newRow) {
+            box.row += 1;
+          }
+        });
+      }
+
+      return {
         ...state,
-        boxes: [...state.boxes, ...newRow],
+        boxes: newBoxes,
+        rows: state.rows + 1, // Update rows count
       };
-      saveToStorage(newState);
-      return newState;
     }
 
     case 'ADD_COLUMN': {
-      const minRow = Math.min(...state.boxes.map((box) => box.row));
-      const maxRow = Math.max(...state.boxes.map((box) => box.row));
-      const minCol = Math.min(...state.boxes.map((box) => box.col));
-      const maxCol = Math.max(...state.boxes.map((box) => box.col));
+      const newBoxes = [...state.boxes];
+      const currentMaxCol = Math.max(...newBoxes.map((box) => box.col));
+      const newCol = action.position === 'left' ? 0 : currentMaxCol + 1;
 
-      let shiftedBoxes = state.boxes;
-      if (action.position === 'left') {
-        shiftedBoxes = state.boxes.map((box) => ({ ...box, col: box.col + 1 }));
+      // Add new boxes for the new column
+      for (
+        let row = 0;
+        row <= Math.max(...newBoxes.map((box) => box.row));
+        row++
+      ) {
+        newBoxes.push({
+          row,
+          col: newCol,
+          letter: null,
+        });
       }
 
-      const newColIndex = action.position === 'left' ? minCol : maxCol + 1;
-      const newCol = Array.from(
-        { length: maxRow - minRow + 1 },
-        (_, rowIndex) => ({
-          letter: null,
-          row: rowIndex + minRow,
-          col: newColIndex,
-        })
-      );
+      // If adding at left, shift all existing boxes right
+      if (action.position === 'left') {
+        newBoxes.forEach((box) => {
+          if (box.col !== newCol) {
+            box.col += 1;
+          }
+        });
+      }
 
-      newState = {
+      return {
         ...state,
-        boxes: [...shiftedBoxes, ...newCol],
+        boxes: newBoxes,
+        cols: state.cols + 1, // Update cols count
       };
-      saveToStorage(newState);
-      return newState;
     }
 
     case 'UPDATE_BOX_SIZE':
@@ -193,15 +196,11 @@ function gridReducer(state: GridState, action: GridAction): GridState {
       return newState;
 
     case 'RESET':
+      localStorage.removeItem(STORAGE_KEY);
       newState = getInitialState();
-      saveToStorage(newState);
       return newState;
 
     case 'UPDATE_GRID_SIZE': {
-      const rowDiff = action.rows - state.rows;
-      const colDiff = action.cols - state.cols;
-
-      // If shrinking, adjust positions to keep content aligned to top-left
       const updatedBoxes = state.boxes
         .map((box) => ({
           ...box,
@@ -210,7 +209,6 @@ function gridReducer(state: GridState, action: GridAction): GridState {
         }))
         .filter(
           (box, index, self) =>
-            // Remove duplicates that might occur from position adjustments
             self.findIndex((b) => b.row === box.row && b.col === box.col) ===
             index
         );
@@ -250,7 +248,7 @@ const getInitialState = (): GridState => {
   const defaultState = {
     version: STORAGE_VERSION,
     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
-    boxSize: BOX_SIZE,
+    boxSize: INITIAL_BOX_SIZE,
     rows: INITIAL_GRID_SIZE.rows,
     cols: INITIAL_GRID_SIZE.cols,
   };
@@ -266,15 +264,11 @@ const getInitialState = (): GridState => {
 export function useGridReducer() {
   const [state, dispatch] = useReducer(gridReducer, getInitialState());
 
-  // Sync to localStorage whenever state changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Check for browser environment
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
   }, [state]);
-
-  // console.log('state', state.boxes[0]);
 
   function getNextHintNumber(): number {
     const usedHints = state.boxes.map((box) => box.hint);

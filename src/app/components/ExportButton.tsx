@@ -13,13 +13,7 @@ type ExportButtonProps = {
   minRow: number;
 };
 
-export function ExportButton({
-  boxes,
-  minRow,
-  maxRow,
-  minCol,
-  maxCol,
-}: ExportButtonProps) {
+export function ExportButton({}: ExportButtonProps) {
   const [isExporting, setIsExporting] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -31,76 +25,77 @@ export function ExportButton({
       if (buttonRef.current) buttonRef.current.style.display = 'none';
 
       const element = document.getElementById('crossword-grid');
-      if (!element) {
-        throw new Error('Grid element not found');
-      }
+      if (!element) throw new Error('Grid element not found');
 
-      const numRows = maxRow - minRow + 1;
-      const numCols = maxCol - minCol + 1;
-      const cellSize = element.clientWidth / numCols;
-      const actualWidth = cellSize * numCols;
-      const actualHeight = cellSize * numRows;
+      // Hide letters but preserve structural elements
+      const style = document.createElement('style');
+      style.textContent = `
+        [data-letter] {
+          color: transparent !important;
+        }
+        [data-hint] span {
+          position: absolute;
+          top: -7px;
+        }
+      `;
+      document.head.appendChild(style);
 
       const canvas = await html2canvas(element, {
         backgroundColor: 'white',
-        scale: 2,
-        width: actualWidth,
-        height: actualHeight,
-        onclone: (doc) => {
-          const inputs = doc.getElementsByTagName('input');
-          Array.from(inputs).forEach((input) => {
-            input.value = '';
-          });
-          const buttons = doc.getElementsByTagName('button');
-          Array.from(buttons).forEach((button) => {
-            if (!button.classList.contains('options-button')) {
-              button.textContent = '';
-            }
-          });
-        },
+        scale: 4,
+        useCORS: true,
+        logging: false,
       });
 
+      // Remove temporary style
+      document.head.removeChild(style);
+
+      // A4 dimensions in mm
+      const A4_WIDTH = 210;
+      const A4_HEIGHT = 297;
+
+      const scaleWidth = A4_WIDTH / canvas.width;
+      const scaleHeight = A4_HEIGHT / canvas.height;
+      const scale = Math.min(scaleWidth, scaleHeight) * 0.6;
+
+      const scaledWidth = canvas.width * scale;
+      const scaledHeight = canvas.height * scale;
+
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: 'p',
         unit: 'mm',
         format: 'a4',
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const targetWidth = pdfWidth * 0.8;
-      const aspectRatio = canvas.height / canvas.width;
-      const targetHeight = targetWidth * aspectRatio;
-      const x = (pdfWidth - targetWidth) / 2;
-      const y = (pdfHeight - targetHeight) / 2;
+      const marginLeft = (A4_WIDTH - scaledWidth) / 2;
+      const marginTop = (A4_HEIGHT - scaledHeight) / 2;
 
       pdf.addImage(
-        canvas.toDataURL('image/jpeg', 1.0),
-        'JPEG',
-        x,
-        y,
-        targetWidth,
-        targetHeight
+        canvas.toDataURL('image/png'),
+        'PNG',
+        marginLeft,
+        marginTop,
+        scaledWidth,
+        scaledHeight
       );
 
       pdf.save('crossword.pdf');
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Export failed:', error);
     } finally {
-      if (buttonRef.current) buttonRef.current.style.display = 'block';
       setIsExporting(false);
+      if (buttonRef.current) buttonRef.current.style.display = 'block';
     }
   };
 
   return (
     <button
       ref={buttonRef}
-      aria-label="Export to PDF"
-      className="h-6 w-6 rounded text-gray-400 transition-colors hover:bg-gray-200 disabled:opacity-50"
+      className="rounded bg-blue-500 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-600"
       disabled={isExporting}
-      onClick={() => void exportToPDF()}
+      onClick={exportToPDF}
     >
-      ⬇
+      {isExporting ? 'Exporting...' : 'Export'}
     </button>
   );
 }

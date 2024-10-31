@@ -3,7 +3,7 @@
   "plugins": ["typescript-sort-keys"],
   "rules": {
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
     "typescript-sort-keys/interface": "error",
     "typescript-sort-keys/string-enum": "error",
     "react/jsx-sort-props": [

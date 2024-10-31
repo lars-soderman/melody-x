@@ -28,14 +28,6 @@ body {
   }
 }
 
-/* @media (max-width: 768px) {
-  #crossword-grid {
-    transform: scale(0.8);
-    transform-origin: center;
-  }
-} */
-
-/* Add to your existing styles */
 .hover-trigger .hover-target {
   opacity: 0;
   pointer-events: none;
@@ -44,9 +36,4 @@ body {
 .hover-trigger:hover .hover-target {
   opacity: 1;
   pointer-events: auto;
-}
-
-/* Optional: fade effect when grid is hovered */
-#crossword-grid:hover .hover-trigger .hover-target {
-  transition-delay: 150ms;
 }
