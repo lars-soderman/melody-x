@@ -80,7 +80,9 @@ function gridReducer(state: GridState, action: GridAction): GridState {
         newState = {
           ...state,
           boxes: state.boxes.map((box) =>
-            getId(box) === action.id ? { ...box, black: action.black } : box
+            getId(box) === action.id
+              ? { ...box, black: action.black, letter: null }
+              : box
           ),
         };
         saveToStorage(newState);
