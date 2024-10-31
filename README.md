@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Melodikryss - Interactive Crossword Grid Editor
 
-## Getting Started
+> 🤖 **Note:** Nearly every line of code here is written by [Cursor](https://cursor.sh/),
 
-First, run the development server:
+A React-based crossword puzzle editor with dynamic grid manipulation and real-time editing capabilities.
+
+## ✨ Features
+
+- 📏 Dynamic grid resizing
+- ➕ Add/remove rows and columns
+- ⌨️ Keyboard navigation
+- ⬛ Black cell toggling
+- ➡️ Arrow indicators for clues
+- 🔢 Hint number management
+- 📄 PDF export
+- 💾 Local storage persistence
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js
+- npm/yarn
+
+### Installation
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:4000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Core Components
 
-## Learn More
+```yomama
+src/
+├── app/
+│   ├── components/
+│   │   ├── CrosswordGrid.tsx   # Main grid component
+│   │   ├── GridCell.tsx        # Individual cell component
+│   │   ├── BoxInput.tsx        # Editable cell input
+│   │   └── Settings.tsx        # Configuration panel
+│   └── page.tsx                # Main page
+├── hooks/
+│   ├── useGridReducer.ts       # Grid state management
+│   └── useGridNavigation.ts    # Keyboard navigation
+├── types/
+│   └── index.ts               # Type definitions
+└── utils/
+    └── grid.ts                # Grid utilities
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🔧 Technical Debt & Improvements
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **State Management**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   - Split grid reducer into smaller modules
+   - Move action types to separate file
 
-## Deploy on Vercel
+2. **Performance**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - Virtualize grid for large puzzles
+   - Optimize re-renders
+   - Memoize expensive calculations
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Type Safety**
+   - Stricter action types
+   - Branded types for IDs
+   - Better grid-cols TypeScript support
+
+### Code Cleanup
+
+- Clean up commented code
+- Remove console.logs
+- Standardize prop patterns
+
+## 🎯 Future Features
+
+- [ ] Handle multiple melodikryss
+- [ ] Undo/Redo functionality
+- [ ] Multiple grid templates
+- [ ] Clue management system
+- [ ] Collaborative editing
+- [ ] Grid validation rules
+- [ ] Import/Export formats
+- [ ] Accessibility improvements
+- [ ] Mobile responsiveness
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+
+## 📝 License
+
+...
+
+## 🔗 Contact
+
+...

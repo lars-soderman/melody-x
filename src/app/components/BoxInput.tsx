@@ -19,7 +19,6 @@ type BoxInputProps = {
   onStopBottom: () => void;
   onStopRight: () => void;
   toggleHint: (id: string) => void;
-  // onHintChange: (hint: number) => void;
 };
 
 export function BoxInput({
@@ -30,11 +29,8 @@ export function BoxInput({
   onBlack,
   black,
   isSelected,
-  hint,
   id,
   onNavigate,
-
-  boxSize,
   onStopBottom,
   onStopRight,
   toggleHint,
