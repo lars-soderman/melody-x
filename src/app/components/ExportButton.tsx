@@ -91,11 +91,11 @@ export function ExportButton({}: ExportButtonProps) {
   return (
     <button
       ref={buttonRef}
-      className="rounded bg-blue-500 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-600"
+      className="flex w-10 items-center gap-1 rounded px-3 py-1 text-center text-sm text-gray-500 transition-colors hover:bg-gray-200"
       disabled={isExporting}
       onClick={exportToPDF}
     >
-      {isExporting ? 'Exporting...' : 'Export'}
+      ↓
     </button>
   );
 }

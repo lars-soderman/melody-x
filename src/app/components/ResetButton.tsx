@@ -13,7 +13,7 @@ export function ResetButton({
 }: ResetButtonProps) {
   return (
     <button
-      className="w-6 rounded text-2xl text-gray-400 transition-colors hover:bg-gray-200"
+      className="w-10 rounded text-2xl text-gray-400 transition-colors hover:bg-gray-200"
       aria-label={
         isConfirming ? 'Confirm reset grid' : 'Reset grid to initial state'
       }

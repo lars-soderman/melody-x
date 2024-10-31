@@ -68,7 +68,7 @@ export function Settings({
       >
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
-            <label className="text-sm text-gray-500">Grid Size:</label>
+            <label className="text-sm text-gray-500">Grid Size</label>
             <div className="flex items-center gap-2">
               <input
                 className="w-10 rounded border border-gray-300 p-1 text-sm"
@@ -95,7 +95,7 @@ export function Settings({
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <label className="text-sm text-gray-500">Box Size:</label>
+            <label className="text-sm text-gray-500">Box Size</label>
             <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
           </div>
 
