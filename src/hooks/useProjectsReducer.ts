@@ -26,8 +26,8 @@ function projectsReducer(
         .map((id) => storage.getProject(id))
         .filter((p): p is Project => p !== null);
 
-      // Create default project if none exist
-      if (projects.length === 0) {
+      // Only create default project if no projects exist AND no project IDs exist
+      if (projects.length === 0 && projectIds.length === 0) {
         const defaultProject = createDefaultProject('Untitled Project');
         storage.saveProject(defaultProject);
         projects = [defaultProject];
@@ -36,7 +36,7 @@ function projectsReducer(
       return {
         ...state,
         projects,
-        currentProjectId: projects[0].id, // Now safe to access since projects array will never be empty
+        currentProjectId: projects[0]?.id || '',
       };
     }
 
@@ -97,7 +97,11 @@ export function useProjectsReducer() {
   });
 
   const loadProjects = useCallback(() => {
-    dispatch({ type: 'LOAD_PROJECTS' });
+    return new Promise<void>((resolve) => {
+      dispatch({ type: 'LOAD_PROJECTS' });
+      // Use setTimeout to ensure state update happens before resolving
+      setTimeout(resolve, 0);
+    });
   }, []);
 
   const createProject = useCallback((name: string) => {

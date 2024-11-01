@@ -4,7 +4,7 @@ import { DEFAULT_STATE } from '@/constants';
 import { Project } from '@/types';
 import { Box } from '@types';
 import { createInitialBoxes, getId } from '@utils/grid';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 // const STORAGE_KEY = 'melodikryss-state';
 // const STORAGE_VERSION = 1;
@@ -31,26 +31,8 @@ type GridAction =
   | { id: string; stop: Box['stop']; type: 'UPDATE_STOP' }
   | { hint?: number; id: string; type: 'SET_HINT' }
   | { cols: number; rows: number; type: 'UPDATE_GRID_SIZE' }
-  | { font: string; type: 'UPDATE_FONT' };
-
-// function loadFromStorage(): GridState | null {
-//   try {
-//     const saved = localStorage.getItem(STORAGE_KEY);
-//     if (!saved) return null;
-
-//     const parsed = JSON.parse(saved) as GridState;
-//     if (!parsed.boxSize || isNaN(parsed.boxSize)) {
-//       parsed.boxSize = INITIAL_BOX_SIZE;
-//     }
-//     return parsed.version === STORAGE_VERSION ? parsed : null;
-//   } catch {
-//     return null;
-//   }
-// }
-
-// function saveToStorage(state: GridState) {
-//   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-// }
+  | { font: string; type: 'UPDATE_FONT' }
+  | { state: GridState; type: 'SET_STATE' };
 
 function gridReducer(state: GridState, action: GridAction): GridState {
   let newState: GridState;
@@ -285,6 +267,9 @@ function gridReducer(state: GridState, action: GridAction): GridState {
           font: action.font,
         };
 
+      case 'SET_STATE':
+        return action.state;
+
       default:
         throw new Error(
           `Unhandled action type: ${(action as { type: string }).type}`
@@ -310,70 +295,107 @@ function gridReducer(state: GridState, action: GridAction): GridState {
   }
 }
 
-// const getInitialState = (): GridState => {
-//   const initialState: GridState = {
-//     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
-//     boxSize: INITIAL_BOX_SIZE,
-//     cols: INITIAL_GRID_SIZE.cols,
-//     font: 'var(--font-default)',
-//     rows: INITIAL_GRID_SIZE.rows,
-//     version: 1,
-//   };
-
-//   if (typeof window === 'undefined') {
-//     return initialState;
-//   }
-
-//   // const saved = loadFromStorage();
-//   return initialState;
-// };
+const getInitialState = (project: Project | null): GridState => {
+  console.log('Getting initial state with project:', project);
+  if (project) {
+    const state = {
+      boxSize: project.boxSize,
+      boxes: project.boxes,
+      cols: project.cols,
+      rows: project.rows,
+      font: project.font,
+      version: 1,
+    };
+    console.log('Initial state from project:', state);
+    return state;
+  }
+  console.log('Using default state');
+  return {
+    ...DEFAULT_STATE,
+    boxes: createInitialBoxes(DEFAULT_STATE.rows, DEFAULT_STATE.cols),
+    version: 1,
+  };
+};
 
 export function useGridReducer(
   project: Project | null,
   onProjectChange: (updatedProject: Project) => void
 ) {
-  const initialState = useMemo(
-    () => ({
-      ...(project
-        ? {
-            boxes: project.boxes,
-            boxSize: project.boxSize,
-            rows: project.rows,
-            cols: project.cols,
-            font: project.font,
-          }
-        : {
-            ...DEFAULT_STATE,
-            boxes: createInitialBoxes(DEFAULT_STATE.rows, DEFAULT_STATE.cols),
-          }),
-      version: 1,
-    }),
-    [project]
-  );
+  const [state, dispatch] = useReducer(gridReducer, getInitialState(project));
+  const prevProjectIdRef = useRef<string | null>(project?.id ?? null);
+  const prevStateRef = useRef(state);
+  const updateTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const [state, dispatch] = useReducer(gridReducer, initialState);
-
-  // Add effect to sync changes back to project
+  // Effect for loading from project
   useEffect(() => {
-    if (project && JSON.stringify(state) !== JSON.stringify(initialState)) {
-      onProjectChange({
-        ...project,
-        boxes: state.boxes,
-        boxSize: state.boxSize,
-        rows: state.rows,
-        cols: state.cols,
-        font: state.font,
-        modifiedAt: new Date().toISOString(),
+    if (!project) return;
+
+    // Reset state when switching to a different project
+    if (project.id !== prevProjectIdRef.current) {
+      prevProjectIdRef.current = project.id;
+      dispatch({
+        type: 'SET_STATE',
+        state: {
+          boxSize: project.boxSize,
+          boxes: project.boxes,
+          cols: project.cols,
+          rows: project.rows,
+          font: project.font,
+          version: 1,
+        },
       });
     }
-  }, [state, project, onProjectChange, initialState]);
+  }, [project]);
 
-  console.log('project', project);
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined') {
-  //     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  //   }
-  // }, [state]);
+  // Effect for syncing state changes back to project
+  useEffect(() => {
+    if (!project || project.id !== prevProjectIdRef.current) return;
+
+    const currentStateString = JSON.stringify({
+      boxes: state.boxes,
+      boxSize: state.boxSize,
+      rows: state.rows,
+      cols: state.cols,
+      font: state.font,
+    });
+
+    const prevStateString = JSON.stringify({
+      boxes: prevStateRef.current.boxes,
+      boxSize: prevStateRef.current.boxSize,
+      rows: prevStateRef.current.rows,
+      cols: prevStateRef.current.cols,
+      font: prevStateRef.current.font,
+    });
+
+    if (currentStateString !== prevStateString) {
+      prevStateRef.current = state;
+
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+
+      updateTimeoutRef.current = setTimeout(() => {
+        onProjectChange({
+          ...project,
+          boxes: state.boxes,
+          boxSize: state.boxSize,
+          rows: state.rows,
+          cols: state.cols,
+          font: state.font,
+          modifiedAt: new Date().toISOString(),
+        });
+      }, 500);
+    }
+  }, [state, project, onProjectChange]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, []);
 
   function getNextHintNumber(): number {
     const usedHints = state.boxes.map((box) => box.hint);

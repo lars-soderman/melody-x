@@ -20,13 +20,23 @@ import { RemoveButtons } from './components/RemoveButtons';
 import { Settings } from './components/Settings';
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const {
     currentProject,
     loadProjects,
     updateProject,
     projects,
+    createProject,
     setCurrentProjectId,
   } = useProjectsReducer();
+
+  useEffect(() => {
+    const init = async () => {
+      await loadProjects();
+      setIsLoading(false);
+    };
+    init();
+  }, [loadProjects]);
 
   const {
     boxes,
@@ -52,7 +62,6 @@ export default function Home() {
   const { editingBox, setEditingBox, handleNavigate } =
     useGridNavigation(boxes);
 
-  const [isClient, setIsClient] = useState(false);
   const [_, setIsConfirmingReset] = useState(false);
   const [confirmingRemove, setConfirmingRemove] = useState<{
     index: number;
@@ -61,12 +70,23 @@ export default function Home() {
   const [lastTwoInputs, setLastTwoInputs] = useState<Box[]>([]);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    console.log('Current state:', {
+      boxes,
+      boxSize,
+      rows,
+      cols,
+      font,
+      currentProject,
+    });
+  }, [boxes, boxSize, rows, cols, font, currentProject]);
 
-  useEffect(() => {
-    loadProjects();
-  }, [loadProjects]);
+  if (isLoading || !currentProject || !boxes) {
+    return (
+      <main className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black">
+        <div>Loading...</div>
+      </main>
+    );
+  }
 
   const minRow = getMinRow(boxes);
   const maxRow = getMaxRow(boxes);
@@ -96,12 +116,6 @@ export default function Home() {
       handleNavigate(currentBox, isVertical ? 'down' : 'right');
     }
   };
-
-  if (!isClient) {
-    return (
-      <main className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black" />
-    );
-  }
 
   const handleRemoveRow = (rowIndex: number) => {
     if (
@@ -137,8 +151,10 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       <ProjectsMenu
+        createProject={createProject}
         currentProject={currentProject}
         projects={projects}
+        updateProject={updateProject}
         onSelectProject={setCurrentProjectId}
       />
       <main className="h-full overflow-scroll pb-16" onClick={handleMainClick}>

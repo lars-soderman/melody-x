@@ -10,14 +10,26 @@ export const storage = {
   },
 
   getProject: (id: string): Project | null => {
-    const data = localStorage.getItem(`${PROJECT_PREFIX}${id}`);
+    // Find the project name from the index
+    const projectKeys = Object.keys(localStorage).filter(
+      (key) => key.startsWith(PROJECT_PREFIX) && key.includes(id)
+    );
+    if (projectKeys.length === 0) return null;
+
+    const data = localStorage.getItem(projectKeys[0]);
     return data ? JSON.parse(data) : null;
   },
 
   saveProject: (project: Project): void => {
+    // Create a storage key with both ID and name
+    const safeProjectName = project.name
+      .replace(/[^a-z0-9]/gi, '-')
+      .toLowerCase();
+    const storageKey = `${PROJECT_PREFIX}${project.id}-${safeProjectName}`;
+
     // Save project
     localStorage.setItem(
-      `${PROJECT_PREFIX}${project.id}`,
+      storageKey,
       JSON.stringify({
         ...project,
         modifiedAt: new Date().toISOString(),
@@ -33,7 +45,13 @@ export const storage = {
   },
 
   deleteProject: (id: string): void => {
-    localStorage.removeItem(`${PROJECT_PREFIX}${id}`);
+    // Find and remove the project by ID pattern
+    const projectKeys = Object.keys(localStorage).filter(
+      (key) => key.startsWith(PROJECT_PREFIX) && key.includes(id)
+    );
+    projectKeys.forEach((key) => localStorage.removeItem(key));
+
+    // Update index
     const ids = storage.getProjectIds().filter((pid) => pid !== id);
     localStorage.setItem(PROJECT_INDEX_KEY, JSON.stringify(ids));
   },
