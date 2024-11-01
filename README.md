@@ -102,3 +102,55 @@ src/
 ## 🔗 Contact
 
 ...
+
+## Adding New Fonts
+
+1. Import the font in `src/app/layout.tsx`:
+
+```typescript
+import { NewFont } from 'next/font/google';
+const newFont = NewFont({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-new-font',
+});
+```
+
+### 2. Add the CSS variable in `src/app/globals.css`:
+
+```css
+:root {
+  --font-new-font: var(--font-new-font);
+}
+```
+
+### 3. Add the font to the body class in `layout.tsx`:
+
+```typescript
+<body className={`${geistMono.variable} ${creepster.variable} ${newFont.variable} ...`}>
+```
+
+### 4. Add the font option to `FontSelector.tsx`:
+
+```typescript
+<select>
+  <option value="var(--font-default)">Default</option>
+  <option value="var(--font-creepster)">Creepster</option>
+  <option value="var(--font-new-font)">New Font</option>
+</select>
+```
+
+### Local Fonts
+
+For local fonts, use `next/font/local` instead:
+
+```typescript
+import localFont from 'next/font/local';
+
+const localNewFont = localFont({
+  src: './fonts/NewFont.woff2',
+  variable: '--font-new-font',
+});
+```
+
+All fonts are automatically optimized and self-hosted by Next.js for optimal performance.
