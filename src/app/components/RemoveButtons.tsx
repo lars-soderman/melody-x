@@ -41,14 +41,24 @@ export function RemoveButtons({
                 }}
               >
                 <button
-                  aria-label="Remove row"
-                  title="Remove row"
+                  aria-label={
+                    confirmingRemove?.type === 'row' &&
+                    confirmingRemove.index === box.row
+                      ? 'Confirm remove row'
+                      : 'Remove row'
+                  }
                   className={`hover-target absolute -left-3 top-1/2 flex h-8 w-6 -translate-y-1/2 items-center justify-center bg-white text-lg text-gray-400 opacity-0 shadow-md transition-all duration-200 ${
                     confirmingRemove?.type === 'row' &&
                     confirmingRemove.index === box.row
                       ? 'bg-red-50 text-gray-500 opacity-100'
                       : ''
                   } `}
+                  title={
+                    confirmingRemove?.type === 'row' &&
+                    confirmingRemove.index === box.row
+                      ? 'Confirm remove row'
+                      : 'Remove row'
+                  }
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveRow(box.row);
