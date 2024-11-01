@@ -122,7 +122,7 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen">
-      <main className="h-full overflow-scroll" onClick={handleMainClick}>
+      <main className="h-full overflow-scroll pb-16" onClick={handleMainClick}>
         <Settings
           boxSize={boxSize}
           cols={cols}

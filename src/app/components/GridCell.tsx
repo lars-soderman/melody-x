@@ -8,7 +8,6 @@ type GridCellProps = {
   box: Box;
   boxSize: number;
   editingBox: Box | null;
-  font: string;
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
@@ -21,7 +20,6 @@ type GridCellProps = {
 export const GridCell = memo(function GridCell({
   box,
   editingBox,
-  font,
   onLetterChange,
   onUpdateArrow,
   onUpdateBlack,
@@ -40,7 +38,6 @@ export const GridCell = memo(function GridCell({
         borderWidth: `${boxSize * 0.03}px`,
         borderStyle: 'solid',
         borderColor: 'black',
-        fontFamily: font,
       }}
     >
       {editingBox === box ? (

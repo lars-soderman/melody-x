@@ -70,7 +70,7 @@ export function BoxInput({
         maxLength={1}
         type="text"
         value={letter || ''}
-        className={`z-10 w-full cursor-pointer text-center text-4xl uppercase text-gray-500 ${
+        className={`z-10 w-full cursor-pointer text-center text-4xl uppercase ${
           black ? 'bg-black text-white' : 'bg-white'
         } focus:outline-blue-500 focus:ring-blue-500 focus-visible:outline-8`}
         onKeyDown={handleKeyDown}

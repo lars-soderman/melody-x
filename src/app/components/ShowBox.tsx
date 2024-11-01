@@ -6,7 +6,6 @@ import { ArrowRight } from '../icons/arrowRight';
 type ShowBoxProps = Box & {
   black?: boolean;
   boxSize: number;
-  font: string;
   id: string;
   isSelected?: boolean;
   onClick: () => void;

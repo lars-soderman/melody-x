@@ -12,7 +12,7 @@ export function FontSelector({
       onChange={(e) => onChange(e.target.value)}
     >
       <option value="var(--font-default)">Default</option>
-      <option value="var(--font-creepster)">Creepster</option>
+      <option value="var(--font-creepster)">Halloween</option>
     </select>
   );
 }
