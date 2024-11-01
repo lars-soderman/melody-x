@@ -23,6 +23,7 @@ export default function Home() {
     boxSize,
     rows,
     cols,
+    font,
     updateBoxSize,
     updateGridSize,
     addRow,
@@ -35,6 +36,7 @@ export default function Home() {
     reset,
     updateStop,
     toggleHint,
+    updateFont,
   } = useGridReducer();
 
   const { editingBox, setEditingBox, handleNavigate } =
@@ -124,7 +126,9 @@ export default function Home() {
         <Settings
           boxSize={boxSize}
           cols={cols}
+          font={font}
           rows={rows}
+          updateFont={updateFont}
           exportProps={{
             boxes,
             minRow,
@@ -147,6 +151,7 @@ export default function Home() {
             boxSize={boxSize}
             confirmingRemove={confirmingRemove}
             editingBox={editingBox}
+            font={font}
             grid={grid}
             handleRemoveColumn={handleRemoveColumn}
             handleRemoveRow={handleRemoveRow}

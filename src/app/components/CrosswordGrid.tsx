@@ -7,6 +7,7 @@ type CrosswordGridProps = {
   boxes: Box[];
   confirmingRemove: { index: number; type: 'row' | 'column' } | null;
   editingBox: Box | null;
+  font: string;
   grid: Box[][];
   handleRemoveColumn: (colIndex: number) => void;
   handleRemoveRow: (rowIndex: number) => void;
@@ -26,10 +27,7 @@ type CrosswordGridProps = {
 export function CrosswordGrid({
   grid,
   editingBox,
-  boxes,
-  minRow,
   minCol,
-  maxRow,
   maxCol,
   onLetterChange,
   onUpdateArrow,
@@ -37,15 +35,14 @@ export function CrosswordGrid({
   onUpdateStop,
   onNavigate,
   onSetEditingBox,
-  handleRemoveRow,
-  handleRemoveColumn,
-  confirmingRemove,
   boxSize,
   toggleHint,
+  font,
 }: CrosswordGridProps) {
   return (
     <div
       className={`grid grid-cols-${maxCol - minCol + 1} border-collapse gap-0 border-2 border-black`}
+      style={{ fontFamily: font }}
     >
       {grid.map((row) =>
         row.map((box) => (

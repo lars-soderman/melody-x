@@ -12,6 +12,7 @@ type GridState = {
   boxSize: number;
   boxes: Box[];
   cols: number;
+  font: string;
   rows: number;
   version: number;
 };
@@ -28,7 +29,8 @@ type GridAction =
   | { type: 'RESET' }
   | { id: string; stop: Box['stop']; type: 'UPDATE_STOP' }
   | { hint?: number; id: string; type: 'SET_HINT' }
-  | { cols: number; rows: number; type: 'UPDATE_GRID_SIZE' };
+  | { cols: number; rows: number; type: 'UPDATE_GRID_SIZE' }
+  | { font: string; type: 'UPDATE_FONT' };
 
 function loadFromStorage(): GridState | null {
   try {
@@ -274,6 +276,12 @@ function gridReducer(state: GridState, action: GridAction): GridState {
         break;
       }
 
+      case 'UPDATE_FONT':
+        return {
+          ...state,
+          font: action.font,
+        };
+
       default:
         throw new Error(
           `Unhandled action type: ${(action as { type: string }).type}`
@@ -300,25 +308,26 @@ function gridReducer(state: GridState, action: GridAction): GridState {
 }
 
 const getInitialState = (): GridState => {
-  const defaultState = {
-    version: STORAGE_VERSION,
+  const initialState: GridState = {
     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
     boxSize: INITIAL_BOX_SIZE,
-    rows: INITIAL_GRID_SIZE.rows,
     cols: INITIAL_GRID_SIZE.cols,
+    font: 'var(--font-default)',
+    rows: INITIAL_GRID_SIZE.rows,
+    version: STORAGE_VERSION,
   };
 
   if (typeof window === 'undefined') {
-    return defaultState;
+    return initialState;
   }
 
   const saved = loadFromStorage();
-  return saved || defaultState;
+  return saved || initialState;
 };
 
 export function useGridReducer() {
   const [state, dispatch] = useReducer(gridReducer, getInitialState());
-
+  console.log('state', state);
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -409,5 +418,7 @@ export function useGridReducer() {
     rows: state.rows,
     cols: state.cols,
     updateGridSize,
+    font: state.font,
+    updateFont: (font: string) => dispatch({ type: 'UPDATE_FONT', font }),
   };
 }

@@ -5,6 +5,8 @@
 :root {
   --background: #fff;
   --foreground: #000;
+  --font-default: var(--font-geist-mono);
+  --font-creepster: 'Creepster';
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -17,9 +19,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family:
-    Geist Mono,
-    monospace;
+  font-family: var(--font-geist-mono), monospace;
 }
 
 @layer utilities {

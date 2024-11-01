@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Creepster } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
 
@@ -6,6 +7,12 @@ const geistMono = localFont({
   src: './fonts/GeistMonoVF.woff',
   variable: '--font-geist-mono',
   weight: '100 900',
+});
+
+const creepster = Creepster({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-creepster',
 });
 
 export const metadata: Metadata = {
@@ -20,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistMono.variable} absolute inset-0 antialiased`}>
+      <body
+        className={`${geistMono.variable} ${creepster.variable} absolute inset-0 antialiased`}
+      >
         {children}
       </body>
     </html>

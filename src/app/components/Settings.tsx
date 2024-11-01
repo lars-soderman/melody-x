@@ -2,6 +2,7 @@ import { Box } from '@/types';
 import { useEffect, useState } from 'react';
 import { BoxSizeControl } from './BoxSizeControl';
 import { ExportButton } from './ExportButton';
+import { FontSelector } from './FontSelector';
 import { Popover } from './Popover';
 import { ResetButton } from './ResetButton';
 
@@ -18,20 +19,24 @@ interface SettingsProps {
   boxSize: number;
   cols: number;
   exportProps: ExportProps;
+  font: string;
   onBoxSizeChange: (size: number) => void;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
   rows: number;
+  updateFont: (font: string) => void;
 }
 
 export function Settings({
   boxSize,
-  rows,
   cols,
+  exportProps,
+  font,
   onBoxSizeChange,
   onGridSizeChange,
   onReset,
-  exportProps,
+  rows,
+  updateFont,
 }: SettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
@@ -92,6 +97,11 @@ export function Settings({
                 }
               />
             </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-sm text-gray-500">Font</label>
+            <FontSelector value={font} onChange={updateFont} />
           </div>
 
           <div className="flex items-center justify-between gap-4">
