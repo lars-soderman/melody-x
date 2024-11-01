@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useRef } from 'react';
 
 type PopoverProps = {
+  align?: 'start' | 'end';
   children: ReactNode;
   focusTrap?: boolean;
   isOpen: boolean;
@@ -10,12 +11,13 @@ type PopoverProps = {
 };
 
 export function Popover({
+  align = 'end',
+  children,
+  focusTrap = false,
   isOpen,
   onClose,
-  children,
-  trigger,
   position = 'top',
-  focusTrap = false,
+  trigger,
 }: PopoverProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -75,7 +77,9 @@ export function Popover({
       {isOpen && (
         <div
           className={`absolute z-20 min-w-[300px] rounded-lg border border-gray-200 bg-white p-4 shadow-lg ${
-            position === 'top' ? 'right-0 top-8' : 'left-8 top-0'
+            position === 'top'
+              ? `${align === 'end' ? 'right-0' : 'left-0'} top-8`
+              : 'left-8 top-0'
           }`}
         >
           {children}

@@ -12,12 +12,22 @@ import {
 import { useEffect, useState } from 'react';
 import { useGridNavigation } from '../hooks/useGridNavigation';
 import { useGridReducer } from '../hooks/useGridReducer';
+import { useProjectsReducer } from '../hooks/useProjectsReducer';
 import { AddGridButtons } from './components/AddGridButtons';
 import { CrosswordGrid } from './components/CrosswordGrid';
+import { ProjectsMenu } from './components/ProjectsMenu';
 import { RemoveButtons } from './components/RemoveButtons';
 import { Settings } from './components/Settings';
 
 export default function Home() {
+  const {
+    currentProject,
+    loadProjects,
+    updateProject,
+    projects,
+    setCurrentProjectId,
+  } = useProjectsReducer();
+
   const {
     boxes,
     boxSize,
@@ -37,7 +47,7 @@ export default function Home() {
     updateStop,
     toggleHint,
     updateFont,
-  } = useGridReducer();
+  } = useGridReducer(currentProject, updateProject);
 
   const { editingBox, setEditingBox, handleNavigate } =
     useGridNavigation(boxes);
@@ -53,6 +63,10 @@ export default function Home() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
 
   const minRow = getMinRow(boxes);
   const maxRow = getMaxRow(boxes);
@@ -122,6 +136,11 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen">
+      <ProjectsMenu
+        currentProject={currentProject}
+        projects={projects}
+        onSelectProject={setCurrentProjectId}
+      />
       <main className="h-full overflow-scroll pb-16" onClick={handleMainClick}>
         <Settings
           boxSize={boxSize}

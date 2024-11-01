@@ -53,6 +53,10 @@ export const toGrid = (
   minCol: number,
   maxCol: number
 ): Box[][] => {
+  if (!boxes?.length) {
+    return [];
+  }
+
   const rowCount = stepsBetween(maxRow, minRow);
   const colCount = stepsBetween(maxCol, minCol);
 

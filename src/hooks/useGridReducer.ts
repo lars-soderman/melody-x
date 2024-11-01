@@ -1,12 +1,13 @@
 'use client';
 
-import { INITIAL_BOX_SIZE, INITIAL_GRID_SIZE } from '@/constants';
+import { DEFAULT_STATE } from '@/constants';
+import { Project } from '@/types';
 import { Box } from '@types';
 import { createInitialBoxes, getId } from '@utils/grid';
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
-const STORAGE_KEY = 'melodikryss-state';
-const STORAGE_VERSION = 1;
+// const STORAGE_KEY = 'melodikryss-state';
+// const STORAGE_VERSION = 1;
 
 type GridState = {
   boxSize: number;
@@ -32,24 +33,24 @@ type GridAction =
   | { cols: number; rows: number; type: 'UPDATE_GRID_SIZE' }
   | { font: string; type: 'UPDATE_FONT' };
 
-function loadFromStorage(): GridState | null {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return null;
+// function loadFromStorage(): GridState | null {
+//   try {
+//     const saved = localStorage.getItem(STORAGE_KEY);
+//     if (!saved) return null;
 
-    const parsed = JSON.parse(saved) as GridState;
-    if (!parsed.boxSize || isNaN(parsed.boxSize)) {
-      parsed.boxSize = INITIAL_BOX_SIZE;
-    }
-    return parsed.version === STORAGE_VERSION ? parsed : null;
-  } catch {
-    return null;
-  }
-}
+//     const parsed = JSON.parse(saved) as GridState;
+//     if (!parsed.boxSize || isNaN(parsed.boxSize)) {
+//       parsed.boxSize = INITIAL_BOX_SIZE;
+//     }
+//     return parsed.version === STORAGE_VERSION ? parsed : null;
+//   } catch {
+//     return null;
+//   }
+// }
 
-function saveToStorage(state: GridState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+// function saveToStorage(state: GridState) {
+//   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+// }
 
 function gridReducer(state: GridState, action: GridAction): GridState {
   let newState: GridState;
@@ -65,7 +66,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
               : box
           ),
         };
-        saveToStorage(newState);
+        // saveToStorage(newState);
         return newState;
 
       case 'UPDATE_ARROW':
@@ -75,7 +76,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
             getId(box) === action.id ? { ...box, arrow: action.arrow } : box
           ),
         };
-        saveToStorage(newState);
+        // saveToStorage(newState);
         return newState;
 
       case 'UPDATE_BLACK':
@@ -87,7 +88,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
               : box
           ),
         };
-        saveToStorage(newState);
+        // saveToStorage(newState);
         return newState;
 
       case 'REMOVE_ROW': {
@@ -209,7 +210,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
           ...state,
           boxSize: Math.max(action.size, 4),
         };
-        saveToStorage(newState);
+        // saveToStorage(newState);
         return newState;
 
       case 'UPDATE_STOP':
@@ -219,7 +220,7 @@ function gridReducer(state: GridState, action: GridAction): GridState {
             getId(box) === action.id ? { ...box, stop: action.stop } : box
           ),
         };
-        saveToStorage(newState);
+        // saveToStorage(newState);
         return newState;
 
       case 'SET_HINT':
@@ -229,13 +230,15 @@ function gridReducer(state: GridState, action: GridAction): GridState {
             getId(box) === action.id ? { ...box, hint: action.hint } : box
           ),
         };
-        saveToStorage(newState);
+        // saveToStorage(newState);
         return newState;
 
       case 'RESET':
-        localStorage.removeItem(STORAGE_KEY);
-        newState = getInitialState();
-        return newState;
+        return {
+          ...DEFAULT_STATE,
+          boxes: createInitialBoxes(state.rows, state.cols),
+          version: 1,
+        };
 
       case 'UPDATE_GRID_SIZE': {
         const updatedBoxes = state.boxes
@@ -307,32 +310,70 @@ function gridReducer(state: GridState, action: GridAction): GridState {
   }
 }
 
-const getInitialState = (): GridState => {
-  const initialState: GridState = {
-    boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
-    boxSize: INITIAL_BOX_SIZE,
-    cols: INITIAL_GRID_SIZE.cols,
-    font: 'var(--font-default)',
-    rows: INITIAL_GRID_SIZE.rows,
-    version: STORAGE_VERSION,
-  };
+// const getInitialState = (): GridState => {
+//   const initialState: GridState = {
+//     boxes: createInitialBoxes(INITIAL_GRID_SIZE.rows, INITIAL_GRID_SIZE.cols),
+//     boxSize: INITIAL_BOX_SIZE,
+//     cols: INITIAL_GRID_SIZE.cols,
+//     font: 'var(--font-default)',
+//     rows: INITIAL_GRID_SIZE.rows,
+//     version: 1,
+//   };
 
-  if (typeof window === 'undefined') {
-    return initialState;
-  }
+//   if (typeof window === 'undefined') {
+//     return initialState;
+//   }
 
-  const saved = loadFromStorage();
-  return saved || initialState;
-};
+//   // const saved = loadFromStorage();
+//   return initialState;
+// };
 
-export function useGridReducer() {
-  const [state, dispatch] = useReducer(gridReducer, getInitialState());
-  console.log('state', state);
+export function useGridReducer(
+  project: Project | null,
+  onProjectChange: (updatedProject: Project) => void
+) {
+  const initialState = useMemo(
+    () => ({
+      ...(project
+        ? {
+            boxes: project.boxes,
+            boxSize: project.boxSize,
+            rows: project.rows,
+            cols: project.cols,
+            font: project.font,
+          }
+        : {
+            ...DEFAULT_STATE,
+            boxes: createInitialBoxes(DEFAULT_STATE.rows, DEFAULT_STATE.cols),
+          }),
+      version: 1,
+    }),
+    [project]
+  );
+
+  const [state, dispatch] = useReducer(gridReducer, initialState);
+
+  // Add effect to sync changes back to project
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (project && JSON.stringify(state) !== JSON.stringify(initialState)) {
+      onProjectChange({
+        ...project,
+        boxes: state.boxes,
+        boxSize: state.boxSize,
+        rows: state.rows,
+        cols: state.cols,
+        font: state.font,
+        modifiedAt: new Date().toISOString(),
+      });
     }
-  }, [state]);
+  }, [state, project, onProjectChange, initialState]);
+
+  console.log('project', project);
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  //   }
+  // }, [state]);
 
   function getNextHintNumber(): number {
     const usedHints = state.boxes.map((box) => box.hint);
