@@ -19,7 +19,7 @@ export function OptionsButton(props: OptionsButtonProps) {
     <>
       <button
         aria-label="Show options"
-        className="rounded-2 absolute right-[2px] top-[2px] z-20 flex h-6 w-4 cursor-pointer items-center justify-center border-none bg-transparent text-xl font-bold hover:bg-gray-100 active:bg-gray-200"
+        className={`rounded-2 absolute right-[2px] top-[2px] z-20 flex ${isOpen ? 'h-3' : 'h-6'} w-4 cursor-pointer items-center justify-center border-none bg-transparent text-xl font-bold hover:bg-gray-100 active:bg-gray-200`}
         title="Show options"
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -31,7 +31,7 @@ export function OptionsButton(props: OptionsButtonProps) {
           {/* Arrow Down option */}
           <button
             aria-label="Add down arrow"
-            className="absolute right-0 top-1/4 cursor-pointer p-1"
+            className="absolute right-0 top-[20%] cursor-pointer p-1"
             title="Add down arrow"
             onClick={() => {
               props.onArrowDown();
@@ -51,17 +51,17 @@ export function OptionsButton(props: OptionsButtonProps) {
               setIsOpen(false);
             }}
           />
-
-          {/* Add hint option */}
+          {/* Black square option */}
           <button
-            aria-label="Add hint number"
-            className="absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-gray-400 hover:border-gray-600"
-            title="Add hint number"
+            aria-label="Toggle black square"
+            className="absolute bottom-0 right-0 h-3 w-3 cursor-pointer rounded-sm bg-gray-400 hover:bg-gray-600"
+            title="Toggle black square"
             onClick={() => {
-              props.toggleHint();
+              props.onBlack();
               setIsOpen(false);
             }}
-          ></button>
+          />
+
           {/* Stop Bottom option */}
           <button
             aria-label="Toggle bottom stop"
@@ -85,16 +85,16 @@ export function OptionsButton(props: OptionsButtonProps) {
             <ArrowRight className="h-3 w-3 text-gray-400 hover:text-gray-600" />
           </button>
 
-          {/* Black square option */}
+          {/* Add hint option */}
           <button
-            aria-label="Toggle black square"
-            className="absolute left-1 top-1 h-3 w-3 cursor-pointer rounded-sm bg-gray-400 hover:bg-gray-600"
-            title="Toggle black square"
+            aria-label="Add hint number"
+            className="absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-gray-400 hover:border-gray-600"
+            title="Add hint number"
             onClick={() => {
-              props.onBlack();
+              props.toggleHint();
               setIsOpen(false);
             }}
-          />
+          ></button>
         </div>
       )}
     </>

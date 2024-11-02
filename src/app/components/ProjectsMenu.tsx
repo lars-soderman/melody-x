@@ -89,6 +89,7 @@ export function ProjectsMenu({
           setIsOpen(false);
           setIsCreating(false);
           setNewProjectName('');
+          setConfirmingDeleteId(null);
         }}
       >
         <div className="flex flex-col gap-4">
@@ -164,7 +165,7 @@ export function ProjectsMenu({
                   ) : (
                     <div className="flex items-center gap-2">
                       <span>{project.name}</span>
-                      <div className="invisible flex gap-1 group-hover:visible">
+                      <div className="invisible ml-auto flex gap-1 group-hover:visible">
                         <button
                           className="rounded p-0.5 hover:bg-gray-200"
                           onClick={(e) => {
