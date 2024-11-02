@@ -156,6 +156,7 @@ export default function Home() {
           boxSize={boxSize}
           cols={cols}
           font={font}
+          project={currentProject}
           rows={rows}
           updateFont={updateFont}
           exportProps={{

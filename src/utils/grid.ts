@@ -26,9 +26,9 @@ export const isValidLetter = (key: string): boolean => {
 export const createInitialBoxes = (rows: number, cols: number): Box[] => {
   const result = Array.from({ length: rows }, (_, row) =>
     Array.from({ length: cols }, (_, col) => ({
-      letter: null,
       row,
       col,
+      letter: null,
     }))
   )
     .flat()

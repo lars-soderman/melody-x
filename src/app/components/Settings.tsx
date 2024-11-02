@@ -1,6 +1,7 @@
-import { Box } from '@/types';
+import { Box, Project } from '@/types';
 import { useEffect, useState } from 'react';
 import { BoxSizeControl } from './BoxSizeControl';
+import { DownloadButton } from './DownloadButton';
 import { ExportButton } from './ExportButton';
 import { FontSelector } from './FontSelector';
 import { Popover } from './Popover';
@@ -23,6 +24,7 @@ interface SettingsProps {
   onBoxSizeChange: (size: number) => void;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
+  project: Project;
   rows: number;
   updateFont: (font: string) => void;
 }
@@ -35,6 +37,7 @@ export function Settings({
   onBoxSizeChange,
   onGridSizeChange,
   onReset,
+  project,
   rows,
   updateFont,
 }: SettingsProps) {
@@ -123,8 +126,15 @@ export function Settings({
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Export PDF</span>
+            <span className="text-sm text-gray-500">
+              Export <span className="italic">kryssplan</span>
+            </span>
             <ExportButton {...exportProps} />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">Download as JSON</span>
+            <DownloadButton project={project} />
           </div>
         </div>
       </Popover>
