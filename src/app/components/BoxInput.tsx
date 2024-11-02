@@ -92,7 +92,6 @@ export function BoxInput({
           onArrowDown={onArrowDown}
           onArrowRight={onArrowRight}
           onBlack={onBlack}
-          onStop={() => console.log('Stop')}
           onStopBottom={onStopBottom}
           onStopRight={onStopRight}
         />

@@ -6,7 +6,6 @@ type OptionsButtonProps = {
   onArrowDown: () => void;
   onArrowRight: () => void;
   onBlack: () => void;
-  onStop: () => void;
   onStopBottom: () => void;
   onStopRight: () => void;
   toggleHint: () => void;

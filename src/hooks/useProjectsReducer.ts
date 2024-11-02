@@ -1,6 +1,6 @@
+import { storage } from '@/app/lib/storage';
 import { createDefaultProject } from '@/constants';
 import { Project } from '@/types';
-import { storage } from '@/utils/storage';
 import { useCallback, useReducer } from 'react';
 
 type ProjectsState = {
@@ -41,13 +41,18 @@ function projectsReducer(
     }
 
     case 'CREATE_PROJECT': {
+      console.log('CREATE_PROJECT action:', action.name);
       const newProject = createDefaultProject(action.name);
+      console.log('Created new project:', {
+        id: newProject.id,
+        name: newProject.name,
+      });
       storage.saveProject(newProject);
 
       return {
         ...state,
-        projects: [...state.projects, newProject],
         currentProjectId: newProject.id,
+        projects: [...state.projects, newProject],
       };
     }
 
@@ -92,8 +97,8 @@ function projectsReducer(
 
 export function useProjectsReducer() {
   const [state, dispatch] = useReducer(projectsReducer, {
-    projects: [],
     currentProjectId: '',
+    projects: [],
   });
 
   const loadProjects = useCallback(() => {
@@ -105,6 +110,7 @@ export function useProjectsReducer() {
   }, []);
 
   const createProject = useCallback((name: string) => {
+    console.log('createProject callback called');
     dispatch({ type: 'CREATE_PROJECT', name });
   }, []);
 

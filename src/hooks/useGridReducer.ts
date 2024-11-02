@@ -296,7 +296,6 @@ function gridReducer(state: GridState, action: GridAction): GridState {
 }
 
 const getInitialState = (project: Project | null): GridState => {
-  console.log('Getting initial state with project:', project);
   if (project) {
     const state = {
       boxSize: project.boxSize,
@@ -306,10 +305,8 @@ const getInitialState = (project: Project | null): GridState => {
       font: project.font,
       version: 1,
     };
-    console.log('Initial state from project:', state);
     return state;
   }
-  console.log('Using default state');
   return {
     ...DEFAULT_STATE,
     boxes: createInitialBoxes(DEFAULT_STATE.rows, DEFAULT_STATE.cols),

@@ -70,16 +70,7 @@ export default function Home() {
   } | null>(null);
   const [lastTwoInputs, setLastTwoInputs] = useState<Box[]>([]);
 
-  useEffect(() => {
-    console.log('Current state:', {
-      boxes,
-      boxSize,
-      rows,
-      cols,
-      font,
-      currentProject,
-    });
-  }, [boxes, boxSize, rows, cols, font, currentProject]);
+  useEffect(() => {}, [boxes, boxSize, rows, cols, font, currentProject]);
 
   if (isLoading || !currentProject || !boxes) {
     return (
