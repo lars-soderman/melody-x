@@ -60,7 +60,7 @@ export function Settings({
         trigger={
           <button
             aria-label="Settings"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-3xl text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-4xl text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
             onClick={() => setIsOpen(!isOpen)}
           >
             ⚙
