@@ -29,9 +29,11 @@ export function ProjectsMenu({
   );
 
   const handleCreateProject = () => {
-    console.log('handleCreateProject called with stack:', new Error().stack);
-    createProject('new project');
+    if (!newProjectName.trim()) return;
+    createProject(newProjectName.trim());
     setIsOpen(false);
+    setIsCreating(false);
+    setNewProjectName('');
   };
 
   const handleUpdateName = (project: Project) => {
@@ -43,17 +45,6 @@ export function ProjectsMenu({
       });
     }
     setEditingProjectId(null);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent, projectId: string) => {
-    e.stopPropagation();
-    setConfirmingDeleteId(projectId);
-  };
-
-  const handleConfirmDelete = (e: React.MouseEvent, projectId: string) => {
-    e.stopPropagation();
-    deleteProject(projectId);
-    setConfirmingDeleteId(null);
   };
 
   return (
@@ -137,19 +128,11 @@ export function ProjectsMenu({
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className={`group flex items-center justify-between rounded p-2 text-left text-sm hover:bg-gray-100 ${
+                  className={`group flex items-center justify-between rounded text-left text-sm hover:bg-gray-100 ${
                     project.id === currentProject?.id ? 'bg-gray-50' : ''
                   }`}
                 >
-                  <div
-                    className="flex-1 cursor-pointer"
-                    onClick={() => {
-                      if (!editingProjectId && !confirmingDeleteId) {
-                        onSelectProject(project.id);
-                        setIsOpen(false);
-                      }
-                    }}
-                  >
+                  <div className="flex-1">
                     {editingProjectId === project.id ? (
                       <input
                         autoFocus
@@ -167,7 +150,17 @@ export function ProjectsMenu({
                         }}
                       />
                     ) : (
-                      <span>{project.name}</span>
+                      <button
+                        className="p-2"
+                        onClick={() => {
+                          if (!editingProjectId && !confirmingDeleteId) {
+                            onSelectProject(project.id);
+                            setIsOpen(false);
+                          }
+                        }}
+                      >
+                        {project.name}
+                      </button>
                     )}
                   </div>
 

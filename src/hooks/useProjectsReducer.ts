@@ -15,10 +15,17 @@ type ProjectsAction =
   | { id: string; type: 'DELETE_PROJECT' }
   | { id: string; type: 'SELECT_PROJECT' };
 
-function projectsReducer(
-  state: ProjectsState,
-  action: ProjectsAction
-): ProjectsState {
+type LastCreation = {
+  name: string;
+  timestamp: number;
+};
+
+type ProjectsReducerWithMeta = {
+  (state: ProjectsState, action: ProjectsAction): ProjectsState;
+  lastCreation?: LastCreation;
+};
+
+const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
   switch (action.type) {
     case 'LOAD_PROJECTS': {
       const projectIds = storage.getProjectIds();
@@ -26,31 +33,40 @@ function projectsReducer(
         .map((id) => storage.getProject(id))
         .filter((p): p is Project => p !== null);
 
-      // Only create default project if no projects exist AND no project IDs exist
       if (projects.length === 0 && projectIds.length === 0) {
         const defaultProject = createDefaultProject('Untitled Project');
         storage.saveProject(defaultProject);
         projects = [defaultProject];
       }
 
+      const lastSelectedId = storage.getLastSelectedProjectId();
       return {
-        ...state,
         projects,
-        currentProjectId: projects[0]?.id || '',
+        currentProjectId: lastSelectedId || projects[0]?.id || '',
       };
     }
 
     case 'CREATE_PROJECT': {
-      console.log('CREATE_PROJECT action:', action.name);
+      if (
+        (projectsReducer as ProjectsReducerWithMeta).lastCreation?.name ===
+          action.name &&
+        Date.now() -
+          (projectsReducer as ProjectsReducerWithMeta).lastCreation!.timestamp <
+          1000
+      ) {
+        return state;
+      }
+
       const newProject = createDefaultProject(action.name);
-      console.log('Created new project:', {
-        id: newProject.id,
-        name: newProject.name,
-      });
       storage.saveProject(newProject);
+      storage.setLastSelectedProjectId(newProject.id);
+
+      projectsReducer.lastCreation = {
+        name: action.name,
+        timestamp: Date.now(),
+      };
 
       return {
-        ...state,
         currentProjectId: newProject.id,
         projects: [...state.projects, newProject],
       };
@@ -84,6 +100,8 @@ function projectsReducer(
     }
 
     case 'SELECT_PROJECT': {
+      console.log('SELECT_PROJECT action', action.id);
+      storage.setLastSelectedProjectId(action.id);
       return {
         ...state,
         currentProjectId: action.id,
@@ -93,7 +111,7 @@ function projectsReducer(
     default:
       return state;
   }
-}
+};
 
 export function useProjectsReducer() {
   const [state, dispatch] = useReducer(projectsReducer, {
@@ -102,46 +120,47 @@ export function useProjectsReducer() {
   });
 
   const loadProjects = useCallback(() => {
-    return new Promise<void>((resolve) => {
-      dispatch({ type: 'LOAD_PROJECTS' });
-      // Use setTimeout to ensure state update happens before resolving
-      setTimeout(resolve, 0);
-    });
+    console.log('Loading projects...');
+    dispatch({ type: 'LOAD_PROJECTS' });
   }, []);
 
-  const createProject = useCallback((name: string) => {
-    console.log('createProject callback called');
-    dispatch({ type: 'CREATE_PROJECT', name });
-  }, []);
+  const createProject = useCallback(
+    (name: string) => {
+      if (
+        (projectsReducer as ProjectsReducerWithMeta).lastCreation?.name ===
+          name &&
+        Date.now() -
+          (projectsReducer as ProjectsReducerWithMeta).lastCreation!.timestamp <
+          1000
+      ) {
+        return;
+      }
 
-  const updateProject = useCallback((project: Project) => {
-    dispatch({ type: 'UPDATE_PROJECT', project });
-  }, []);
-
-  const deleteProject = useCallback((id: string) => {
-    dispatch({ type: 'DELETE_PROJECT', id });
-  }, []);
-
-  const selectProject = useCallback((id: string) => {
-    dispatch({ type: 'SELECT_PROJECT', id });
-  }, []);
-
-  const currentProject =
-    state.projects.find((p) => p.id === state.currentProjectId) ??
-    state.projects[0];
-
-  const setCurrentProjectId = useCallback((id: string) => {
-    dispatch({ type: 'SELECT_PROJECT', id });
-  }, []);
+      console.log('createProject callback called');
+      dispatch({ type: 'CREATE_PROJECT', name });
+      // Force reload projects to update UI
+      loadProjects();
+    },
+    [loadProjects]
+  );
 
   return {
-    currentProject,
+    createProject,
+    currentProject: state.projects.find((p) => p.id === state.currentProjectId),
+    deleteProject: useCallback(
+      (id: string) => {
+        dispatch({ type: 'DELETE_PROJECT', id });
+        loadProjects(); // Also reload after delete
+      },
+      [loadProjects]
+    ),
     loadProjects,
     projects: state.projects,
-    setCurrentProjectId,
-    updateProject,
-    createProject,
-    deleteProject,
-    selectProject,
+    setCurrentProjectId: useCallback((id: string) => {
+      dispatch({ type: 'SELECT_PROJECT', id });
+    }, []),
+    updateProject: useCallback((project: Project) => {
+      dispatch({ type: 'UPDATE_PROJECT', project });
+    }, []),
   };
 }

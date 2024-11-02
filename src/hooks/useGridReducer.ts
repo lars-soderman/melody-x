@@ -6,9 +6,6 @@ import { Box } from '@types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-// const STORAGE_KEY = 'melodikryss-state';
-// const STORAGE_VERSION = 1;
-
 type GridState = {
   boxSize: number;
   boxes: Box[];
