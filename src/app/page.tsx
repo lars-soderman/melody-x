@@ -159,6 +159,7 @@ export default function Home() {
         updateProject={updateProject}
         onSelectProject={setCurrentProjectId}
       />
+
       <main className="h-full overflow-scroll pb-16" onClick={handleMainClick}>
         <Settings
           boxSize={boxSize}
@@ -177,12 +178,14 @@ export default function Home() {
           onGridSizeChange={updateGridSize}
           onReset={reset}
         />
-
         <div
           className="relative mx-auto mt-44 w-fit"
           id="crossword-grid"
           style={{ width: `${(maxCol - minCol + 1) * boxSize}px` }}
         >
+          <h2 className="absolute -top-8 text-sm text-gray-500 dark:text-gray-400">
+            {currentProject?.name}
+          </h2>
           <CrosswordGrid
             boxes={boxes}
             boxSize={boxSize}
