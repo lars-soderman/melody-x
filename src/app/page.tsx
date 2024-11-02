@@ -28,6 +28,7 @@ export default function Home() {
     projects,
     createProject,
     setCurrentProjectId,
+    deleteProject,
   } = useProjectsReducer();
 
   useEffect(() => {
@@ -153,6 +154,7 @@ export default function Home() {
       <ProjectsMenu
         createProject={createProject}
         currentProject={currentProject}
+        deleteProject={deleteProject}
         projects={projects}
         updateProject={updateProject}
         onSelectProject={setCurrentProjectId}

@@ -5,6 +5,7 @@ import { Popover } from './Popover';
 type ProjectsMenuProps = {
   createProject: (name: string) => void;
   currentProject: Project;
+  deleteProject: (id: string) => void;
   onSelectProject: (projectId: string) => void;
   projects: Project[];
   updateProject: (project: Project) => void;
@@ -13,6 +14,7 @@ type ProjectsMenuProps = {
 export function ProjectsMenu({
   createProject,
   currentProject,
+  deleteProject,
   onSelectProject,
   projects,
   updateProject,
@@ -22,6 +24,9 @@ export function ProjectsMenu({
   const [newProjectName, setNewProjectName] = useState('');
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(
+    null
+  );
 
   const handleCreateProject = () => {
     if (newProjectName.trim()) {
@@ -40,6 +45,17 @@ export function ProjectsMenu({
       });
     }
     setEditingProjectId(null);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, projectId: string) => {
+    e.stopPropagation();
+    setConfirmingDeleteId(projectId);
+  };
+
+  const handleConfirmDelete = (e: React.MouseEvent, projectId: string) => {
+    e.stopPropagation();
+    deleteProject(projectId);
+    setConfirmingDeleteId(null);
   };
 
   return (
@@ -123,13 +139,13 @@ export function ProjectsMenu({
                 key={project.id}
                 className={`group flex items-center justify-between rounded p-2 text-left text-sm hover:bg-gray-100 ${project.id === currentProject?.id ? 'bg-gray-50' : ''}`}
                 onClick={() => {
-                  if (!editingProjectId) {
+                  if (!editingProjectId && !confirmingDeleteId) {
                     onSelectProject(project.id);
                     setIsOpen(false);
                   }
                 }}
               >
-                <div className="flex-1">
+                <div className="ml-auto flex-1">
                   {editingProjectId === project.id ? (
                     <input
                       autoFocus
@@ -148,34 +164,77 @@ export function ProjectsMenu({
                   ) : (
                     <div className="flex items-center gap-2">
                       <span>{project.name}</span>
-                      <button
-                        className="opacity-0 group-hover:opacity-100"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingProjectId(project.id);
-                          setEditingName(project.name);
-                        }}
-                      >
-                        <svg
-                          className="h-3.5 w-3.5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
+                      <div className="invisible flex gap-1 group-hover:visible">
+                        <button
+                          className="rounded p-0.5 hover:bg-gray-200"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingProjectId(project.id);
+                            setEditingName(project.name);
+                          }}
                         >
-                          <path
-                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
+                          <svg
+                            className="h-3.5 w-3.5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                        {projects.length > 1 && (
+                          <button
+                            className="ml-auto rounded p-0.5 hover:bg-gray-200"
+                            onClick={(e) => handleDeleteClick(e, project.id)}
+                          >
+                            <svg
+                              className="h-3.5 w-3.5 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                   <div className="text-xs text-gray-500">
                     Modified {new Date(project.modifiedAt).toLocaleDateString()}
                   </div>
+                  {confirmingDeleteId === project.id && (
+                    <div className="mt-2 flex items-center gap-2 rounded bg-red-50 p-2 text-xs">
+                      <span className="text-red-600">Delete project?</span>
+                      <div className="flex gap-2">
+                        <button
+                          className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
+                          onClick={(e) => handleConfirmDelete(e, project.id)}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="rounded bg-gray-200 px-2 py-1 hover:bg-gray-300"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmingDeleteId(null);
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </button>
             ))}
