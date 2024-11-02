@@ -55,7 +55,6 @@ function gridReducer(state: GridState, action: GridAction): GridState {
             getId(box) === action.id ? { ...box, arrow: action.arrow } : box
           ),
         };
-        // saveToStorage(newState);
         return newState;
 
       case 'UPDATE_BLACK':
@@ -67,7 +66,6 @@ function gridReducer(state: GridState, action: GridAction): GridState {
               : box
           ),
         };
-        // saveToStorage(newState);
         return newState;
 
       case 'REMOVE_ROW': {
@@ -117,35 +115,48 @@ function gridReducer(state: GridState, action: GridAction): GridState {
       }
 
       case 'ADD_ROW': {
-        const newBoxes = [...state.boxes];
-        const currentMaxRow = Math.max(...newBoxes.map((box) => box.row));
-        const newRow = action.position === 'top' ? 0 : currentMaxRow + 1;
-
-        for (
-          let col = 0;
-          col <= Math.max(...newBoxes.map((box) => box.col));
-          col++
-        ) {
-          newBoxes.push({
-            row: newRow,
-            col,
-            letter: null,
-          });
-        }
+        const currentMaxRow = Math.max(...state.boxes.map((box) => box.row));
+        const currentMaxCol = Math.max(...state.boxes.map((box) => box.col));
 
         if (action.position === 'top') {
-          newBoxes.forEach((box) => {
-            if (box.row !== newRow) {
-              box.row += 1;
-            }
-          });
-        }
+          // For top insertion, first shift all existing boxes down
+          const shiftedBoxes = state.boxes.map((box) => ({
+            ...box,
+            row: box.row + 1,
+          }));
 
-        newState = {
-          ...state,
-          boxes: newBoxes,
-          rows: state.rows + 1,
-        };
+          // Then create new row at position 0
+          const newRowBoxes = Array.from(
+            { length: currentMaxCol + 1 },
+            (_, col) => ({
+              row: 0,
+              col,
+              letter: null,
+            })
+          );
+
+          newState = {
+            ...state,
+            boxes: [...newRowBoxes, ...shiftedBoxes],
+            rows: state.rows + 1,
+          };
+        } else {
+          // For bottom insertion, simply append new row
+          const newRowBoxes = Array.from(
+            { length: currentMaxCol + 1 },
+            (_, col) => ({
+              row: currentMaxRow + 1,
+              col,
+              letter: null,
+            })
+          );
+
+          newState = {
+            ...state,
+            boxes: [...state.boxes, ...newRowBoxes],
+            rows: state.rows + 1,
+          };
+        }
         break;
       }
 

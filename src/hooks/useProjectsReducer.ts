@@ -100,7 +100,6 @@ const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
     }
 
     case 'SELECT_PROJECT': {
-      console.log('SELECT_PROJECT action', action.id);
       storage.setLastSelectedProjectId(action.id);
       return {
         ...state,
@@ -119,8 +118,7 @@ export function useProjectsReducer() {
     projects: [],
   });
 
-  const loadProjects = useCallback(() => {
-    console.log('Loading projects...');
+  const loadProjects = useCallback(async (): Promise<void> => {
     dispatch({ type: 'LOAD_PROJECTS' });
   }, []);
 
@@ -136,9 +134,7 @@ export function useProjectsReducer() {
         return;
       }
 
-      console.log('createProject callback called');
       dispatch({ type: 'CREATE_PROJECT', name });
-      // Force reload projects to update UI
       loadProjects();
     },
     [loadProjects]

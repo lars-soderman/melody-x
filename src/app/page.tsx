@@ -58,7 +58,7 @@ export default function Home() {
     updateStop,
     toggleHint,
     updateFont,
-  } = useGridReducer(currentProject, updateProject);
+  } = useGridReducer(currentProject ?? null, updateProject);
 
   const { editingBox, setEditingBox, handleNavigate } =
     useGridNavigation(boxes);

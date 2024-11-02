@@ -49,7 +49,7 @@ export function ProjectsMenu({
 
   return (
     <div className="relative">
-      <div className="absolute left-4 top-4">
+      <div className="absolute left-4 top-4 z-40">
         <Popover
           align="start"
           isOpen={isOpen}

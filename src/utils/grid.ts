@@ -66,9 +66,9 @@ export const toGrid = (
       const col = minCol + colIndex;
       return (
         boxes.find((b) => b.row === row && b.col === col) || {
-          letter: null,
           row,
           col,
+          letter: null,
         }
       );
     });
