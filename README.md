@@ -1,6 +1,6 @@
 # Melodikryss - Interactive Crossword Grid Editor
 
-> 🤖 **Note:** Nearly every line of code here is written by [Cursor](https://cursor.sh/),
+> 🤖 **Note:** Nearly every line of code here is written by [Cursor](https://cursor.sh/)
 
 A React-based crossword puzzle editor with dynamic grid manipulation and real-time editing capabilities.
 
@@ -154,3 +154,33 @@ const localNewFont = localFont({
 ```
 
 All fonts are automatically optimized and self-hosted by Next.js for optimal performance.
+
+## Roadmap
+
+Current features:
+
+- [x] Create and manage multiple projects
+- [x] Link boxes together
+- [x] Edit box contents
+- [x] Local storage persistence
+- [x] Dark mode
+
+Planned features:
+
+- [ ] Project sharing
+  - First iteration: URL-based sharing with compression
+    - Remove empty boxes when generating share URL
+    - Base64 encode the compressed data
+    - Read-only view for shared projects
+  - Future considerations:
+    - Backend storage for larger projects
+    - Collaborative editing
+- [ ] Export to different formats
+- [ ] Keyboard shortcuts
+- [ ] Mobile-friendly UI
+- [ ] Undo/redo
+- [ ] Different box sizes
+- [ ] Custom colors
+- [ ] Multiple box selection
+- [ ] Drag to create links
+- [ ] Import from text
