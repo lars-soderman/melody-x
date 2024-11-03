@@ -13,7 +13,8 @@ type ProjectsAction =
   | { name: string; type: 'CREATE_PROJECT' }
   | { project: Project; type: 'UPDATE_PROJECT' }
   | { id: string; type: 'DELETE_PROJECT' }
-  | { id: string; type: 'SELECT_PROJECT' };
+  | { id: string; type: 'SELECT_PROJECT' }
+  | { project: Project; type: 'IMPORT_PROJECT' };
 
 type LastCreation = {
   name: string;
@@ -107,6 +108,18 @@ const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
       };
     }
 
+    case 'IMPORT_PROJECT': {
+      console.log('IMPORT_PROJECT', action.project);
+
+      const newState = {
+        ...state,
+        projects: [...state.projects, action.project],
+        currentProjectId: action.project.id,
+      };
+      storage.saveProject(action.project);
+      return newState;
+    }
+
     default:
       return state;
   }
@@ -122,23 +135,28 @@ export function useProjectsReducer() {
     dispatch({ type: 'LOAD_PROJECTS' });
   }, []);
 
-  const createProject = useCallback(
-    (name: string) => {
-      if (
-        (projectsReducer as ProjectsReducerWithMeta).lastCreation?.name ===
-          name &&
-        Date.now() -
-          (projectsReducer as ProjectsReducerWithMeta).lastCreation!.timestamp <
-          1000
-      ) {
-        return;
-      }
+  const createProject = useCallback((name: string) => {
+    //   const project: Project = {
+    //     ...createDefaultProject(name),
+    //     ...importedData,
+    //     id: crypto.randomUUID(), // Always generate new ID
+    //     createdAt: new Date().toISOString(),
+    //     modifiedAt: new Date().toISOString(),
+    //   };
 
-      dispatch({ type: 'CREATE_PROJECT', name });
-      loadProjects();
-    },
-    [loadProjects]
-  );
+    dispatch({ type: 'CREATE_PROJECT', name });
+  }, []);
+
+  const importProject = useCallback((importedProject: Project) => {
+    const project: Project = {
+      ...importedProject,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+    };
+
+    dispatch({ type: 'IMPORT_PROJECT', project });
+  }, []);
 
   return {
     createProject,
@@ -158,5 +176,6 @@ export function useProjectsReducer() {
     updateProject: useCallback((project: Project) => {
       dispatch({ type: 'UPDATE_PROJECT', project });
     }, []),
+    importProject,
   };
 }

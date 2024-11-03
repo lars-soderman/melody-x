@@ -29,6 +29,7 @@ export default function Home() {
     createProject,
     setCurrentProjectId,
     deleteProject,
+    importProject,
   } = useProjectsReducer();
 
   useEffect(() => {
@@ -146,6 +147,7 @@ export default function Home() {
         createProject={createProject}
         currentProject={currentProject}
         deleteProject={deleteProject}
+        importProject={importProject}
         projects={projects}
         updateProject={updateProject}
         onSelectProject={setCurrentProjectId}
