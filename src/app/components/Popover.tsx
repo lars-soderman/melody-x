@@ -68,7 +68,11 @@ export function Popover({
       ref={menuRef}
       className="relative"
       onBlur={(e) => {
-        if (!focusTrap && !menuRef.current?.contains(e.relatedTarget as Node)) {
+        if (
+          !focusTrap &&
+          !menuRef.current?.contains(e.relatedTarget as Node) &&
+          e.relatedTarget !== null
+        ) {
           onClose();
         }
       }}

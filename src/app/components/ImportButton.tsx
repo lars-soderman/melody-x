@@ -1,5 +1,5 @@
 import { Project } from '@/types';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 type ImportButtonProps = {
   onImport: (project: Project) => void;
@@ -9,15 +9,21 @@ export function ImportButton({ onImport }: ImportButtonProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     event.stopPropagation();
-    console.log('handleImport triggered');
     const file = event.target.files?.[0];
     if (!file) return;
 
     try {
       const text = await file.text();
       const project: Project = JSON.parse(text);
-      if (!project.id || !project.name || !project.boxes) {
+      if (
+        !project.id ||
+        !project.name ||
+        !project.boxes ||
+        !project.rows ||
+        !project.cols
+      ) {
         throw new Error('Invalid project file');
       }
 
@@ -32,12 +38,8 @@ export function ImportButton({ onImport }: ImportButtonProps) {
     }
   };
 
-  useEffect(() => {
-    console.log('fileInputRef value:', fileInputRef.current);
-  }, [fileInputRef]);
-
   return (
-    <div className="w-full" onClick={(e) => e.stopPropagation()}>
+    <>
       <input
         ref={fileInputRef}
         accept=".json"
@@ -46,9 +48,12 @@ export function ImportButton({ onImport }: ImportButtonProps) {
         onChange={handleImport}
       />
       <button
-        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+        aria-label="Import project from JSON"
+        className="rounded p-1 text-gray-400 hover:bg-gray-100"
+        title="Import project from JSON"
         type="button"
-        onClick={(e) => {
+        onMouseDown={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           fileInputRef.current?.click();
         }}
@@ -66,8 +71,7 @@ export function ImportButton({ onImport }: ImportButtonProps) {
             strokeLinejoin="round"
           />
         </svg>
-        Import from JSON
       </button>
-    </div>
+    </>
   );
 }

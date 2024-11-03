@@ -1,6 +1,7 @@
 import { storage } from '@/app/lib/storage';
 import { createDefaultProject } from '@/constants';
 import { Project } from '@/types';
+import { decompressProject } from '@/utils/compression';
 import { useCallback, useReducer } from 'react';
 
 type ProjectsState = {
@@ -48,28 +49,13 @@ const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
     }
 
     case 'CREATE_PROJECT': {
-      if (
-        (projectsReducer as ProjectsReducerWithMeta).lastCreation?.name ===
-          action.name &&
-        Date.now() -
-          (projectsReducer as ProjectsReducerWithMeta).lastCreation!.timestamp <
-          1000
-      ) {
-        return state;
-      }
-
       const newProject = createDefaultProject(action.name);
       storage.saveProject(newProject);
-      storage.setLastSelectedProjectId(newProject.id);
-
-      projectsReducer.lastCreation = {
-        name: action.name,
-        timestamp: Date.now(),
-      };
 
       return {
-        currentProjectId: newProject.id,
+        ...state,
         projects: [...state.projects, newProject],
+        currentProjectId: newProject.id,
       };
     }
 
@@ -136,26 +122,13 @@ export function useProjectsReducer() {
   }, []);
 
   const createProject = useCallback((name: string) => {
-    //   const project: Project = {
-    //     ...createDefaultProject(name),
-    //     ...importedData,
-    //     id: crypto.randomUUID(), // Always generate new ID
-    //     createdAt: new Date().toISOString(),
-    //     modifiedAt: new Date().toISOString(),
-    //   };
-
     dispatch({ type: 'CREATE_PROJECT', name });
   }, []);
 
   const importProject = useCallback((importedProject: Project) => {
-    const project: Project = {
-      ...importedProject,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    };
+    const decompressedProject = decompressProject(importedProject);
 
-    dispatch({ type: 'IMPORT_PROJECT', project });
+    dispatch({ type: 'IMPORT_PROJECT', project: decompressedProject });
   }, []);
 
   return {

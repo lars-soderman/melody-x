@@ -34,7 +34,7 @@ export function ProjectsMenu({
   const handleCreateProject = () => {
     if (!newProjectName.trim()) return;
     createProject(newProjectName.trim());
-    setIsOpen(false);
+    // setIsOpen(false);
     setIsCreating(false);
     setNewProjectName('');
   };
@@ -55,7 +55,7 @@ export function ProjectsMenu({
       <div className="absolute left-4 top-4 z-40">
         <Popover
           align="start"
-          isOpen={true}
+          isOpen={isOpen}
           trigger={
             <button
               aria-label="Projects"
@@ -88,19 +88,20 @@ export function ProjectsMenu({
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-gray-700">Projects</h2>
-              <button
-                aria-label="New project"
-                className="rounded p-1 text-gray-400 hover:bg-gray-100"
-                onClick={() => setIsCreating(true)}
-              >
-                +
-              </button>
-              <ImportButton
-                onImport={(project) => {
-                  importProject(project);
-                  setIsOpen(false);
-                }}
-              />
+              <div className="flex gap-1">
+                <ImportButton
+                  onImport={(project) => {
+                    importProject(project);
+                  }}
+                />
+                <button
+                  aria-label="New project"
+                  className="rounded p-1 text-gray-400 hover:bg-gray-100"
+                  onClick={() => setIsCreating(true)}
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             {isCreating && (

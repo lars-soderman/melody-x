@@ -16,14 +16,15 @@ export type GridState = {
   version: number;
 };
 
-export type Project = {
+export interface Project {
   boxSize: number;
   boxes: Box[];
   cols: number;
+  compressed?: boolean;
   createdAt: string;
   font: string;
   id: string;
   modifiedAt: string;
   name: string;
   rows: number;
-};
+}
