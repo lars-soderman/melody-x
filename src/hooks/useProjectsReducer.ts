@@ -49,11 +49,14 @@ const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
     }
 
     case 'CREATE_PROJECT': {
+      if (state.projects.some((p) => p.name === action.name)) {
+        return state;
+      }
+
       const newProject = createDefaultProject(action.name);
       storage.saveProject(newProject);
 
       return {
-        ...state,
         projects: [...state.projects, newProject],
         currentProjectId: newProject.id,
       };

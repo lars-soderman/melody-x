@@ -30,13 +30,25 @@ export function ProjectsMenu({
   const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(
     null
   );
+  const [isCreatingInProgress, setIsCreatingInProgress] = useState(false);
 
   const handleCreateProject = () => {
-    if (!newProjectName.trim()) return;
-    createProject(newProjectName.trim());
-    // setIsOpen(false);
-    setIsCreating(false);
-    setNewProjectName('');
+    const trimmedName = newProjectName.trim();
+    if (trimmedName && !isCreatingInProgress) {
+      // Check if project with this name already exists
+      const existingProject = projects.find((p) => p.name === trimmedName);
+      if (existingProject) {
+        alert('A project with this name already exists');
+        return;
+      }
+
+      setIsCreatingInProgress(true);
+      createProject(trimmedName);
+      setIsCreating(false);
+      setNewProjectName('');
+      // Reset the flag after a short delay
+      setTimeout(() => setIsCreatingInProgress(false), 100);
+    }
   };
 
   const handleUpdateName = (project: Project) => {
@@ -125,7 +137,8 @@ export function ProjectsMenu({
                     Cancel
                   </button>
                   <button
-                    className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                    className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600 disabled:opacity-50"
+                    disabled={isCreatingInProgress}
                     onClick={handleCreateProject}
                   >
                     Create
