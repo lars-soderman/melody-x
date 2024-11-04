@@ -35,19 +35,14 @@ export function ProjectsMenu({
   const handleCreateProject = () => {
     const trimmedName = newProjectName.trim();
     if (trimmedName && !isCreatingInProgress) {
-      // Check if project with this name already exists
-      const existingProject = projects.find((p) => p.name === trimmedName);
-      if (existingProject) {
-        alert('A project with this name already exists');
-        return;
-      }
-
       setIsCreatingInProgress(true);
       createProject(trimmedName);
       setIsCreating(false);
       setNewProjectName('');
-      // Reset the flag after a short delay
-      setTimeout(() => setIsCreatingInProgress(false), 100);
+
+      setTimeout(() => {
+        setIsCreatingInProgress(false);
+      }, 100);
     }
   };
 

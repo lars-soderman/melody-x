@@ -17,17 +17,10 @@ type ProjectsAction =
   | { id: string; type: 'SELECT_PROJECT' }
   | { project: Project; type: 'IMPORT_PROJECT' };
 
-type LastCreation = {
-  name: string;
-  timestamp: number;
-};
-
-type ProjectsReducerWithMeta = {
-  (state: ProjectsState, action: ProjectsAction): ProjectsState;
-  lastCreation?: LastCreation;
-};
-
-const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
+const projectsReducer = (
+  state: ProjectsState,
+  action: ProjectsAction
+): ProjectsState => {
   switch (action.type) {
     case 'LOAD_PROJECTS': {
       const projectIds = storage.getProjectIds();
@@ -49,15 +42,36 @@ const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
     }
 
     case 'CREATE_PROJECT': {
-      if (state.projects.some((p) => p.name === action.name)) {
-        return state;
+      // Check for existing project with same name in storage
+      const projectIds = storage.getProjectIds();
+      const existingProjects = projectIds
+        .map((id) => storage.getProject(id))
+        .filter((p): p is Project => p !== null);
+
+      const existingProject = existingProjects.find(
+        (p) => p.name === action.name
+      );
+      if (existingProject) {
+        return state; // Don't create if name exists in storage
       }
 
-      const newProject = createDefaultProject(action.name);
+      // Create new project with unique ID
+      let lastCreatedId = 0;
+      const newProject = {
+        ...createDefaultProject(action.name),
+        id: `${Date.now()}-${++lastCreatedId}`,
+      };
+
       storage.saveProject(newProject);
 
+      // Update state with all projects from storage
+      const updatedProjects = storage
+        .getProjectIds()
+        .map((id) => storage.getProject(id))
+        .filter((p): p is Project => p !== null);
+
       return {
-        projects: [...state.projects, newProject],
+        projects: updatedProjects,
         currentProjectId: newProject.id,
       };
     }
@@ -124,6 +138,8 @@ export function useProjectsReducer() {
 
   const createProject = useCallback((name: string) => {
     dispatch({ type: 'CREATE_PROJECT', name });
+    // Force refresh after creation
+    dispatch({ type: 'LOAD_PROJECTS' });
   }, []);
 
   const importProject = useCallback((importedProject: Project) => {

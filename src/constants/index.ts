@@ -15,10 +15,13 @@ export const DEFAULT_STATE = {
   font: 'var(--font-default)',
 } as const;
 
-// We can also add a function to create a default project
+let lastCreatedId = 0;
+
 export function createDefaultProject(name: string): Project {
+  lastCreatedId++;
+
   return {
-    id: crypto.randomUUID(),
+    id: `${Date.now()}-${lastCreatedId}`,
     name,
     createdAt: new Date().toISOString(),
     modifiedAt: new Date().toISOString(),
