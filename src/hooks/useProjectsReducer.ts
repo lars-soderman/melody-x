@@ -98,8 +98,6 @@ const projectsReducer: ProjectsReducerWithMeta = (state, action) => {
     }
 
     case 'IMPORT_PROJECT': {
-      console.log('IMPORT_PROJECT', action.project);
-
       const newState = {
         ...state,
         projects: [...state.projects, action.project],

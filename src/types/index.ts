@@ -12,6 +12,7 @@ export type GridState = {
   boxSize: number;
   boxes: Box[];
   cols: number;
+  font: string;
   rows: number;
   version: number;
 };

@@ -1,6 +1,5 @@
 import { Project } from '@/types';
 
-// Constants for storage keys
 const STORAGE_PREFIX = 'melody-x';
 const STORAGE_INDEX = `${STORAGE_PREFIX}:index`;
 const getProjectKey = (name: string, id: string) =>
@@ -10,14 +9,6 @@ interface StorageIndex {
   lastSelectedId?: string;
   projectIds: string[];
 }
-
-// Add this helper function to find a project's storage key
-const findProjectKey = (id: string): string | null => {
-  const key = Object.keys(localStorage).find(
-    (key) => key.startsWith(`${STORAGE_PREFIX}:project:`) && key.endsWith(id)
-  );
-  return key || null;
-};
 
 export const storage = {
   getProjectIds: (): string[] => {
@@ -48,7 +39,6 @@ export const storage = {
 
   getProject: (id: string): Project | null => {
     try {
-      // Find project by ID pattern
       const projectKey = Object.keys(localStorage).find(
         (key) =>
           key.startsWith(`${STORAGE_PREFIX}:project:`) && key.endsWith(id)
@@ -63,20 +53,16 @@ export const storage = {
     }
   },
 
-  saveProject: (project: Project, oldName?: string): void => {
-    console.log('Saving project:', { id: project.id, name: project.name });
+  saveProject: (project: Project): void => {
     try {
-      // Find and remove any existing entries for this ID first
       const existingKeys = Object.keys(localStorage).filter(
         (key) =>
           key.startsWith(`${STORAGE_PREFIX}:project:`) &&
           key.includes(project.id)
       );
-      console.log('Existing storage keys:', existingKeys);
 
       existingKeys.forEach((key) => localStorage.removeItem(key));
 
-      // Save project with new name
       const projectKey = getProjectKey(project.name, project.id);
       localStorage.setItem(
         projectKey,
@@ -86,7 +72,6 @@ export const storage = {
         })
       );
 
-      // Update index
       const indexData = localStorage.getItem(STORAGE_INDEX);
       const index: StorageIndex = indexData
         ? JSON.parse(indexData)
@@ -117,7 +102,6 @@ export const storage = {
 
   deleteProject: (id: string): void => {
     try {
-      // Find and remove project by ID pattern
       const projectKey = Object.keys(localStorage).find(
         (key) =>
           key.startsWith(`${STORAGE_PREFIX}:project:`) && key.endsWith(id)
@@ -126,7 +110,6 @@ export const storage = {
         localStorage.removeItem(projectKey);
       }
 
-      // Update index
       const indexData = localStorage.getItem(STORAGE_INDEX);
       const index: StorageIndex = indexData
         ? JSON.parse(indexData)

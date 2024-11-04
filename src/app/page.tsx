@@ -45,7 +45,7 @@ export default function Home() {
     boxSize,
     rows,
     cols,
-    font,
+    // font,
     updateBoxSize,
     updateGridSize,
     addRow,
@@ -56,6 +56,7 @@ export default function Home() {
     removeRow,
     removeColumn,
     reset,
+    font,
     updateStop,
     toggleHint,
     updateFont,
@@ -70,8 +71,6 @@ export default function Home() {
     type: 'row' | 'column';
   } | null>(null);
   const [lastTwoInputs, setLastTwoInputs] = useState<Box[]>([]);
-
-  useEffect(() => {}, [boxes, boxSize, rows, cols, font, currentProject]);
 
   if (isLoading || !currentProject || !boxes) {
     return (

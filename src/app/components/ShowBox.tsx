@@ -75,6 +75,7 @@ export function ShowBox({
             left: '3px',
             top: '3px',
             border: '2px solid black',
+            fontFamily: 'var(--font-default)',
           }}
         >
           <span className="text-xs">{hint}</span>
