@@ -32,17 +32,15 @@ export function ProjectsMenu({
   );
   const [isCreatingInProgress, setIsCreatingInProgress] = useState(false);
 
-  const handleCreateProject = () => {
+  const handleCreateProject = async () => {
     const trimmedName = newProjectName.trim();
     if (trimmedName && !isCreatingInProgress) {
       setIsCreatingInProgress(true);
-      createProject(trimmedName);
+      await createProject(trimmedName);
       setIsCreating(false);
       setNewProjectName('');
-
-      setTimeout(() => {
-        setIsCreatingInProgress(false);
-      }, 100);
+      setIsCreatingInProgress(false);
+      setIsOpen(false);
     }
   };
 
@@ -67,7 +65,9 @@ export function ProjectsMenu({
             <button
               aria-label="Projects"
               className="flex h-10 w-10 items-center justify-center rounded-full text-2xl text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
-              onClick={() => setIsOpen(!isOpen)}
+              data-testid="projects-menu-button"
+              title="Projects"
+              onClick={() => setIsOpen(true)}
             >
               <svg
                 className="h-6 w-6"
@@ -104,6 +104,7 @@ export function ProjectsMenu({
                 <button
                   aria-label="New project"
                   className="rounded p-1 text-gray-400 hover:bg-gray-100"
+                  data-testid="new-project-button"
                   onClick={() => setIsCreating(true)}
                 >
                   +
@@ -112,18 +113,35 @@ export function ProjectsMenu({
             </div>
 
             {isCreating && (
-              <div className="flex flex-col gap-2">
+              <form
+                className="flex flex-col gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  // console.log('Form submitted');
+                  handleCreateProject();
+                }}
+              >
                 <input
                   autoFocus
                   className="rounded border border-gray-200 p-2 text-sm"
                   placeholder="Project name"
                   type="text"
                   value={newProjectName}
-                  onChange={(e) => setNewProjectName(e.target.value)}
+                  onChange={(e) => {
+                    // console.log('Input changed:', e.target.value);
+                    setNewProjectName(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    // console.log('Key pressed:', e.key);
+                    if (e.key === 'Enter') {
+                      console.log('Enter key detected');
+                    }
+                  }}
                 />
                 <div className="flex justify-end gap-2">
                   <button
                     className="text-sm text-gray-500 hover:text-gray-700"
+                    type="button"
                     onClick={() => {
                       setIsCreating(false);
                       setNewProjectName('');
@@ -134,12 +152,12 @@ export function ProjectsMenu({
                   <button
                     className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600 disabled:opacity-50"
                     disabled={isCreatingInProgress}
-                    onClick={handleCreateProject}
+                    type="submit"
                   >
                     Create
                   </button>
                 </div>
-              </div>
+              </form>
             )}
 
             {projects.map((project) => (

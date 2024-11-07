@@ -10,42 +10,115 @@ interface StorageIndex {
   projectIds: string[];
 }
 
+const MIN_PROJECT_CREATE_INTERVAL = 1000; // 1 second
+let lastProjectCreationTime = 0;
+
+const canCreateProject = (): boolean => {
+  const now = Date.now();
+  if (now - lastProjectCreationTime < MIN_PROJECT_CREATE_INTERVAL) {
+    return false;
+  }
+  lastProjectCreationTime = now;
+  return true;
+};
+
+// Type for our storage manager
+type StorageManager = {
+  data: Record<string, string>;
+  persist: boolean;
+};
+
+// Single storage manager instance
+const storageManager: StorageManager = {
+  data: {},
+  persist: false, // Will be set to true if localStorage is available
+};
+
+// Add near the top with other constants
+let FORCE_STORAGE_UNAVAILABLE = true;
+
+// Initialize storage manager
+const initStorage = () => {
+  if (FORCE_STORAGE_UNAVAILABLE) {
+    storageManager.persist = false;
+    return;
+  }
+
+  try {
+    const test = '__storage_test__';
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    storageManager.persist = true;
+
+    // Load existing data from localStorage if available
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith(STORAGE_PREFIX)) {
+        storageManager.data[key] = localStorage.getItem(key) || '';
+      }
+    });
+  } catch (e) {
+    storageManager.persist = false;
+  }
+};
+
+// Initialize on import
+initStorage();
+
 export const storage = {
-  getProjectIds: (): string[] => {
-    try {
-      const indexData = localStorage.getItem(STORAGE_INDEX);
-      const index: StorageIndex = indexData
-        ? JSON.parse(indexData)
-        : { projectIds: [] };
-      return index.projectIds;
-    } catch (e) {
-      console.error('Error getting project IDs:', e);
-      return [];
+  getItem: (key: string): string | null => {
+    return storageManager.data[key] || null;
+  },
+
+  setItem: (key: string, value: string): void => {
+    storageManager.data[key] = value;
+    if (storageManager.persist) {
+      localStorage.setItem(key, value);
     }
   },
 
-  getLastSelectedProjectId: (): string | null => {
-    try {
-      const indexData = localStorage.getItem(STORAGE_INDEX);
-      const index: StorageIndex = indexData
-        ? JSON.parse(indexData)
-        : { projectIds: [] };
-      return index.lastSelectedId || null;
-    } catch (e) {
-      console.error('Error getting last selected project:', e);
-      return null;
+  removeItem: (key: string): void => {
+    delete storageManager.data[key];
+    if (storageManager.persist) {
+      localStorage.removeItem(key);
     }
+  },
+
+  getProjectIds: (): string[] => {
+    const indexData = storage.getItem(STORAGE_INDEX);
+    const index: StorageIndex = indexData
+      ? JSON.parse(indexData)
+      : { projectIds: [] };
+    return index.projectIds;
+  },
+
+  getLastSelectedProjectId: (): string | null => {
+    const indexData = storage.getItem(STORAGE_INDEX);
+    const index: StorageIndex = indexData
+      ? JSON.parse(indexData)
+      : { projectIds: [] };
+    return index.lastSelectedId || null;
+  },
+
+  setLastSelectedProjectId: (id: string): void => {
+    const indexData = storage.getItem(STORAGE_INDEX);
+    const index: StorageIndex = indexData
+      ? JSON.parse(indexData)
+      : { projectIds: [] };
+
+    index.lastSelectedId = id;
+    storage.setItem(STORAGE_INDEX, JSON.stringify(index));
   },
 
   getProject: (id: string): Project | null => {
     try {
-      const projectKey = Object.keys(localStorage).find(
+      // Find project by ID in all stored projects
+      const key = Object.keys(storageManager.data).find(
         (key) =>
-          key.startsWith(`${STORAGE_PREFIX}:project:`) && key.endsWith(id)
+          key.startsWith(`${STORAGE_PREFIX}:project:`) && key.includes(id)
       );
-      if (!projectKey) return null;
+      if (!key) return null;
 
-      const data = localStorage.getItem(projectKey);
+      const data = storage.getItem(key);
       return data ? JSON.parse(data) : null;
     } catch (e) {
       console.error('Error getting project:', e);
@@ -53,75 +126,72 @@ export const storage = {
     }
   },
 
-  saveProject: (project: Project): void => {
+  saveProject: (project: Project): boolean => {
     try {
-      const existingKeys = Object.keys(localStorage).filter(
-        (key) =>
-          key.startsWith(`${STORAGE_PREFIX}:project:`) &&
-          key.includes(project.id)
-      );
-
-      existingKeys.forEach((key) => localStorage.removeItem(key));
+      if (!project.id.includes('new-') && !canCreateProject()) {
+        return false;
+      }
 
       const projectKey = getProjectKey(project.name, project.id);
-      localStorage.setItem(
-        projectKey,
-        JSON.stringify({
-          ...project,
-          modifiedAt: new Date().toISOString(),
-        })
-      );
+      storage.setItem(projectKey, JSON.stringify(project));
 
-      const indexData = localStorage.getItem(STORAGE_INDEX);
+      // Update index
+      const indexData = storage.getItem(STORAGE_INDEX);
       const index: StorageIndex = indexData
         ? JSON.parse(indexData)
         : { projectIds: [] };
 
       if (!index.projectIds.includes(project.id)) {
         index.projectIds.push(project.id);
+        storage.setItem(STORAGE_INDEX, JSON.stringify(index));
       }
-      localStorage.setItem(STORAGE_INDEX, JSON.stringify(index));
+
+      return true;
     } catch (e) {
       console.error('Error saving project:', e);
-    }
-  },
-
-  setLastSelectedProjectId: (id: string): void => {
-    try {
-      const indexData = localStorage.getItem(STORAGE_INDEX);
-      const index: StorageIndex = indexData
-        ? JSON.parse(indexData)
-        : { projectIds: [] };
-
-      index.lastSelectedId = id;
-      localStorage.setItem(STORAGE_INDEX, JSON.stringify(index));
-    } catch (e) {
-      console.error('Error setting last selected project:', e);
+      return false;
     }
   },
 
   deleteProject: (id: string): void => {
     try {
-      const projectKey = Object.keys(localStorage).find(
+      // Find and remove project data
+      const projectKey = Object.keys(storageManager.data).find(
         (key) =>
-          key.startsWith(`${STORAGE_PREFIX}:project:`) && key.endsWith(id)
+          key.startsWith(`${STORAGE_PREFIX}:project:`) && key.includes(id)
       );
       if (projectKey) {
-        localStorage.removeItem(projectKey);
+        storage.removeItem(projectKey);
       }
 
-      const indexData = localStorage.getItem(STORAGE_INDEX);
+      // Update index
+      const indexData = storage.getItem(STORAGE_INDEX);
       const index: StorageIndex = indexData
         ? JSON.parse(indexData)
         : { projectIds: [] };
 
       index.projectIds = index.projectIds.filter((pid) => pid !== id);
       if (index.lastSelectedId === id) {
-        index.lastSelectedId = index.projectIds[0];
+        delete index.lastSelectedId;
       }
-      localStorage.setItem(STORAGE_INDEX, JSON.stringify(index));
+
+      storage.setItem(STORAGE_INDEX, JSON.stringify(index));
     } catch (e) {
       console.error('Error deleting project:', e);
     }
+  },
+
+  setStorageAvailable: (available: boolean) => {
+    FORCE_STORAGE_UNAVAILABLE = !available;
+    if (FORCE_STORAGE_UNAVAILABLE) {
+      storageManager.persist = false;
+    } else {
+      // Re-run initialization to check actual availability
+      initStorage();
+    }
+  },
+
+  isStorageAvailable: () => {
+    return !FORCE_STORAGE_UNAVAILABLE && storageManager.persist;
   },
 };

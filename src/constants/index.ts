@@ -15,13 +15,9 @@ export const DEFAULT_STATE = {
   font: 'var(--font-default)',
 } as const;
 
-let lastCreatedId = 0;
-
 export function createDefaultProject(name: string): Project {
-  lastCreatedId++;
-
   return {
-    id: `${Date.now()}-${lastCreatedId}`,
+    id: `new-${Date.now()}`,
     name,
     createdAt: new Date().toISOString(),
     modifiedAt: new Date().toISOString(),

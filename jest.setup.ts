@@ -1,10 +1,8 @@
 import '@testing-library/jest-dom';
 
-// Mock crypto.randomUUID
-let uuidCounter = 0;
 Object.defineProperty(global, 'crypto', {
   value: {
-    randomUUID: () => `test-uuid-${uuidCounter++}`,
+    randomUUID: () => 'test-uuid-123',
   },
 });
 
