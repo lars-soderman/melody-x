@@ -2,7 +2,6 @@
 
 import { Box } from '@types';
 import {
-  getId,
   getMaxCol,
   getMaxRow,
   getMinCol,
@@ -62,8 +61,13 @@ export default function Home() {
     updateFont,
   } = useGridReducer(currentProject ?? null, updateProject);
 
-  const { editingBox, setEditingBox, handleNavigate } =
-    useGridNavigation(boxes);
+  const {
+    editingBox,
+    setEditingBox,
+    handleKeyboardNavigation,
+    handleCharacterInput,
+    currentDirection,
+  } = useGridNavigation(boxes);
 
   const [_, setIsConfirmingReset] = useState(false);
   const [confirmingRemove, setConfirmingRemove] = useState<{
@@ -89,24 +93,16 @@ export default function Home() {
 
   const handleLetterChange = (id: string, letter: string) => {
     updateLetter(id, letter);
-
-    const currentBox = boxes.find((box) => getId(box) === id);
-    if (!currentBox) return;
-
-    // Update last two inputs
-    setLastTwoInputs((prev) => [currentBox, ...prev].slice(0, 2));
-
-    // Only auto-navigate if a letter was actually input
-    if (letter) {
-      // Check if the last two inputs were vertical
-      const isVertical =
-        lastTwoInputs.length === 2 &&
-        lastTwoInputs[0].col === lastTwoInputs[1].col &&
-        Math.abs(lastTwoInputs[0].row - lastTwoInputs[1].row) === 1;
-
-      // Navigate down if vertical, right otherwise
-      handleNavigate(currentBox, isVertical ? 'down' : 'right');
+    if (editingBox) {
+      handleCharacterInput(editingBox);
     }
+  };
+
+  const handleBoxNavigation = (
+    box: Box,
+    direction: 'up' | 'down' | 'left' | 'right'
+  ) => {
+    handleKeyboardNavigation(box, direction);
   };
 
   const handleRemoveRow = (rowIndex: number) => {
@@ -194,7 +190,7 @@ export default function Home() {
             minRow={minRow}
             toggleHint={toggleHint}
             onLetterChange={handleLetterChange}
-            onNavigate={handleNavigate}
+            onNavigate={handleBoxNavigation}
             onSetEditingBox={setEditingBox}
             onUpdateArrow={updateArrow}
             onUpdateBlack={updateBlack}
