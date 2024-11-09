@@ -1,6 +1,6 @@
+import { CrosswordGrid } from '@/app/components/CrosswordGrid';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { CrosswordGrid } from './CrosswordGrid';
 
 describe('CrosswordGrid', () => {
   const mockProps = {

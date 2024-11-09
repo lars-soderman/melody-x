@@ -32,6 +32,7 @@ export const GridCell = memo(function GridCell({
   return (
     <div
       className="relative flex"
+      data-testid={`grid-cell`}
       style={{
         width: `${boxSize}px`,
         height: `${boxSize}px`,

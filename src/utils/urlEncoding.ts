@@ -1,4 +1,3 @@
-import { createDefaultProject } from '@/constants';
 import { Box, Project } from '@/types';
 
 // Special characters for encoding
@@ -9,7 +8,8 @@ const SPECIAL_CHARS = {
   STOP_BOTTOM: '_',
   STOP_RIGHT: '|',
   HINT: '#',
-  SEPARATOR: '-',
+  SEPARATOR: '§',
+  META_SEPARATOR: '~',
 } as const;
 
 // Create a type for the special characters
@@ -18,45 +18,81 @@ type SpecialChar = (typeof SPECIAL_CHARS)[keyof typeof SPECIAL_CHARS];
 // Create a Set of special characters for faster lookup
 const SPECIAL_CHAR_SET = new Set(Object.values(SPECIAL_CHARS));
 
-export function encodeProject(project: Project): string {
-  // Header: rows,cols in base36
-  const header = `${project.rows.toString(36)}${project.cols.toString(36)}`;
+export function encodeProject(
+  project: Project | null | undefined
+): string | null {
+  // Early return with warning for null/undefined
+  if (!project) {
+    console.warn('Cannot encode null or undefined project');
+    return null;
+  }
 
-  // Encode boxes with content
-  const boxes = project.boxes
-    .filter((b) => b.letter || b.black || b.arrow || b.stop || b.hint)
-    .map((b) => {
-      // Position: 2 chars (col,row in base36)
-      const pos = `${b.col.toString(36)}${b.row.toString(36)}`;
+  // Validate required fields
+  if (
+    !project.id ||
+    !project.name ||
+    typeof project.rows !== 'number' ||
+    typeof project.cols !== 'number'
+  ) {
+    console.warn('Project missing required fields');
+    return null;
+  }
 
-      // Modifiers
-      const mods = [
-        b.black ? SPECIAL_CHARS.BLACK : '',
-        b.arrow === 'down' ? SPECIAL_CHARS.ARROW_DOWN : '',
-        b.arrow === 'right' ? SPECIAL_CHARS.ARROW_RIGHT : '',
-        b.stop === 'bottom' ? SPECIAL_CHARS.STOP_BOTTOM : '',
-        b.stop === 'right' ? SPECIAL_CHARS.STOP_RIGHT : '',
-        b.hint ? SPECIAL_CHARS.HINT + b.hint.toString(36) : '',
-      ].join('');
+  try {
+    // Header: rows,cols in base36
+    const header = `${project.rows.toString(36)}${project.cols.toString(36)}`;
 
-      return `${pos}${b.letter || ''}${mods}`;
-    })
-    .join('');
+    // Encode metadata with safe defaults for optional fields
+    const metadata = [
+      project.id.replace(/[§~]/g, '-'),
+      project.name.replace(/[§~]/g, '-'),
+      (project.boxSize ?? 64).toString(36),
+      (project.font ?? 'var(--font-default)').replace(/[§~]/g, '-'),
+      project.createdAt ?? new Date().toISOString(),
+      project.modifiedAt ?? new Date().toISOString(),
+    ]
+      .map(encodeURIComponent)
+      .join(SPECIAL_CHARS.META_SEPARATOR);
 
-  return `${header}${SPECIAL_CHARS.SEPARATOR}${boxes}`;
+    // Safely handle boxes array
+    const boxes = (project.boxes ?? [])
+      .filter((b): b is NonNullable<Box> => b != null)
+      .filter((b) => b.letter || b.black || b.arrow || b.stop || b.hint)
+      .map((b) => {
+        const pos = `${b.col.toString(36)}${b.row.toString(36)}`;
+        const mods = [
+          b.black ? SPECIAL_CHARS.BLACK : '',
+          b.arrow === 'down' ? SPECIAL_CHARS.ARROW_DOWN : '',
+          b.arrow === 'right' ? SPECIAL_CHARS.ARROW_RIGHT : '',
+          b.stop === 'bottom' ? SPECIAL_CHARS.STOP_BOTTOM : '',
+          b.stop === 'right' ? SPECIAL_CHARS.STOP_RIGHT : '',
+          b.hint ? SPECIAL_CHARS.HINT + b.hint.toString(36) : '',
+        ].join('');
+
+        return `${pos}${b.letter || ''}${mods}`;
+      })
+      .join('');
+
+    return `${header}${SPECIAL_CHARS.SEPARATOR}${metadata}${SPECIAL_CHARS.SEPARATOR}${boxes}`;
+  } catch (e) {
+    console.warn('Error encoding project:', e);
+    return null;
+  }
 }
 
 export function decodeProject(encoded: string): Project | null {
+  // Basic validation
+  if (!encoded || encoded.split(SPECIAL_CHARS.SEPARATOR).length !== 3) {
+    console.warn('Invalid encoded project string');
+    return null;
+  }
+
   try {
-    // Basic validation
-    if (!encoded || !encoded.includes(SPECIAL_CHARS.SEPARATOR)) {
-      return null;
-    }
+    const [header, metadata, boxesStr] = encoded.split(SPECIAL_CHARS.SEPARATOR);
 
-    const [header, boxesStr] = encoded.split(SPECIAL_CHARS.SEPARATOR);
-
-    // Validate header format (must be exactly 2 base36 digits)
+    // Validate header format
     if (!header || header.length !== 2 || !/^[0-9a-z]{2}$/i.test(header)) {
+      console.warn('Invalid header format');
       return null;
     }
 
@@ -65,12 +101,31 @@ export function decodeProject(encoded: string): Project | null {
     const cols = parseInt(header[1], 36);
 
     if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
+      console.warn('Invalid grid dimensions');
       return null;
     }
 
-    const project = createDefaultProject('Imported Puzzle');
-    project.rows = rows;
-    project.cols = cols;
+    // Parse metadata
+    const [id, name, boxSize, font, createdAt, modifiedAt] = metadata
+      .split(SPECIAL_CHARS.META_SEPARATOR)
+      .map(decodeURIComponent);
+
+    const project: Project = {
+      id: id || `imported-${Date.now()}`,
+      name: name || 'Imported Project',
+      rows,
+      cols,
+      boxSize: parseInt(boxSize, 36) || 64,
+      font: font || 'var(--font-default)',
+      createdAt,
+      modifiedAt,
+      boxes: [],
+    };
+
+    // Parse boxes
+    if (!boxesStr) {
+      return project;
+    }
 
     // Validate boxes string
     if (!boxesStr || boxesStr.length === 0) {
@@ -88,7 +143,7 @@ export function decodeProject(encoded: string): Project | null {
         i + 1 >= boxesStr.length ||
         !/^[0-9a-z]{2}/i.test(boxesStr.slice(i))
       ) {
-        return null;
+        throw new Error('Invalid position');
       }
 
       const col = parseInt(boxesStr[i], 36);
@@ -96,7 +151,7 @@ export function decodeProject(encoded: string): Project | null {
       i += 2;
 
       if (isNaN(row) || isNaN(col) || row >= rows || col >= cols) {
-        return null;
+        throw new Error('Invalid position');
       }
 
       const box: Box = { row, col, letter: null };
@@ -138,11 +193,11 @@ export function decodeProject(encoded: string): Project | null {
             if (i < boxesStr.length && /^[0-9a-z]$/i.test(boxesStr[i])) {
               box.hint = parseInt(boxesStr[i], 36);
             } else {
-              return null;
+              throw new Error('Invalid hint');
             }
             break;
           default:
-            return null;
+            throw new Error('Invalid special character');
         }
         i++;
       }
@@ -153,25 +208,57 @@ export function decodeProject(encoded: string): Project | null {
     project.boxes = boxes;
     return project;
   } catch (e) {
-    console.error('Error decoding project:', e);
+    console.warn('Error decoding project:', e);
     return null;
   }
 }
 
-// Example usage:
-/*
-const project = {
-  rows: 9,
-  cols: 10,
-  boxes: [
-    { row: 0, col: 0, letter: 'H' },
-    { row: 0, col: 1, letter: 'E' },
-    { row: 0, col: 2, letter: 'J', black: true },
-    { row: 1, col: 2, letter: 'A', arrow: 'down' },
-  ]
+export const checkEqual = (project1: Project, project2: Project) => {
+  const isEqual = JSON.stringify(project1) === JSON.stringify(project2);
+  if (!isEqual) {
+    console.error(
+      'Project compression/decompression failed - projects are not equal'
+    );
+
+    // Log differences between projects
+    const project1Keys = Object.keys(project1) as (keyof Project)[];
+    project1Keys.forEach((key) => {
+      if (JSON.stringify(project1[key]) !== JSON.stringify(project2[key])) {
+        console.error(`Difference in ${key}:`);
+        console.error('Project 1:', project1[key]);
+        console.error('Project 2:', project2[key]);
+      }
+    });
+
+    return false;
+  }
+  return true;
 };
 
-// Encodes to something like: "9a-00H01E02J.12Av"
-const encoded = encodeProject(project);
-const decoded = decodeProject(encoded);
-*/
+export function compressProject(
+  project: Project | null | undefined
+): Project | null {
+  if (!project) {
+    console.warn('Cannot compress null or undefined project');
+    return null;
+  }
+
+  const strippedBoxes = (project.boxes ?? [])
+    .filter((box): box is NonNullable<Box> => box != null)
+    .filter(
+      (box) => box.letter || box.black || box.hint || box.arrow || box.stop
+    );
+
+  return {
+    id: project.id,
+    name: project.name,
+    rows: project.rows,
+    cols: project.cols,
+    boxSize: project.boxSize ?? 64,
+    font: project.font ?? 'var(--font-default)',
+    createdAt: project.createdAt ?? new Date().toISOString(),
+    modifiedAt: project.modifiedAt ?? new Date().toISOString(),
+    boxes: strippedBoxes,
+    compressed: true,
+  };
+}

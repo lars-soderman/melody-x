@@ -1,5 +1,7 @@
 import { Project } from '@/types';
-import { useState } from 'react';
+import { compressProject, decompressProject } from '@/utils/compression';
+import { decodeProject, encodeProject } from '@/utils/urlEncoding';
+import { useEffect, useState } from 'react';
 import { ImportButton } from './ImportButton';
 import { Popover } from './Popover';
 
@@ -32,6 +34,27 @@ export function ProjectsMenu({
   );
   const [isCreatingInProgress, setIsCreatingInProgress] = useState(false);
 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const encodedProject = url.searchParams.get('project');
+
+    if (encodedProject) {
+      try {
+        const decodedProject = decodeProject(encodedProject);
+        if (decodedProject) {
+          const decompressedProject = decompressProject(decodedProject);
+          importProject(decompressedProject);
+
+          // Clear the URL parameter after importing
+          url.searchParams.delete('project');
+          window.history.replaceState({}, '', url.toString());
+        }
+      } catch (error) {
+        console.error('Failed to import project from URL:', error);
+      }
+    }
+  }, []); // Run once on mount
+
   const handleCreateProject = async () => {
     const trimmedName = newProjectName.trim();
     if (trimmedName && !isCreatingInProgress) {
@@ -53,6 +76,20 @@ export function ProjectsMenu({
       });
     }
     setEditingProjectId(null);
+  };
+
+  const handleShareProject = (project: Project) => {
+    console.log('project', project.boxes.length);
+
+    const compressedProject = compressProject(project);
+    const encodedProject = encodeProject(compressedProject);
+    // const decodedProject = decodeProject(encodedProject ?? '');
+    // const decompressedProject = decompressProject(decodedProject!);
+
+    // Create share URL
+    const url = new URL(window.location.href);
+    url.searchParams.set('project', encodedProject ?? '');
+    navigator.clipboard.writeText(url.toString());
   };
 
   return (
@@ -96,11 +133,34 @@ export function ProjectsMenu({
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-gray-700">Projects</h2>
               <div className="flex gap-1">
+                {/* share project */}
+                <button
+                  className="rounded p-1 text-gray-400 hover:bg-gray-100"
+                  title="Share project"
+                  onClick={() => handleShareProject(currentProject)}
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                {/* import project */}
                 <ImportButton
                   onImport={(project) => {
                     importProject(project);
                   }}
                 />
+                {/* new project */}
                 <button
                   aria-label="New project"
                   className="rounded p-1 text-gray-400 hover:bg-gray-100"

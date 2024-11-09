@@ -33,6 +33,7 @@ export function RemoveButtons({
             {box.col === minCol && (
               <div
                 className="hover-trigger absolute z-30"
+                data-testid={`remove-row-hover-trigger-${box.row}`}
                 style={{
                   top: `${(box.row - minRow) * boxSize}px`,
                   left: 0,
@@ -41,12 +42,12 @@ export function RemoveButtons({
                 }}
               >
                 <button
-                  aria-label={
-                    confirmingRemove?.type === 'row' &&
-                    confirmingRemove.index === box.row
-                      ? 'Confirm remove row'
-                      : 'Remove row'
-                  }
+                  // aria-label={
+                  //   confirmingRemove?.type === 'row' &&
+                  //   confirmingRemove.index === box.row
+                  //     ? 'Confirm remove row'
+                  //     : 'Remove row'
+                  // }
                   className={`hover-target absolute -left-3 top-1/2 flex h-8 w-6 -translate-y-1/2 items-center justify-center bg-white text-lg text-gray-400 opacity-0 shadow-md transition-all duration-200 ${
                     confirmingRemove?.type === 'row' &&
                     confirmingRemove.index === box.row
@@ -56,8 +57,8 @@ export function RemoveButtons({
                   title={
                     confirmingRemove?.type === 'row' &&
                     confirmingRemove.index === box.row
-                      ? 'Confirm remove row'
-                      : 'Remove row'
+                      ? `Confirm remove row ${box.row}`
+                      : `Remove row ${box.row}`
                   }
                   onClick={(e) => {
                     e.stopPropagation();
@@ -75,6 +76,7 @@ export function RemoveButtons({
             {box.col === maxCol && (
               <div
                 className="hover-trigger absolute z-30"
+                data-testid={`remove-row-hover-trigger-${box.row}`}
                 style={{
                   top: `${(box.row - minRow) * boxSize}px`,
                   right: 0,
@@ -84,6 +86,7 @@ export function RemoveButtons({
               >
                 <button
                   aria-label="Remove row"
+                  data-testid={`remove-row-${box.row}`}
                   title="Remove row"
                   className={`hover-target absolute -right-3 top-1/2 flex h-8 w-6 -translate-y-1/2 items-center justify-center bg-white text-lg text-gray-400 opacity-0 shadow-md transition-all duration-200 ${
                     confirmingRemove?.type === 'row' &&
@@ -149,6 +152,7 @@ export function RemoveButtons({
               >
                 <button
                   aria-label="Remove column"
+                  data-testid={`remove-col-${box.col}`}
                   title="Remove column"
                   className={`hover-target absolute -bottom-3 left-1/2 flex h-8 w-6 -translate-x-1/2 items-center justify-center bg-white text-lg text-gray-400 opacity-0 shadow-md transition-all duration-200 ${
                     confirmingRemove?.type === 'column' &&

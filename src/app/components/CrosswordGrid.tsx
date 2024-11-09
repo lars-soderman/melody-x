@@ -42,6 +42,7 @@ export function CrosswordGrid({
   return (
     <div
       className={`grid grid-cols-${maxCol - minCol + 1} border-collapse gap-0 border-2 border-black`}
+      id="crossword-grid"
       style={{ fontFamily: font }}
     >
       {grid.map((row) =>

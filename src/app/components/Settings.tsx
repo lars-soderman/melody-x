@@ -103,8 +103,14 @@ export function Settings({
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <label className="text-sm text-gray-500">Font</label>
-            <FontSelector value={font} onChange={updateFont} />
+            <label className="text-sm text-gray-500" htmlFor="font-selector">
+              Font
+            </label>
+            <FontSelector
+              id="font-selector"
+              value={font}
+              onChange={updateFont}
+            />
           </div>
 
           <div className="flex items-center justify-between gap-4">

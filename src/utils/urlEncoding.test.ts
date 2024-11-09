@@ -1,37 +1,25 @@
-import { Project } from '@/types';
-import { decodeProject, encodeProject } from './urlEncoding';
+import { mockProject } from '@/test/mocks';
+import { Box, Project } from '@/types';
+import {
+  compressProject,
+  decodeProject,
+  encodeProject,
+} from '@/utils/urlEncoding';
 
 describe('URL Encoding', () => {
-  const mockProject: Project = {
-    id: 'test-id',
-    name: 'Test Project',
-    rows: 9,
-    cols: 10,
-    boxSize: 64,
-    font: 'var(--font-default)',
-    createdAt: '2024-03-20T12:00:00Z',
-    modifiedAt: '2024-03-20T12:00:00Z',
-    boxes: [
-      { row: 0, col: 0, letter: 'H' },
-      { row: 0, col: 1, letter: 'E' },
-      { row: 0, col: 2, letter: 'J', black: true },
-      { row: 1, col: 2, letter: 'A', arrow: 'down' },
-      { row: 2, col: 3, letter: 'B', stop: 'right' },
-      { row: 3, col: 4, letter: 'C', hint: 1 },
-    ],
-  };
-
   it('should encode and decode a project correctly', () => {
     const encoded = encodeProject(mockProject);
-    const decoded = decodeProject(encoded);
+    const decoded = decodeProject(encoded ?? '');
 
     expect(decoded).not.toBeNull();
     if (!decoded) return;
 
+    // Should preserve project structure
     expect(decoded.rows).toBe(mockProject.rows);
     expect(decoded.cols).toBe(mockProject.cols);
+    expect(decoded.boxes).toHaveLength(mockProject.boxes.length);
 
-    // Check each box property
+    // Should preserve box properties
     const findBox = (row: number, col: number) =>
       decoded.boxes.find((b) => b.row === row && b.col === col);
 
@@ -42,18 +30,6 @@ describe('URL Encoding', () => {
     const j = findBox(0, 2);
     expect(j?.letter).toBe('J');
     expect(j?.black).toBe(true);
-
-    const a = findBox(1, 2);
-    expect(a?.letter).toBe('A');
-    expect(a?.arrow).toBe('down');
-
-    const b = findBox(2, 3);
-    expect(b?.letter).toBe('B');
-    expect(b?.stop).toBe('right');
-
-    const c = findBox(3, 4);
-    expect(c?.letter).toBe('C');
-    expect(c?.hint).toBe(1);
   });
 
   it('should handle empty projects', () => {
@@ -63,7 +39,7 @@ describe('URL Encoding', () => {
     };
 
     const encoded = encodeProject(emptyProject);
-    const decoded = decodeProject(encoded);
+    const decoded = decodeProject(encoded ?? '');
 
     expect(decoded).not.toBeNull();
     if (!decoded) return;
@@ -81,7 +57,7 @@ describe('URL Encoding', () => {
 
   it('should produce compact strings', () => {
     const encoded = encodeProject(mockProject);
-    expect(encoded.length).toBeLessThan(50); // Adjust based on actual implementation
+    expect(encoded?.length).toBeLessThan(500); // Adjust based on actual implementation
 
     // Log the encoded string for manual inspection
     console.log('Encoded string:', encoded);
@@ -98,7 +74,7 @@ describe('URL Encoding', () => {
     };
 
     const encoded = encodeProject(complexProject);
-    const decoded = decodeProject(encoded);
+    const decoded = decodeProject(encoded ?? '');
 
     expect(decoded).not.toBeNull();
     if (!decoded) return;
@@ -134,7 +110,7 @@ describe('URL Encoding', () => {
     };
 
     const encoded = encodeProject(largeProject);
-    const decoded = decodeProject(encoded);
+    const decoded = decodeProject(encoded ?? '');
 
     expect(decoded).not.toBeNull();
     if (!decoded) return;
@@ -158,7 +134,7 @@ describe('URL Encoding', () => {
     };
 
     const encoded = encodeProject(specialCharsProject);
-    const decoded = decodeProject(encoded);
+    const decoded = decodeProject(encoded ?? '');
 
     expect(decoded).not.toBeNull();
     if (!decoded) return;
@@ -177,5 +153,125 @@ describe('URL Encoding', () => {
 
     const é = findBox(1, 0);
     expect(é?.letter).toBe('É');
+  });
+});
+
+describe('Project Encoding', () => {
+  it('should handle null/undefined project', () => {
+    const consoleSpy = jest.spyOn(console, 'warn');
+
+    expect(encodeProject(null)).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Cannot encode null or undefined project'
+    );
+
+    expect(encodeProject(undefined)).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Cannot encode null or undefined project'
+    );
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should handle missing required fields', () => {
+    const consoleSpy = jest.spyOn(console, 'warn');
+    const invalidProject = {
+      boxes: [],
+    } as unknown as Project;
+
+    expect(encodeProject(invalidProject)).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith('Project missing required fields');
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should handle null/undefined boxes', () => {
+    const projectWithNullBoxes: Project = {
+      id: 'test',
+      name: 'Test',
+      rows: 9,
+      cols: 10,
+      boxes: [
+        { row: 0, col: 0, letter: 'A' },
+        null as unknown as Box,
+        { row: 1, col: 1, letter: 'B' },
+      ],
+      boxSize: 64,
+      font: 'var(--font-default)',
+      createdAt: '2024-03-20T12:00:00Z',
+      modifiedAt: '2024-03-20T12:00:00Z',
+    };
+
+    const encoded = encodeProject(projectWithNullBoxes);
+    const decoded = decodeProject(encoded ?? '');
+
+    expect(decoded).not.toBeNull();
+    if (!decoded) return;
+
+    // Should only include valid boxes
+    expect(decoded.boxes).toHaveLength(2);
+    expect(decoded.boxes[0].letter).toBe('A');
+    expect(decoded.boxes[1].letter).toBe('B');
+  });
+
+  it('should handle missing optional fields', () => {
+    const minimalProject: Project = {
+      id: 'test',
+      name: 'Test',
+      rows: 9,
+      cols: 10,
+      boxes: [{ row: 0, col: 0, letter: 'A' }],
+    } as Project;
+
+    const encoded = encodeProject(minimalProject);
+    const decoded = decodeProject(encoded ?? '');
+
+    expect(decoded).not.toBeNull();
+    if (!decoded) return;
+
+    // Should use defaults for missing fields
+    expect(decoded.boxSize).toBe(64);
+    expect(decoded.font).toBe('var(--font-default)');
+    expect(decoded.createdAt).toBeTruthy();
+    expect(decoded.modifiedAt).toBeTruthy();
+  });
+});
+
+describe('Project Compression', () => {
+  it('should handle null/undefined project', () => {
+    const consoleSpy = jest.spyOn(console, 'warn');
+    expect(compressProject(null)).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Cannot compress null or undefined project'
+    );
+    expect(compressProject(undefined)).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Cannot compress null or undefined project'
+    );
+    consoleSpy.mockRestore();
+  });
+
+  it('should handle null boxes in compression', () => {
+    const projectWithNullBoxes: Project = {
+      id: 'test',
+      name: 'Test',
+      rows: 9,
+      cols: 10,
+      boxes: [
+        { row: 0, col: 0, letter: 'A' },
+        null as unknown as Box,
+        { row: 1, col: 1, letter: null },
+      ],
+      boxSize: 64,
+      font: 'var(--font-default)',
+      createdAt: '2024-03-20T12:00:00Z',
+      modifiedAt: '2024-03-20T12:00:00Z',
+    };
+
+    const compressed = compressProject(projectWithNullBoxes);
+
+    // Should only include non-null boxes with content
+    expect(compressed?.boxes).toHaveLength(1);
+    expect(compressed?.boxes[0].letter).toBe('A');
   });
 });

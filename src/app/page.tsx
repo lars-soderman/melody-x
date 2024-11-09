@@ -173,7 +173,7 @@ export default function Home() {
         />
         <div
           className="relative mx-auto mt-44 w-fit"
-          id="crossword-grid"
+          // id="crossword-grid"
           style={{ width: `${(maxCol - minCol + 1) * boxSize}px` }}
         >
           <h2 className="absolute -top-8 text-sm text-gray-500 dark:text-gray-400">

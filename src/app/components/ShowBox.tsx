@@ -85,12 +85,12 @@ export function ShowBox({
         </div>
       )}
       {arrow === 'right' && (
-        <div className="absolute bottom-1 left-1">
+        <div className="absolute bottom-1 left-1" data-testid="arrow-right">
           <ArrowRight className="h-4 w-4 text-black" />
         </div>
       )}
       {arrow === 'down' && (
-        <div className="absolute right-1 top-1">
+        <div className="absolute right-1 top-1" data-testid="arrow-down">
           <ArrowDown className="h-4 w-4 text-black" />
         </div>
       )}

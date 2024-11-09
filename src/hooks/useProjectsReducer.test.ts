@@ -1,9 +1,9 @@
-import { storage } from '@/app/lib/storage';
 import { createDefaultProject } from '@/constants';
 import { projectsReducer } from '@/reducers/projectsReducer';
+import { storage } from '@/utils/storage';
 
 // Mock the storage module
-jest.mock('@/app/lib/storage', () => ({
+jest.mock('@/utils/storage', () => ({
   storage: {
     deleteProject: jest.fn(),
     getLastSelectedProjectId: jest.fn(),

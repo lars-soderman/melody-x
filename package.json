@@ -9,7 +9,7 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "jest",
+    "test:unit": "clear && jest",
     "test:e2e": "clear && playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug"

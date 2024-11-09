@@ -35,7 +35,7 @@ const storageManager: StorageManager = {
 };
 
 // Add near the top with other constants
-let FORCE_STORAGE_UNAVAILABLE = true;
+let FORCE_STORAGE_UNAVAILABLE = false;
 
 // Initialize storage manager
 const initStorage = () => {

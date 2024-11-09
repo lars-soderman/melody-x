@@ -1,5 +1,5 @@
 import { DEFAULT_STATE } from '@/constants';
-import { gridReducer } from '../reducers/gridReducer';
+import { gridReducer } from '@/reducers/gridReducer';
 
 describe('gridReducer', () => {
   const initialState = {

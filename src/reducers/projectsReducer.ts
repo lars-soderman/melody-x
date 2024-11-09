@@ -1,6 +1,6 @@
-import { storage } from '@/app/lib/storage';
 import { createDefaultProject } from '@/constants';
 import { Project } from '@/types';
+import { storage } from '@/utils/storage';
 import { ProjectsAction, ProjectsState } from './types/projectActions';
 
 export const projectsReducer = (
