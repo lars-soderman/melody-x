@@ -49,7 +49,7 @@ export function ImportButton({ onImport }: ImportButtonProps) {
       />
       <button
         aria-label="Import project from JSON"
-        className="rounded p-1 text-gray-400 hover:bg-gray-100"
+        className="flex w-8 rounded p-1 text-gray-400 hover:bg-gray-100"
         title="Import project from JSON"
         type="button"
         onMouseDown={(e) => {
@@ -59,7 +59,7 @@ export function ImportButton({ onImport }: ImportButtonProps) {
         }}
       >
         <svg
-          className="h-4 w-4"
+          className="m-auto h-4 w-4"
           fill="none"
           stroke="currentColor"
           strokeWidth={2}

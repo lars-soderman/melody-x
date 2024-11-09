@@ -50,7 +50,7 @@ export function ShowBox({
         data-position={id}
         data-testid={`grid-cell-${id}`}
         tabIndex={0}
-        className={`relative w-full cursor-pointer text-center text-2xl uppercase md:text-4xl ${
+        className={`relative w-full cursor-pointer text-center text-4xl uppercase md:text-4xl ${
           black ? 'bg-black text-white' : 'bg-white'
         }`}
         onClick={onClick}

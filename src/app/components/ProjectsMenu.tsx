@@ -53,7 +53,7 @@ export function ProjectsMenu({
         console.error('Failed to import project from URL:', error);
       }
     }
-  }, []); // Run once on mount
+  }, [importProject]); // Run once on mount
 
   const handleCreateProject = async () => {
     const trimmedName = newProjectName.trim();
@@ -135,12 +135,12 @@ export function ProjectsMenu({
               <div className="flex gap-1">
                 {/* share project */}
                 <button
-                  className="rounded p-1 text-gray-400 hover:bg-gray-100"
+                  className="flex w-8 rounded p-1 text-gray-400 hover:bg-gray-100"
                   title="Share project"
                   onClick={() => handleShareProject(currentProject)}
                 >
                   <svg
-                    className="h-4 w-4"
+                    className="m-auto h-4 w-4"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={2}
@@ -162,9 +162,9 @@ export function ProjectsMenu({
                 />
                 {/* new project */}
                 <button
-                  aria-label="New project"
-                  className="rounded p-1 text-gray-400 hover:bg-gray-100"
+                  className="flex h-8 w-8 items-center justify-center rounded text-2xl text-gray-400 hover:bg-gray-100"
                   data-testid="new-project-button"
+                  title="Create new project"
                   onClick={() => setIsCreating(true)}
                 >
                   +
@@ -177,7 +177,6 @@ export function ProjectsMenu({
                 className="flex flex-col gap-2"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  // console.log('Form submitted');
                   handleCreateProject();
                 }}
               >
