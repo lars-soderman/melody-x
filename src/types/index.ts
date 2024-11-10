@@ -24,8 +24,26 @@ export interface Project {
   compressed?: boolean;
   createdAt: string;
   font: string;
+  hints?: Hint[];
   id: string;
   modifiedAt: string;
   name: string;
   rows: number;
 }
+
+export type HintDirection = 'vertical' | 'horizontal';
+
+export type Hint = {
+  boxId: string;
+  // Reference to the box where the hint starts
+  direction: HintDirection;
+  id: string;
+  length: number;
+  number: number;
+  text: string;
+};
+
+export type HintState = {
+  hints: Hint[];
+  version: number;
+};

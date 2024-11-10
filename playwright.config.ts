@@ -7,6 +7,10 @@ const config = defineConfig({
     baseURL: 'http://localhost:4000',
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
+    headless: true,
+    launchOptions: {
+      headless: true,
+    },
   },
   timeout: 5000,
   webServer: {
@@ -14,6 +18,7 @@ const config = defineConfig({
     url: 'http://localhost:4000',
     reuseExistingServer: !process.env.CI,
   },
+  outputDir: './src/test/e2e/test-results',
 });
 
 export default config;

@@ -12,7 +12,6 @@ type BoxInputProps = {
   letter: string | null;
   onArrowDown: () => void;
   onArrowRight: () => void;
-
   onBlack: () => void;
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;

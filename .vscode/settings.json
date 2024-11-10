@@ -18,5 +18,8 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "playwright.env": {
+    "PWTEST_HEADED": "0"
   }
 }

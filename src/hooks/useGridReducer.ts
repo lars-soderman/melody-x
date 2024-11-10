@@ -27,7 +27,8 @@ const getInitialState = (project: Project | null): GridState => {
 
 export function useGridReducer(
   project: Project | null,
-  onProjectChange: (updatedProject: Project) => void
+  onProjectChange: (updatedProject: Project) => void,
+  getNextHintNumber: () => number
 ) {
   const [state, dispatch] = useReducer(gridReducer, getInitialState(project));
   const prevProjectIdRef = useRef<string | null>(project?.id ?? null);
@@ -105,15 +106,22 @@ export function useGridReducer(
     };
   }, []);
 
-  function getNextHintNumber(): number {
-    const usedHints = state.boxes.map((box) => box.hint);
+  const toggleHint = useCallback(
+    (id: string) => {
+      const box = state.boxes.find((box) => getId(box) === id);
+      if (!box) return;
 
-    let nextHint = 1;
-    while (usedHints.includes(nextHint)) {
-      nextHint++;
-    }
-    return nextHint;
-  }
+      if (box.hint) {
+        // If box already has a hint, remove it
+        dispatch({ type: 'SET_HINT', id, hint: undefined });
+      } else {
+        // Use the provided hint number function
+        const nextHint = getNextHintNumber();
+        dispatch({ type: 'SET_HINT', id, hint: nextHint });
+      }
+    },
+    [state.boxes, getNextHintNumber]
+  );
 
   const updateBoxSize = useCallback((size: number) => {
     dispatch({ type: 'UPDATE_BOX_SIZE', size });
@@ -155,20 +163,12 @@ export function useGridReducer(
     dispatch({ type: 'UPDATE_STOP', id, stop });
   }, []);
 
-  const toggleHint = (id: string) => {
-    const box = state.boxes.find((box) => getId(box) === id);
-    if (box?.hint) {
-      // If box already has a hint, remove it
-      dispatch({ type: 'SET_HINT', id, hint: undefined });
-    } else {
-      // If no hint, add the next available number
-      const nextHint = getNextHintNumber();
-      dispatch({ type: 'SET_HINT', id, hint: nextHint });
-    }
-  };
-
   const updateGridSize = useCallback((rows: number, cols: number) => {
     dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
+  }, []);
+
+  const setHint = useCallback((id: string, hint: number | undefined) => {
+    dispatch({ type: 'SET_HINT', id, hint });
   }, []);
 
   return {
@@ -185,11 +185,11 @@ export function useGridReducer(
     reset,
     updateStop,
     toggleHint,
-    getNextHintNumber,
     rows: state.rows,
     cols: state.cols,
     updateGridSize,
     font: state.font,
     updateFont: (font: string) => dispatch({ type: 'UPDATE_FONT', font }),
+    setHint,
   };
 }

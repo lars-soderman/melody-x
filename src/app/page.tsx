@@ -1,19 +1,22 @@
 'use client';
 
-import { Box } from '@types';
+import { useHintReducer } from '@/hooks/useHintReducer';
+import { Box, Hint } from '@types';
 import {
+  getId,
   getMaxCol,
   getMaxRow,
   getMinCol,
   getMinRow,
   toGrid,
 } from '@utils/grid';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGridNavigation } from '../hooks/useGridNavigation';
 import { useGridReducer } from '../hooks/useGridReducer';
 import { useProjectsReducer } from '../hooks/useProjectsReducer';
 import { AddGridButtons } from './components/AddGridButtons';
 import { CrosswordGrid } from './components/CrosswordGrid';
+import { HintNotepad } from './components/HintNotepad';
 import { ProjectsMenu } from './components/ProjectsMenu';
 import { RemoveButtons } from './components/RemoveButtons';
 import { Settings } from './components/Settings';
@@ -39,6 +42,26 @@ export default function Home() {
     init();
   }, [loadProjects]);
 
+  const [_, setIsConfirmingReset] = useState(false);
+  const [confirmingRemove, setConfirmingRemove] = useState<{
+    index: number;
+    type: 'row' | 'column';
+  } | null>(null);
+
+  const updateHints = useCallback(
+    (hints: Hint[]) => {
+      if (!currentProject) return;
+      updateProject({
+        ...currentProject,
+        hints,
+      });
+    },
+    [currentProject, updateProject]
+  );
+
+  const { hints, addHint, updateHintText, removeHint, getNextAvailableNumber } =
+    useHintReducer(currentProject?.hints ?? [], updateHints);
+
   const {
     boxes,
     boxSize,
@@ -57,24 +80,24 @@ export default function Home() {
     reset,
     font,
     updateStop,
-    toggleHint,
+    setHint,
     updateFont,
-  } = useGridReducer(currentProject ?? null, updateProject);
+  } = useGridReducer(
+    currentProject ?? null,
+    updateProject,
+    getNextAvailableNumber
+  );
 
   const {
     editingBox,
     setEditingBox,
     handleKeyboardNavigation,
     handleCharacterInput,
-    currentDirection,
   } = useGridNavigation(boxes);
 
-  const [_, setIsConfirmingReset] = useState(false);
-  const [confirmingRemove, setConfirmingRemove] = useState<{
-    index: number;
-    type: 'row' | 'column';
-  } | null>(null);
-  const [lastTwoInputs, setLastTwoInputs] = useState<Box[]>([]);
+  const activeHint = editingBox?.hint
+    ? hints.find((h) => h.boxId === getId(editingBox))
+    : null;
 
   if (isLoading || !currentProject || !boxes) {
     return (
@@ -136,6 +159,41 @@ export default function Home() {
     setConfirmingRemove(null);
   };
 
+  const onToggleHint = (boxId: string) => {
+    const box = boxes.find((b) => getId(b) === boxId);
+    if (!box) return;
+    console.log('box', box);
+    const hint = hints.find((h) => h.boxId === boxId);
+    // if (!hint) return;
+
+    if (box.hint) {
+      console.log('if', box.hint);
+      // If box already has a hint, remove it from both reducers
+      setHint(boxId, undefined);
+      removeHint(hint?.id ?? '');
+    } else {
+      console.log('else', hint);
+      // Get direction based on arrows or default to horizontal
+      const direction = box.arrow === 'down' ? 'vertical' : 'horizontal';
+
+      // Calculate word length based on direction
+      const length =
+        direction === 'vertical'
+          ? boxes.filter(
+              (b) => b.col === box.col && b.row >= box.row && !b.black
+            ).length
+          : boxes.filter(
+              (b) => b.row === box.row && b.col >= box.col && !b.black
+            ).length;
+
+      // Add hint first to get the number
+      const hintNumber = addHint(boxId, direction, length);
+
+      // Then update the grid with the hint number
+      setHint(boxId, hintNumber);
+    }
+  };
+
   return (
     <div className="relative min-h-screen">
       <ProjectsMenu
@@ -169,7 +227,6 @@ export default function Home() {
         />
         <div
           className="relative mx-auto mt-44 w-fit"
-          // id="crossword-grid"
           style={{ width: `${(maxCol - minCol + 1) * boxSize}px` }}
         >
           <h2 className="absolute -top-8 text-sm text-gray-500 dark:text-gray-400">
@@ -188,7 +245,7 @@ export default function Home() {
             maxRow={maxRow}
             minCol={minCol}
             minRow={minRow}
-            toggleHint={toggleHint}
+            toggleHint={onToggleHint}
             onLetterChange={handleLetterChange}
             onNavigate={handleBoxNavigation}
             onSetEditingBox={setEditingBox}
@@ -210,6 +267,14 @@ export default function Home() {
           />
         </div>
       </main>
+
+      {activeHint && (
+        <HintNotepad
+          hint={activeHint}
+          onRemove={removeHint}
+          onTextChange={updateHintText}
+        />
+      )}
 
       <a
         aria-label="View source on GitHub"
