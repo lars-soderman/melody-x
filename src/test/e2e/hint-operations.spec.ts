@@ -11,7 +11,7 @@ test.describe('Hint Operations', () => {
     // Create a new project
     await page.goto('/');
     await page.getByRole('button', { name: 'Projects' }).click();
-    await page.getByRole('button', { name: '+' }).click();
+    await page.getByRole('button', { name: 'Create new project' }).click();
     await page.getByPlaceholder('Project name').fill('Test Project');
     await page.getByPlaceholder('Project name').press('Enter');
   });

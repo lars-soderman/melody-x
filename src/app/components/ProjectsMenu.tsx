@@ -79,8 +79,6 @@ export function ProjectsMenu({
   };
 
   const handleShareProject = (project: Project) => {
-    console.log('project', project.boxes.length);
-
     const compressedProject = compressProject(project);
     const encodedProject = encodeProject(compressedProject);
     // const decodedProject = decodeProject(encodedProject ?? '');
@@ -162,6 +160,7 @@ export function ProjectsMenu({
                 />
                 {/* new project */}
                 <button
+                  aria-label="Create new project"
                   className="flex h-8 w-8 items-center justify-center rounded text-2xl text-gray-400 hover:bg-gray-100"
                   data-testid="new-project-button"
                   title="Create new project"
@@ -187,13 +186,10 @@ export function ProjectsMenu({
                   type="text"
                   value={newProjectName}
                   onChange={(e) => {
-                    // console.log('Input changed:', e.target.value);
                     setNewProjectName(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    // console.log('Key pressed:', e.key);
                     if (e.key === 'Enter') {
-                      console.log('Enter key detected');
                     }
                   }}
                 />

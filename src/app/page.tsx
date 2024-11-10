@@ -162,17 +162,14 @@ export default function Home() {
   const onToggleHint = (boxId: string) => {
     const box = boxes.find((b) => getId(b) === boxId);
     if (!box) return;
-    console.log('box', box);
     const hint = hints.find((h) => h.boxId === boxId);
     // if (!hint) return;
 
     if (box.hint) {
-      console.log('if', box.hint);
       // If box already has a hint, remove it from both reducers
       setHint(boxId, undefined);
       removeHint(hint?.id ?? '');
     } else {
-      console.log('else', hint);
       // Get direction based on arrows or default to horizontal
       const direction = box.arrow === 'down' ? 'vertical' : 'horizontal';
 

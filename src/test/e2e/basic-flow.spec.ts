@@ -4,9 +4,7 @@ test.describe('Project Management', () => {
   test('can open projects menu', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Projects' }).click();
-    await expect(
-      page.getByRole('button', { name: 'New project' })
-    ).toBeVisible();
+    await expect(page.getByTestId('new-project-button')).toBeVisible();
   });
 
   test('can create new project', async ({ page }) => {
@@ -18,7 +16,7 @@ test.describe('Project Management', () => {
 
     await page.goto('/');
     await page.getByRole('button', { name: 'Projects' }).click();
-    await page.getByRole('button', { name: 'New project' }).click();
+    await page.getByTestId('new-project-button').click();
 
     const input = page.getByPlaceholder('Project name');
     await expect(input).toBeVisible();
