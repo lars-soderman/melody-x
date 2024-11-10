@@ -18,7 +18,8 @@ export function ShowBox({
   onClick,
   onNavigate,
   black,
-  arrow,
+  arrowRight,
+  arrowDown,
   stop,
   hint,
 }: ShowBoxProps) {
@@ -84,12 +85,12 @@ export function ShowBox({
           <span className="text-xs">{hint}</span>
         </div>
       )}
-      {arrow === 'right' && (
+      {arrowRight && (
         <div className="absolute bottom-1 left-1" data-testid="arrow-right">
           <ArrowRight className="h-4 w-4 text-black" />
         </div>
       )}
-      {arrow === 'down' && (
+      {arrowDown && (
         <div className="absolute right-1 top-1" data-testid="arrow-down">
           <ArrowDown className="h-4 w-4 text-black" />
         </div>

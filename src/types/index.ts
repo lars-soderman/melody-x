@@ -1,5 +1,6 @@
 export type Box = {
-  arrow?: 'down' | 'right';
+  arrowDown?: boolean;
+  arrowRight?: boolean;
   black?: boolean;
   col: number;
   hint?: number;

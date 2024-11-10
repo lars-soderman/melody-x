@@ -113,4 +113,34 @@ test.describe('Project Sharing', () => {
     await expect(page.getByTestId('grid-cell-0-0')).toBeVisible();
     await expect(page.getByTestId('grid-cell-0-0')).toHaveText('');
   });
+
+  test('can share project with both arrows', async ({ page, context }) => {
+    // Add right arrow
+    await page.getByTestId('grid-cell-2-0').click();
+    await page.getByRole('button', { name: 'Show options' }).click();
+    await page.getByRole('button', { name: 'Add right arrow' }).click();
+    await expect(page.getByTestId('arrow-right')).toBeVisible();
+
+    // Add down arrow to same cell
+    await page.getByTestId('grid-cell-2-0').click();
+    await page.getByRole('button', { name: 'Show options' }).click();
+    await page.getByRole('button', { name: 'Add down arrow' }).click();
+    await expect(page.getByTestId('arrow-down')).toBeVisible();
+
+    await page.waitForTimeout(100);
+
+    // Share and verify URL
+    await page.getByTestId('projects-menu-button').click();
+    await page.getByRole('button', { name: 'Share' }).click();
+    const shareUrl = await page.evaluate(() => navigator.clipboard.readText());
+
+    // Open new page and verify content
+    const newPage = await context.newPage();
+    await newPage.goto(shareUrl);
+    await newPage.getByTestId('grid-cell-2-0').waitFor();
+    await newPage.waitForTimeout(100);
+
+    await expect(newPage.getByTestId('arrow-right')).toBeVisible();
+    await expect(newPage.getByTestId('arrow-down')).toBeVisible();
+  });
 });

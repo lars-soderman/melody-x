@@ -42,7 +42,7 @@ export default function Home() {
     init();
   }, [loadProjects]);
 
-  const [_, setIsConfirmingReset] = useState(false);
+  const [isConfirmingReset, setIsConfirmingReset] = useState(false);
   const [confirmingRemove, setConfirmingRemove] = useState<{
     index: number;
     type: 'row' | 'column';
@@ -67,7 +67,6 @@ export default function Home() {
     boxSize,
     rows,
     cols,
-    // font,
     updateBoxSize,
     updateGridSize,
     addRow,
@@ -171,7 +170,7 @@ export default function Home() {
       removeHint(hint?.id ?? '');
     } else {
       // Get direction based on arrows or default to horizontal
-      const direction = box.arrow === 'down' ? 'vertical' : 'horizontal';
+      const direction = 'vertical';
 
       // Calculate word length based on direction
       const length =

@@ -11,7 +11,14 @@ type OptionsButtonProps = {
   toggleHint: () => void;
 };
 
-export function OptionsButton(props: OptionsButtonProps) {
+export function OptionsButton({
+  onArrowDown,
+  onArrowRight,
+  onBlack,
+  onStopBottom,
+  onStopRight,
+  toggleHint,
+}: OptionsButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -26,27 +33,14 @@ export function OptionsButton(props: OptionsButtonProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute inset-0 z-10">
-          {/* Arrow Down option */}
-          <button
-            aria-label="Add down arrow"
-            className="absolute right-0 top-[20%] cursor-pointer p-1"
-            title="Add down arrow"
-            onClick={() => {
-              props.onArrowDown();
-              setIsOpen(false);
-            }}
-          >
-            <ArrowDown className="h-3 w-3 text-gray-400 hover:text-gray-600" />
-          </button>
-
+        <div className="absolute inset-0 z-20">
           {/* Stop Right option */}
           <button
             aria-label="Toggle right stop"
             className="absolute right-0 top-1/2 h-6 w-1 -translate-y-1/2 cursor-pointer bg-gray-400 hover:bg-gray-600"
             title="Toggle right stop"
             onClick={() => {
-              props.onStopRight();
+              onStopRight();
               setIsOpen(false);
             }}
           />
@@ -56,7 +50,7 @@ export function OptionsButton(props: OptionsButtonProps) {
             className="absolute bottom-0 right-0 h-3 w-3 cursor-pointer rounded-sm bg-gray-400 hover:bg-gray-600"
             title="Toggle black square"
             onClick={() => {
-              props.onBlack();
+              onBlack();
               setIsOpen(false);
             }}
           />
@@ -67,7 +61,7 @@ export function OptionsButton(props: OptionsButtonProps) {
             className="absolute bottom-0 left-1/2 h-1 w-6 -translate-x-1/2 cursor-pointer bg-gray-400 hover:bg-gray-600"
             title="Toggle bottom stop"
             onClick={() => {
-              props.onStopBottom();
+              onStopBottom();
               setIsOpen(false);
             }}
           />
@@ -77,11 +71,24 @@ export function OptionsButton(props: OptionsButtonProps) {
             className="absolute bottom-0 left-0 cursor-pointer p-1"
             title="Add right arrow"
             onClick={() => {
-              props.onArrowRight();
+              onArrowRight();
               setIsOpen(false);
             }}
           >
             <ArrowRight className="h-3 w-3 text-gray-400 hover:text-gray-600" />
+          </button>
+
+          {/* Arrow Down option */}
+          <button
+            aria-label="Add down arrow"
+            className="absolute bottom-0 left-8 cursor-pointer p-1"
+            title="Add down arrow"
+            onClick={() => {
+              onArrowDown();
+              setIsOpen(false);
+            }}
+          >
+            <ArrowDown className="h-3 w-3 text-gray-400 hover:text-gray-600" />
           </button>
 
           {/* Add hint option */}
@@ -90,7 +97,7 @@ export function OptionsButton(props: OptionsButtonProps) {
             className="absolute left-1 top-1 h-3 w-3 rounded-full border-2 border-gray-400 hover:border-gray-600"
             title="Add hint number"
             onClick={() => {
-              props.toggleHint();
+              toggleHint();
               setIsOpen(false);
             }}
           ></button>

@@ -29,6 +29,7 @@ export const GridCell = memo(function GridCell({
   boxSize,
   toggleHint,
 }: GridCellProps) {
+  console.log(box);
   return (
     <div
       className="relative flex"
@@ -59,7 +60,8 @@ export const GridCell = memo(function GridCell({
         />
       ) : (
         <ShowBox
-          arrow={box.arrow}
+          arrowDown={box.arrowDown}
+          arrowRight={box.arrowRight}
           black={box.black}
           boxSize={boxSize}
           col={box.col}

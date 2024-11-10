@@ -2,11 +2,11 @@ import { Box, Project } from '@/types';
 
 // Special characters for encoding
 const SPECIAL_CHARS = {
-  BLACK: '.',
-  ARROW_DOWN: 'v',
+  BLACK: '!',
   ARROW_RIGHT: '>',
+  ARROW_DOWN: 'v',
+  STOP_RIGHT: ']',
   STOP_BOTTOM: '_',
-  STOP_RIGHT: '|',
   HINT: '#',
   SEPARATOR: '§',
   META_SEPARATOR: '~',
@@ -57,15 +57,18 @@ export function encodeProject(
     // Safely handle boxes array
     const boxes = (project.boxes ?? [])
       .filter((b): b is NonNullable<Box> => b != null)
-      .filter((b) => b.letter || b.black || b.arrow || b.stop || b.hint)
+      .filter(
+        (b) =>
+          b.letter || b.black || b.arrowDown || b.arrowRight || b.stop || b.hint
+      )
       .map((b) => {
         const pos = `${b.col.toString(36)}${b.row.toString(36)}`;
         const mods = [
           b.black ? SPECIAL_CHARS.BLACK : '',
-          b.arrow === 'down' ? SPECIAL_CHARS.ARROW_DOWN : '',
-          b.arrow === 'right' ? SPECIAL_CHARS.ARROW_RIGHT : '',
-          b.stop === 'bottom' ? SPECIAL_CHARS.STOP_BOTTOM : '',
+          b.arrowRight ? SPECIAL_CHARS.ARROW_RIGHT : '',
+          b.arrowDown ? SPECIAL_CHARS.ARROW_DOWN : '',
           b.stop === 'right' ? SPECIAL_CHARS.STOP_RIGHT : '',
+          b.stop === 'bottom' ? SPECIAL_CHARS.STOP_BOTTOM : '',
           b.hint ? SPECIAL_CHARS.HINT + b.hint.toString(36) : '',
         ].join('');
 
@@ -176,17 +179,17 @@ export function decodeProject(encoded: string): Project | null {
           case SPECIAL_CHARS.BLACK:
             box.black = true;
             break;
-          case SPECIAL_CHARS.ARROW_DOWN:
-            box.arrow = 'down';
-            break;
           case SPECIAL_CHARS.ARROW_RIGHT:
-            box.arrow = 'right';
+            box.arrowRight = true;
             break;
-          case SPECIAL_CHARS.STOP_BOTTOM:
-            box.stop = 'bottom';
+          case SPECIAL_CHARS.ARROW_DOWN:
+            box.arrowDown = true;
             break;
           case SPECIAL_CHARS.STOP_RIGHT:
             box.stop = 'right';
+            break;
+          case SPECIAL_CHARS.STOP_BOTTOM:
+            box.stop = 'bottom';
             break;
           case SPECIAL_CHARS.HINT:
             i++;
@@ -246,7 +249,7 @@ export function compressProject(
   const strippedBoxes = (project.boxes ?? [])
     .filter((box): box is NonNullable<Box> => box != null)
     .filter(
-      (box) => box.letter || box.black || box.hint || box.arrow || box.stop
+      (box) => box.letter || box.black || box.hint || box.arrowDown || box.stop
     );
 
   return {

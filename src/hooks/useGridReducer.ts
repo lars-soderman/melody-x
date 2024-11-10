@@ -131,7 +131,7 @@ export function useGridReducer(
     dispatch({ type: 'UPDATE_LETTER', id, letter });
   }, []);
 
-  const updateArrow = useCallback((id: string, arrow: Box['arrow']) => {
+  const updateArrow = useCallback((id: string, arrow: 'down' | 'right') => {
     dispatch({ type: 'UPDATE_ARROW', id, arrow });
   }, []);
 

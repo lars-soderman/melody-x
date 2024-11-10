@@ -67,8 +67,8 @@ describe('URL Encoding', () => {
     const complexProject: Project = {
       ...mockProject,
       boxes: [
-        { row: 0, col: 0, letter: 'A', black: true, arrow: 'down', hint: 1 },
-        { row: 1, col: 1, letter: 'B', arrow: 'right', stop: 'bottom' },
+        { row: 0, col: 0, letter: 'A', black: true, arrowDown: true, hint: 1 },
+        { row: 1, col: 1, letter: 'B', arrowRight: true, stop: 'bottom' },
         { row: 2, col: 2, letter: 'C', stop: 'right', hint: 2 },
       ],
     };
@@ -85,12 +85,12 @@ describe('URL Encoding', () => {
     const a = findBox(0, 0);
     expect(a?.letter).toBe('A');
     expect(a?.black).toBe(true);
-    expect(a?.arrow).toBe('down');
+    expect(a?.arrowDown).toBe(true);
     expect(a?.hint).toBe(1);
 
     const b = findBox(1, 1);
     expect(b?.letter).toBe('B');
-    expect(b?.arrow).toBe('right');
+    expect(b?.arrowRight).toBe(true);
     expect(b?.stop).toBe('bottom');
 
     const c = findBox(2, 2);
