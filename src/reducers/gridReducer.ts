@@ -19,19 +19,24 @@ export function gridReducer(state: GridState, action: GridAction): GridState {
         };
         break;
 
-      case 'UPDATE_ARROW':
-        const box = state.boxes.find((b) => getId(b) === action.id);
-        if (!box) {
-          throw new Error(`Box not found: ${action.id}`);
-        }
-        const arrowUpdate =
-          action.arrow === 'down'
-            ? { arrowDown: !box.arrowDown }
-            : { arrowRight: !box.arrowRight };
+      case 'UPDATE_ARROW_DOWN':
         newState = {
           ...state,
           boxes: state.boxes.map((box) =>
-            getId(box) === action.id ? { ...box, ...arrowUpdate } : box
+            getId(box) === action.id
+              ? { ...box, arrowDown: !box.arrowDown }
+              : box
+          ),
+        };
+        break;
+
+      case 'UPDATE_ARROW_RIGHT':
+        newState = {
+          ...state,
+          boxes: state.boxes.map((box) =>
+            getId(box) === action.id
+              ? { ...box, arrowRight: !box.arrowRight }
+              : box
           ),
         };
         break;

@@ -1,3 +1,4 @@
+import { AuthProvider } from '@/contexts/AuthContext';
 import type { Metadata } from 'next';
 import { Creepster } from 'next/font/google';
 import localFont from 'next/font/local';
@@ -30,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistMono.variable} ${creepster.variable} absolute inset-0 antialiased`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

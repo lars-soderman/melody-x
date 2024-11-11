@@ -35,7 +35,7 @@ describe('Project Compression', () => {
     expect(blackBox?.black).toBe(true);
 
     const arrowBox = decompressed.boxes.find((b) => b.row === 1 && b.col === 2);
-    expect(arrowBox?.arrow).toBe('down');
+    expect(arrowBox?.arrowDown).toBe(true);
   });
 
   it('should handle empty projects', () => {

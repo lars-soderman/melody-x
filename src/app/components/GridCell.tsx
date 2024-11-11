@@ -11,7 +11,8 @@ type GridCellProps = {
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
-  onUpdateArrow: (id: string, direction: 'down' | 'right') => void;
+  onUpdateArrowDown: (id: string) => void;
+  onUpdateArrowRight: (id: string) => void;
   onUpdateBlack: (id: string, isBlack: boolean) => void;
   onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
   toggleHint: (id: string) => void;
@@ -21,7 +22,8 @@ export const GridCell = memo(function GridCell({
   box,
   editingBox,
   onLetterChange,
-  onUpdateArrow,
+  onUpdateArrowDown,
+  onUpdateArrowRight,
   onUpdateBlack,
   onNavigate,
   onSetEditingBox,
@@ -29,7 +31,6 @@ export const GridCell = memo(function GridCell({
   boxSize,
   toggleHint,
 }: GridCellProps) {
-  console.log(box);
   return (
     <div
       className="relative flex"
@@ -50,8 +51,8 @@ export const GridCell = memo(function GridCell({
           isSelected={editingBox === box}
           letter={box.letter}
           toggleHint={toggleHint}
-          onArrowDown={() => onUpdateArrow(getId(box), 'down')}
-          onArrowRight={() => onUpdateArrow(getId(box), 'right')}
+          onArrowDown={() => onUpdateArrowDown(getId(box))}
+          onArrowRight={() => onUpdateArrowRight(getId(box))}
           onBlack={() => onUpdateBlack(getId(box), !box.black)}
           onLetterChange={onLetterChange}
           onNavigate={(direction) => onNavigate(box, direction)}

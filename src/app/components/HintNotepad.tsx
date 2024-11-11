@@ -39,7 +39,7 @@ export function HintNotepad({
       </div>
       <textarea
         className="w-full bg-transparent p-2 text-gray-700 focus:outline-none"
-        placeholder="Enter your hint here..."
+        placeholder="Enter your notes here..."
         rows={4}
         value={hint.text}
         style={{

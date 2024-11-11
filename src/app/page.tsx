@@ -72,7 +72,8 @@ export default function Home() {
     addRow,
     addColumn,
     updateLetter,
-    updateArrow,
+    updateArrowDown,
+    updateArrowRight,
     updateBlack,
     removeRow,
     removeColumn,
@@ -249,7 +250,8 @@ export default function Home() {
             onLetterChange={handleLetterChange}
             onNavigate={handleBoxNavigation}
             onSetEditingBox={setEditingBox}
-            onUpdateArrow={updateArrow}
+            onUpdateArrowDown={updateArrowDown}
+            onUpdateArrowRight={updateArrowRight}
             onUpdateBlack={updateBlack}
             onUpdateStop={updateStop}
           />

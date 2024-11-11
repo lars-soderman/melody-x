@@ -2,7 +2,8 @@ import { Box, GridState } from '@/types';
 
 export type GridAction =
   | { id: string; letter: string; type: 'UPDATE_LETTER' }
-  | { arrow: Box['arrow']; id: string; type: 'UPDATE_ARROW' }
+  | { arrowDown: Box['arrowDown']; id: string; type: 'UPDATE_ARROW_DOWN' }
+  | { arrowRight: Box['arrowRight']; id: string; type: 'UPDATE_ARROW_RIGHT' }
   | { black: boolean; id: string; type: 'UPDATE_BLACK' }
   | { rowIndex: number; type: 'REMOVE_ROW' }
   | { colIndex: number; type: 'REMOVE_COLUMN' }

@@ -131,9 +131,27 @@ export function useGridReducer(
     dispatch({ type: 'UPDATE_LETTER', id, letter });
   }, []);
 
-  const updateArrow = useCallback((id: string, arrow: 'down' | 'right') => {
-    dispatch({ type: 'UPDATE_ARROW', id, arrow });
-  }, []);
+  const updateArrowDown = useCallback(
+    (id: string) => {
+      dispatch({
+        type: 'UPDATE_ARROW_DOWN',
+        id,
+        arrowDown: !state.boxes.find((box) => getId(box) === id)?.arrowDown,
+      });
+    },
+    [state.boxes]
+  );
+
+  const updateArrowRight = useCallback(
+    (id: string) => {
+      dispatch({
+        type: 'UPDATE_ARROW_RIGHT',
+        id,
+        arrowRight: !state.boxes.find((box) => getId(box) === id)?.arrowRight,
+      });
+    },
+    [state.boxes]
+  );
 
   const updateBlack = useCallback((id: string, black: boolean) => {
     dispatch({ type: 'UPDATE_BLACK', id, black });
@@ -171,12 +189,15 @@ export function useGridReducer(
     dispatch({ type: 'SET_HINT', id, hint });
   }, []);
 
+  const updateFont = (font: string) => dispatch({ type: 'UPDATE_FONT', font });
+
   return {
     boxes: state.boxes,
     boxSize: state.boxSize,
     updateBoxSize,
     updateLetter,
-    updateArrow,
+    updateArrowDown,
+    updateArrowRight,
     updateBlack,
     removeRow,
     removeColumn,
@@ -189,7 +210,7 @@ export function useGridReducer(
     cols: state.cols,
     updateGridSize,
     font: state.font,
-    updateFont: (font: string) => dispatch({ type: 'UPDATE_FONT', font }),
+    updateFont,
     setHint,
   };
 }
