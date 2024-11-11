@@ -2,7 +2,13 @@ import { Box, Project } from '@/types';
 
 export function compressProject(project: Project): Project {
   const strippedBoxes = project.boxes.filter(
-    (box) => box.letter || box.black || box.hint || box.arrow || box.stop
+    (box) =>
+      box.letter ||
+      box.black ||
+      box.hint ||
+      box.arrowDown ||
+      box.arrowRight ||
+      box.stop
   );
 
   return {
