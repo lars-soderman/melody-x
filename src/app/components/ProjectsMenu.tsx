@@ -3,6 +3,7 @@ import { Project } from '@/types';
 import { compressProject, decompressProject } from '@/utils/compression';
 import { decodeProject, encodeProject } from '@/utils/urlEncoding';
 import { useEffect, useState } from 'react';
+import { AuthButton } from './AuthButton';
 import { ImportButton } from './ImportButton';
 import { Popover } from './Popover';
 
@@ -321,6 +322,10 @@ export function ProjectsMenu({
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-8 flex items-center gap-4">
+            {/* logout button */}
+            <AuthButton />
           </div>
         </Popover>
       </div>
