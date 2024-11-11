@@ -34,6 +34,19 @@ export function OptionsButton({
 
       {isOpen && (
         <div className="absolute inset-0 z-20">
+          {/* Arrow Down option */}
+          <button
+            aria-label="Add down arrow"
+            className="absolute right-0 top-3 cursor-pointer p-1"
+            title="Add down arrow"
+            onClick={() => {
+              onArrowDown();
+              setIsOpen(false);
+            }}
+          >
+            <ArrowDown className="h-3 w-3 text-gray-400 hover:text-gray-600" />
+          </button>
+
           {/* Stop Right option */}
           <button
             aria-label="Toggle right stop"
@@ -76,19 +89,6 @@ export function OptionsButton({
             }}
           >
             <ArrowRight className="h-3 w-3 text-gray-400 hover:text-gray-600" />
-          </button>
-
-          {/* Arrow Down option */}
-          <button
-            aria-label="Add down arrow"
-            className="absolute bottom-0 left-8 cursor-pointer p-1"
-            title="Add down arrow"
-            onClick={() => {
-              onArrowDown();
-              setIsOpen(false);
-            }}
-          >
-            <ArrowDown className="h-3 w-3 text-gray-400 hover:text-gray-600" />
           </button>
 
           {/* Add hint option */}

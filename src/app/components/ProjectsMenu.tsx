@@ -1,3 +1,4 @@
+import { Toast } from '@/components/Toast';
 import { Project } from '@/types';
 import { compressProject, decompressProject } from '@/utils/compression';
 import { decodeProject, encodeProject } from '@/utils/urlEncoding';
@@ -33,6 +34,7 @@ export function ProjectsMenu({
     null
   );
   const [isCreatingInProgress, setIsCreatingInProgress] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -81,13 +83,12 @@ export function ProjectsMenu({
   const handleShareProject = (project: Project) => {
     const compressedProject = compressProject(project);
     const encodedProject = encodeProject(compressedProject);
-    // const decodedProject = decodeProject(encodedProject ?? '');
-    // const decompressedProject = decompressProject(decodedProject!);
 
     // Create share URL
     const url = new URL(window.location.href);
     url.searchParams.set('project', encodedProject ?? '');
     navigator.clipboard.writeText(url.toString());
+    setShowToast(true);
   };
 
   return (
@@ -102,7 +103,7 @@ export function ProjectsMenu({
               className="flex h-10 w-10 items-center justify-center rounded-full text-2xl text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
               data-testid="projects-menu-button"
               title="Projects"
-              onClick={() => setIsOpen(true)}
+              onClick={() => setIsOpen(!isOpen)}
             >
               <svg
                 className="h-6 w-6"
@@ -131,27 +132,37 @@ export function ProjectsMenu({
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-gray-700">Projects</h2>
               <div className="flex gap-1">
-                {/* share project */}
+                {/* Copy link to project */}
                 <button
                   className="flex w-8 rounded p-1 text-gray-400 hover:bg-gray-100"
-                  title="Share project"
+                  title="Copy link to project"
                   onClick={() => handleShareProject(currentProject)}
                 >
-                  <svg
-                    className="m-auto h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  {showToast ? (
+                    <span>✓</span>
+                  ) : (
+                    <svg
+                      className="m-auto h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
                 </button>
+                {showToast && (
+                  <Toast
+                    message="Link copied to clipboard!"
+                    onClose={() => setShowToast(false)}
+                  />
+                )}
                 {/* import project */}
                 <ImportButton
                   onImport={(project) => {

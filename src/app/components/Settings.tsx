@@ -26,6 +26,8 @@ interface SettingsProps {
   onReset: () => void;
   project: Project;
   rows: number;
+  showGridResize: boolean;
+  toggleGridResize: () => void;
   updateFont: (font: string) => void;
 }
 
@@ -40,6 +42,8 @@ export function Settings({
   project,
   rows,
   updateFont,
+  showGridResize,
+  toggleGridResize,
 }: SettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
@@ -116,6 +120,22 @@ export function Settings({
           <div className="flex items-center justify-between gap-4">
             <label className="text-sm text-gray-500">Box Size</label>
             <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label
+              className="text-sm text-gray-500"
+              htmlFor="grid-resize-toggle"
+            >
+              Show grid resize controls
+            </label>
+            <input
+              checked={showGridResize}
+              className="h-4 w-4 rounded border-gray-300"
+              id="grid-resize-toggle"
+              type="checkbox"
+              onChange={toggleGridResize}
+            />
           </div>
 
           <div className="flex items-center justify-between">

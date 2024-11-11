@@ -25,7 +25,7 @@ test.describe('Project Sharing', () => {
 
     // Share and verify URL
     await page.getByTestId('projects-menu-button').click();
-    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: 'Copy link to project' }).click();
     const shareUrl = await page.evaluate(() => navigator.clipboard.readText());
     expect(shareUrl).toContain('project=');
 
@@ -50,7 +50,7 @@ test.describe('Project Sharing', () => {
 
     // Share and verify URL
     await page.getByTestId('projects-menu-button').click();
-    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: 'Copy link to project' }).click();
     const shareUrl = await page.evaluate(() => navigator.clipboard.readText());
 
     // Open new page and verify content
@@ -73,7 +73,7 @@ test.describe('Project Sharing', () => {
 
     // Share and verify URL
     await page.getByTestId('projects-menu-button').click();
-    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: 'Copy link to project' }).click();
     const shareUrl = await page.evaluate(() => navigator.clipboard.readText());
 
     // Open new page and verify content
@@ -96,7 +96,7 @@ test.describe('Project Sharing', () => {
 
     // Share and verify URL
     await page.getByTestId('projects-menu-button').click();
-    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: 'Copy link to project' }).click();
     const shareUrl = await page.evaluate(() => navigator.clipboard.readText());
 
     // Open new page and verify content
@@ -131,7 +131,7 @@ test.describe('Project Sharing', () => {
 
     // Share and verify URL
     await page.getByTestId('projects-menu-button').click();
-    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: 'Copy link to project' }).click();
     const shareUrl = await page.evaluate(() => navigator.clipboard.readText());
 
     // Open new page and verify content
@@ -143,4 +143,27 @@ test.describe('Project Sharing', () => {
     await expect(newPage.getByTestId('arrow-right')).toBeVisible();
     await expect(newPage.getByTestId('arrow-down')).toBeVisible();
   });
+
+  // test('shows confirmation when project link is copied', async ({ page }) => {
+  //   // Add some content
+  //   await page.getByTestId('grid-cell-0-0').click();
+  //   await page.keyboard.type('TEST');
+  //   await page.waitForTimeout(100);
+
+  //   // Share
+  //   await page.getByTestId('projects-menu-button').click();
+  //   await page.getByRole('button', { name: 'Copy link to project' }).click();
+
+  //   // First verify toast appears
+  //   const toast = page.getByText('Link copied to clipboard!');
+  //   await expect(toast).toBeVisible();
+
+  //   // Wait for toast to be removed from DOM
+  //   await expect(async () => {
+  //     const isVisible = await toast.isVisible().catch(() => false);
+  //     expect(isVisible).toBe(false);
+  //   }).toPass({
+  //     timeout: 4500,
+  //   });
+  // });
 });

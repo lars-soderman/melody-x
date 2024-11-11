@@ -98,6 +98,8 @@ export default function Home() {
     ? hints.find((h) => h.boxId === getId(editingBox))
     : null;
 
+  const [showGridResize, setShowGridResize] = useState(false);
+
   if (isLoading || !currentProject || !boxes) {
     return (
       <main className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black">
@@ -201,26 +203,28 @@ export default function Home() {
         updateProject={updateProject}
         onSelectProject={setCurrentProjectId}
       />
+      <Settings
+        boxSize={boxSize}
+        cols={cols}
+        font={font}
+        project={currentProject}
+        rows={rows}
+        showGridResize={showGridResize}
+        toggleGridResize={() => setShowGridResize(!showGridResize)}
+        updateFont={updateFont}
+        exportProps={{
+          boxes,
+          minRow,
+          maxRow,
+          minCol,
+          maxCol,
+        }}
+        onBoxSizeChange={updateBoxSize}
+        onGridSizeChange={updateGridSize}
+        onReset={reset}
+      />
 
       <main className="h-full overflow-scroll pb-16" onClick={handleMainClick}>
-        <Settings
-          boxSize={boxSize}
-          cols={cols}
-          font={font}
-          project={currentProject}
-          rows={rows}
-          updateFont={updateFont}
-          exportProps={{
-            boxes,
-            minRow,
-            maxRow,
-            minCol,
-            maxCol,
-          }}
-          onBoxSizeChange={updateBoxSize}
-          onGridSizeChange={updateGridSize}
-          onReset={reset}
-        />
         <div
           className="relative mx-auto mt-44 w-fit"
           style={{ width: `${(maxCol - minCol + 1) * boxSize}px` }}
@@ -249,18 +253,22 @@ export default function Home() {
             onUpdateBlack={updateBlack}
             onUpdateStop={updateStop}
           />
-          <AddGridButtons onAddColumn={addColumn} onAddRow={addRow} />
-          <RemoveButtons
-            boxSize={boxSize}
-            confirmingRemove={confirmingRemove}
-            grid={grid}
-            handleRemoveColumn={handleRemoveColumn}
-            handleRemoveRow={handleRemoveRow}
-            maxCol={maxCol}
-            maxRow={maxRow}
-            minCol={minCol}
-            minRow={minRow}
-          />
+          {showGridResize && (
+            <>
+              <AddGridButtons onAddColumn={addColumn} onAddRow={addRow} />
+              <RemoveButtons
+                boxSize={boxSize}
+                confirmingRemove={confirmingRemove}
+                grid={grid}
+                handleRemoveColumn={handleRemoveColumn}
+                handleRemoveRow={handleRemoveRow}
+                maxCol={maxCol}
+                maxRow={maxRow}
+                minCol={minCol}
+                minRow={minRow}
+              />
+            </>
+          )}
         </div>
       </main>
 
