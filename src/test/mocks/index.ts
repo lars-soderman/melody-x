@@ -8,7 +8,7 @@ export const mockProject: Project = {
   boxSize: 64,
   font: 'var(--font-default)',
   createdAt: '2024-03-20T12:00:00Z',
-  modifiedAt: '2024-03-20T12:00:00Z',
+  updatedAt: '2024-03-20T12:00:00Z',
   boxes: [
     { row: 0, col: 0, letter: 'H' },
     { row: 0, col: 1, letter: 'E' },

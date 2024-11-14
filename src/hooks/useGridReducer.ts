@@ -1,7 +1,7 @@
 'use client';
 
 import { DEFAULT_STATE } from '@/constants';
-import { Box, GridState, Project } from '@/types';
+import { GridState, Project } from '@/types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { gridReducer } from '../reducers/gridReducer';
@@ -9,7 +9,6 @@ import { gridReducer } from '../reducers/gridReducer';
 const getInitialState = (project: Project | null): GridState => {
   if (project) {
     return {
-      boxSize: project.boxSize,
       boxes: project.boxes,
       cols: project.cols,
       rows: project.rows,
@@ -45,7 +44,6 @@ export function useGridReducer(
       dispatch({
         type: 'SET_STATE',
         state: {
-          boxSize: project.boxSize,
           boxes: project.boxes,
           cols: project.cols,
           rows: project.rows,
@@ -62,7 +60,7 @@ export function useGridReducer(
 
     const currentStateString = JSON.stringify({
       boxes: state.boxes,
-      boxSize: state.boxSize,
+
       rows: state.rows,
       cols: state.cols,
       font: state.font,
@@ -70,7 +68,7 @@ export function useGridReducer(
 
     const prevStateString = JSON.stringify({
       boxes: prevStateRef.current.boxes,
-      boxSize: prevStateRef.current.boxSize,
+
       rows: prevStateRef.current.rows,
       cols: prevStateRef.current.cols,
       font: prevStateRef.current.font,
@@ -87,11 +85,11 @@ export function useGridReducer(
         onProjectChange({
           ...project,
           boxes: state.boxes,
-          boxSize: state.boxSize,
+
           rows: state.rows,
           cols: state.cols,
           font: state.font,
-          modifiedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         });
       }, 500);
     }
@@ -177,9 +175,27 @@ export function useGridReducer(
     dispatch({ type: 'RESET' });
   }, []);
 
-  const updateStop = useCallback((id: string, stop: Box['stop']) => {
-    dispatch({ type: 'UPDATE_STOP', id, stop });
-  }, []);
+  const updateStopDown = useCallback(
+    (id: string) => {
+      dispatch({
+        type: 'UPDATE_STOP_DOWN',
+        id,
+        stop: !state.boxes.find((box) => getId(box) === id)?.stopDown,
+      });
+    },
+    [state.boxes]
+  );
+
+  const updateStopRight = useCallback(
+    (id: string) => {
+      dispatch({
+        type: 'UPDATE_STOP_RIGHT',
+        id,
+        stop: !state.boxes.find((box) => getId(box) === id)?.stopRight,
+      });
+    },
+    [state.boxes]
+  );
 
   const updateGridSize = useCallback((rows: number, cols: number) => {
     dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
@@ -193,7 +209,6 @@ export function useGridReducer(
 
   return {
     boxes: state.boxes,
-    boxSize: state.boxSize,
     updateBoxSize,
     updateLetter,
     updateArrowDown,
@@ -204,7 +219,8 @@ export function useGridReducer(
     addRow,
     addColumn,
     reset,
-    updateStop,
+    updateStopDown,
+    updateStopRight,
     toggleHint,
     rows: state.rows,
     cols: state.cols,

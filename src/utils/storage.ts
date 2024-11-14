@@ -34,11 +34,11 @@ const storageManager: StorageManager = {
   persist: false, // Will be set to true if localStorage is available
 };
 
-// Add near the top with other constants
-let FORCE_STORAGE_UNAVAILABLE = false;
+let FORCE_STORAGE_UNAVAILABLE = true;
 
 // Initialize storage manager
 const initStorage = () => {
+  console.log('initStorage', FORCE_STORAGE_UNAVAILABLE);
   if (FORCE_STORAGE_UNAVAILABLE) {
     storageManager.persist = false;
     return;

@@ -12,7 +12,9 @@
     "test:unit": "clear && jest",
     "test:e2e": "clear && playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "typecheck": "tsc --noEmit",
+    "generate-types": "dotenv -e .env -- supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
@@ -34,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "eslint-plugin-typescript-sort-keys": "^3.3.0",
@@ -42,6 +45,7 @@
     "postcss": "^8",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
+    "supabase": "^1.219.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

@@ -29,7 +29,7 @@ export function ImportButton({ onImport }: ImportButtonProps) {
 
       project.id = crypto.randomUUID();
       project.createdAt = new Date().toISOString();
-      project.modifiedAt = new Date().toISOString();
+      project.updatedAt = new Date().toISOString();
 
       onImport(project);
     } catch (error) {

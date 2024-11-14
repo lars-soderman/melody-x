@@ -6,11 +6,11 @@ export type Box = {
   hint?: number;
   letter: string | null;
   row: number;
-  stop?: 'bottom' | 'right';
+  stopDown?: boolean;
+  stopRight?: boolean;
 };
 
 export type GridState = {
-  boxSize: number;
   boxes: Box[];
   cols: number;
   font: string;
@@ -18,25 +18,24 @@ export type GridState = {
   version: number;
 };
 
-export interface Project {
-  boxSize: number;
+export type Project = {
   boxes: Box[];
   cols: number;
-  compressed?: boolean;
   createdAt: string;
+  createdBy: string;
   font: string;
-  hints?: Hint[];
+  hints: Hint[];
   id: string;
-  modifiedAt: string;
+  isPublic?: boolean;
   name: string;
   rows: number;
-}
+  updatedAt: string;
+};
 
 export type HintDirection = 'vertical' | 'horizontal';
 
 export type Hint = {
   boxId: string;
-  // Reference to the box where the hint starts
   direction: HintDirection;
   id: string;
   length: number;

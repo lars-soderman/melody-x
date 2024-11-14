@@ -1,5 +1,6 @@
 import { Box, Project } from '@/types';
 import { createInitialBoxes } from '@/utils/grid';
+import { v4 as uuidv4 } from 'uuid';
 
 export const INITIAL_GRID_SIZE = {
   rows: 9,
@@ -15,13 +16,15 @@ export const DEFAULT_STATE = {
   font: 'var(--font-default)',
 } as const;
 
-export function createDefaultProject(name: string): Project {
+export function createDefaultProject(name: string, userId: string): Project {
   return {
-    id: `new-${Date.now()}`,
+    id: uuidv4(),
     name,
     createdAt: new Date().toISOString(),
-    modifiedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     ...DEFAULT_STATE,
     boxes: createInitialBoxes(DEFAULT_STATE.rows, DEFAULT_STATE.cols),
+    createdBy: userId,
+    hints: [],
   };
 }

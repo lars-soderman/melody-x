@@ -49,7 +49,7 @@ export function encodeProject(
       (project.boxSize ?? 64).toString(36),
       (project.font ?? 'var(--font-default)').replace(/[§~]/g, '-'),
       project.createdAt ?? new Date().toISOString(),
-      project.modifiedAt ?? new Date().toISOString(),
+      project.updatedAt ?? new Date().toISOString(),
     ]
       .map(encodeURIComponent)
       .join(SPECIAL_CHARS.META_SEPARATOR);
@@ -109,7 +109,7 @@ export function decodeProject(encoded: string): Project | null {
     }
 
     // Parse metadata
-    const [id, name, boxSize, font, createdAt, modifiedAt] = metadata
+    const [id, name, boxSize, font, createdAt, updatedAt] = metadata
       .split(SPECIAL_CHARS.META_SEPARATOR)
       .map(decodeURIComponent);
 
@@ -121,7 +121,7 @@ export function decodeProject(encoded: string): Project | null {
       boxSize: parseInt(boxSize, 36) || 64,
       font: font || 'var(--font-default)',
       createdAt,
-      modifiedAt,
+      updatedAt,
       boxes: [],
     };
 
@@ -260,7 +260,7 @@ export function compressProject(
     boxSize: project.boxSize ?? 64,
     font: project.font ?? 'var(--font-default)',
     createdAt: project.createdAt ?? new Date().toISOString(),
-    modifiedAt: project.modifiedAt ?? new Date().toISOString(),
+    updatedAt: project.updatedAt ?? new Date().toISOString(),
     boxes: strippedBoxes,
     compressed: true,
   };

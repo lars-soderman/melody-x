@@ -1,6 +1,6 @@
 import { Box, Project } from '@/types';
 import { useEffect, useState } from 'react';
-import { BoxSizeControl } from './BoxSizeControl';
+
 import { DownloadButton } from './DownloadButton';
 import { ExportButton } from './ExportButton';
 import { FontSelector } from './FontSelector';
@@ -17,7 +17,6 @@ interface ExportProps {
 }
 
 interface SettingsProps {
-  boxSize: number;
   cols: number;
   exportProps: ExportProps;
   font: string;
@@ -32,11 +31,9 @@ interface SettingsProps {
 }
 
 export function Settings({
-  boxSize,
   cols,
   exportProps,
   font,
-  onBoxSizeChange,
   onGridSizeChange,
   onReset,
   project,
@@ -115,11 +112,6 @@ export function Settings({
               value={font}
               onChange={updateFont}
             />
-          </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <label className="text-sm text-gray-500">Box Size</label>
-            <BoxSizeControl size={boxSize} onChange={onBoxSizeChange} />
           </div>
 
           <div className="flex items-center justify-between">

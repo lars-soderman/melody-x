@@ -13,7 +13,7 @@ describe('gridReducer', () => {
     ],
     createdAt: new Date().toISOString(),
     id: 'test-id',
-    modifiedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     name: 'Test Project',
   };
 

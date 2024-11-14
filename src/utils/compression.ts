@@ -8,13 +8,13 @@ export function compressProject(project: Project): Project {
       box.hint ||
       box.arrowDown ||
       box.arrowRight ||
-      box.stop
+      box.stopDown ||
+      box.stopRight
   );
 
   return {
     ...project,
     boxes: strippedBoxes,
-    compressed: true,
   };
 }
 
@@ -76,5 +76,37 @@ export function decompressProject(project: Project): Project {
     ...project,
     boxes: fullBoxes,
     compressed: false,
+  };
+}
+
+export function ensureCompleteGrid(project: Project): Project {
+  const expectedLength = project.rows * project.cols;
+
+  // If grid is already complete, return as is
+  if (project.boxes.length === expectedLength) {
+    return project;
+  }
+
+  // Create complete grid with existing boxes
+  const fullBoxes: Box[] = [];
+  for (let row = 0; row < project.rows; row++) {
+    for (let col = 0; col < project.cols; col++) {
+      const existingBox = project.boxes.find(
+        (box) => box.row === row && box.col === col
+      );
+
+      fullBoxes.push(
+        existingBox ?? {
+          row,
+          col,
+          letter: null,
+        }
+      );
+    }
+  }
+
+  return {
+    ...project,
+    boxes: fullBoxes,
   };
 }

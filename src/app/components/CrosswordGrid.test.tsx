@@ -31,6 +31,8 @@ describe('CrosswordGrid', () => {
     toggleHint: jest.fn(),
     handleRemoveColumn: jest.fn(),
     handleRemoveRow: jest.fn(),
+    onUpdateArrowDown: jest.fn(),
+    onUpdateArrowRight: jest.fn(),
   };
 
   it('renders grid cells', () => {

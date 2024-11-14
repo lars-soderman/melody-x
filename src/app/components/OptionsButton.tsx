@@ -6,7 +6,7 @@ type OptionsButtonProps = {
   onArrowDown: () => void;
   onArrowRight: () => void;
   onBlack: () => void;
-  onStopBottom: () => void;
+  onStopDown: () => void;
   onStopRight: () => void;
   toggleHint: () => void;
 };
@@ -15,7 +15,7 @@ export function OptionsButton({
   onArrowDown,
   onArrowRight,
   onBlack,
-  onStopBottom,
+  onStopDown,
   onStopRight,
   toggleHint,
 }: OptionsButtonProps) {
@@ -74,7 +74,7 @@ export function OptionsButton({
             className="absolute bottom-0 left-1/2 h-1 w-6 -translate-x-1/2 cursor-pointer bg-gray-400 hover:bg-gray-600"
             title="Toggle bottom stop"
             onClick={() => {
-              onStopBottom();
+              onStopDown();
               setIsOpen(false);
             }}
           />

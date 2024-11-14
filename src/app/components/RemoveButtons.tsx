@@ -1,8 +1,8 @@
+import { INITIAL_BOX_SIZE } from '@/constants';
 import { Box } from '@/types';
 import React from 'react';
 
 type RemoveButtonsProps = {
-  boxSize: number;
   confirmingRemove: { index: number; type: 'row' | 'column' } | null;
   grid: Box[][];
   handleRemoveColumn: (colIndex: number) => void;
@@ -14,7 +14,6 @@ type RemoveButtonsProps = {
 };
 
 export function RemoveButtons({
-  boxSize,
   grid,
   minRow,
   maxRow,
@@ -24,6 +23,7 @@ export function RemoveButtons({
   handleRemoveColumn,
   confirmingRemove,
 }: RemoveButtonsProps) {
+  const boxSize = INITIAL_BOX_SIZE;
   return (
     <>
       {grid.map((row) =>
@@ -42,12 +42,6 @@ export function RemoveButtons({
                 }}
               >
                 <button
-                  // aria-label={
-                  //   confirmingRemove?.type === 'row' &&
-                  //   confirmingRemove.index === box.row
-                  //     ? 'Confirm remove row'
-                  //     : 'Remove row'
-                  // }
                   className={`hover-target absolute -left-3 top-1/2 flex h-8 w-6 -translate-y-1/2 items-center justify-center bg-white text-lg text-gray-400 opacity-0 shadow-md transition-all duration-200 ${
                     confirmingRemove?.type === 'row' &&
                     confirmingRemove.index === box.row

@@ -11,7 +11,8 @@ export type GridAction =
   | { position: 'left' | 'right'; type: 'ADD_COLUMN' }
   | { size: number; type: 'UPDATE_BOX_SIZE' }
   | { type: 'RESET' }
-  | { id: string; stop: Box['stop']; type: 'UPDATE_STOP' }
+  | { id: string; stop: Box['stopDown']; type: 'UPDATE_STOP_DOWN' }
+  | { id: string; stop: Box['stopRight']; type: 'UPDATE_STOP_RIGHT' }
   | { hint?: number; id: string; type: 'SET_HINT' }
   | { cols: number; rows: number; type: 'UPDATE_GRID_SIZE' }
   | { font: string; type: 'UPDATE_FONT' }

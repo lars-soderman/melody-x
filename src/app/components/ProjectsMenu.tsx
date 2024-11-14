@@ -1,4 +1,4 @@
-import { Toast } from '@/components/Toast';
+import { Toast } from '@/app/components/Toast';
 import { Project } from '@/types';
 import { compressProject, decompressProject } from '@/utils/compression';
 import { decodeProject, encodeProject } from '@/utils/urlEncoding';
@@ -9,7 +9,7 @@ import { Popover } from './Popover';
 
 type ProjectsMenuProps = {
   createProject: (name: string) => void;
-  currentProject: Project;
+  currentProject: Project | null;
   deleteProject: (id: string) => void;
   importProject: (project: Project) => void;
   onSelectProject: (projectId: string) => void;
@@ -75,7 +75,7 @@ export function ProjectsMenu({
       updateProject({
         ...project,
         name: editingName.trim(),
-        modifiedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
     }
     setEditingProjectId(null);

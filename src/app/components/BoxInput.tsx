@@ -15,7 +15,7 @@ type BoxInputProps = {
   onBlack: () => void;
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
-  onStopBottom: () => void;
+  onStopDown: () => void;
   onStopRight: () => void;
   toggleHint: (id: string) => void;
 };
@@ -30,7 +30,7 @@ export function BoxInput({
   isSelected,
   id,
   onNavigate,
-  onStopBottom,
+  onStopDown,
   onStopRight,
   toggleHint,
 }: BoxInputProps) {
@@ -95,7 +95,7 @@ export function BoxInput({
           onArrowDown={onArrowDown}
           onArrowRight={onArrowRight}
           onBlack={onBlack}
-          onStopBottom={onStopBottom}
+          onStopDown={onStopDown}
           onStopRight={onStopRight}
         />
       )}

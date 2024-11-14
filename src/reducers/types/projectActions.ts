@@ -6,8 +6,8 @@ export type ProjectsState = {
 };
 
 export type ProjectsAction =
-  | { type: 'LOAD_PROJECTS' }
-  | { name: string; type: 'CREATE_PROJECT' }
+  | { projects: Project[]; type: 'LOAD_PROJECTS' }
+  | { project: Project; type: 'CREATE_PROJECT' }
   | { project: Project; type: 'UPDATE_PROJECT' }
   | { id: string; type: 'DELETE_PROJECT' }
   | { id: string; type: 'SELECT_PROJECT' }

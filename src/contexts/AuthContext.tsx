@@ -1,11 +1,7 @@
 'use client';
-import { createClient, Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState } from 'react';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type AuthContextType = {
   isInitialized: boolean;

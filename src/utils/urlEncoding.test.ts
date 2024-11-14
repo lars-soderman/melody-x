@@ -199,7 +199,7 @@ describe('Project Encoding', () => {
       boxSize: 64,
       font: 'var(--font-default)',
       createdAt: '2024-03-20T12:00:00Z',
-      modifiedAt: '2024-03-20T12:00:00Z',
+      updatedAt: '2024-03-20T12:00:00Z',
     };
 
     const encoded = encodeProject(projectWithNullBoxes);
@@ -233,7 +233,7 @@ describe('Project Encoding', () => {
     expect(decoded.boxSize).toBe(64);
     expect(decoded.font).toBe('var(--font-default)');
     expect(decoded.createdAt).toBeTruthy();
-    expect(decoded.modifiedAt).toBeTruthy();
+    expect(decoded.updatedAt).toBeTruthy();
   });
 });
 
@@ -265,7 +265,7 @@ describe('Project Compression', () => {
       boxSize: 64,
       font: 'var(--font-default)',
       createdAt: '2024-03-20T12:00:00Z',
-      modifiedAt: '2024-03-20T12:00:00Z',
+      updatedAt: '2024-03-20T12:00:00Z',
     };
 
     const compressed = compressProject(projectWithNullBoxes);

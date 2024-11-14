@@ -3,7 +3,6 @@ import { getId } from '@/utils/grid';
 import { GridCell } from './GridCell';
 
 type CrosswordGridProps = {
-  boxSize: number;
   boxes: Box[];
   confirmingRemove: { index: number; type: 'row' | 'column' } | null;
   editingBox: Box | null;
@@ -21,7 +20,8 @@ type CrosswordGridProps = {
   onUpdateArrowDown: (id: string) => void;
   onUpdateArrowRight: (id: string) => void;
   onUpdateBlack: (id: string, isBlack: boolean) => void;
-  onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
+  onUpdateStopDown: (id: string) => void;
+  onUpdateStopRight: (id: string) => void;
   toggleHint: (id: string) => void;
 };
 
@@ -34,10 +34,10 @@ export function CrosswordGrid({
   onUpdateArrowDown,
   onUpdateArrowRight,
   onUpdateBlack,
-  onUpdateStop,
+  onUpdateStopDown,
+  onUpdateStopRight,
   onNavigate,
   onSetEditingBox,
-  boxSize,
   toggleHint,
   font,
 }: CrosswordGridProps) {
@@ -52,7 +52,6 @@ export function CrosswordGrid({
           <GridCell
             key={getId(box)}
             box={box}
-            boxSize={boxSize}
             editingBox={editingBox}
             toggleHint={toggleHint}
             onLetterChange={onLetterChange}
@@ -61,7 +60,8 @@ export function CrosswordGrid({
             onUpdateArrowDown={onUpdateArrowDown}
             onUpdateArrowRight={onUpdateArrowRight}
             onUpdateBlack={onUpdateBlack}
-            onUpdateStop={onUpdateStop}
+            onUpdateStopDown={onUpdateStopDown}
+            onUpdateStopRight={onUpdateStopRight}
           />
         ))
       )}

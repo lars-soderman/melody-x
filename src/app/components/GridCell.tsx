@@ -1,3 +1,4 @@
+import { INITIAL_BOX_SIZE } from '@/constants';
 import { Box } from '@/types';
 import { getId } from '@/utils/grid';
 import { memo } from 'react';
@@ -6,7 +7,7 @@ import { ShowBox } from './ShowBox';
 
 type GridCellProps = {
   box: Box;
-  boxSize: number;
+
   editingBox: Box | null;
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
@@ -14,7 +15,8 @@ type GridCellProps = {
   onUpdateArrowDown: (id: string) => void;
   onUpdateArrowRight: (id: string) => void;
   onUpdateBlack: (id: string, isBlack: boolean) => void;
-  onUpdateStop: (id: string, stop: 'bottom' | 'right') => void;
+  onUpdateStopDown: (id: string) => void;
+  onUpdateStopRight: (id: string) => void;
   toggleHint: (id: string) => void;
 };
 
@@ -27,10 +29,11 @@ export const GridCell = memo(function GridCell({
   onUpdateBlack,
   onNavigate,
   onSetEditingBox,
-  onUpdateStop,
-  boxSize,
+  onUpdateStopDown,
+  onUpdateStopRight,
   toggleHint,
 }: GridCellProps) {
+  const boxSize = INITIAL_BOX_SIZE;
   return (
     <div
       className="relative flex"
@@ -56,8 +59,8 @@ export const GridCell = memo(function GridCell({
           onBlack={() => onUpdateBlack(getId(box), !box.black)}
           onLetterChange={onLetterChange}
           onNavigate={(direction) => onNavigate(box, direction)}
-          onStopBottom={() => onUpdateStop(getId(box), 'bottom')}
-          onStopRight={() => onUpdateStop(getId(box), 'right')}
+          onStopDown={() => onUpdateStopDown(getId(box))}
+          onStopRight={() => onUpdateStopRight(getId(box))}
         />
       ) : (
         <ShowBox
@@ -70,7 +73,8 @@ export const GridCell = memo(function GridCell({
           id={getId(box)}
           letter={box.letter}
           row={box.row}
-          stop={box.stop}
+          stopDown={box.stopDown}
+          stopRight={box.stopRight}
           onClick={() => onSetEditingBox(box)}
           onNavigate={(direction) => onNavigate(box, direction)}
         />
