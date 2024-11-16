@@ -14,6 +14,7 @@ export type GridState = {
   boxes: Box[];
   cols: number;
   font: string;
+  hints: Hint[];
   rows: number;
   version: number;
 };
@@ -43,7 +44,7 @@ export type Hint = {
   text: string;
 };
 
-export type HintState = {
-  hints: Hint[];
-  version: number;
-};
+// export type HintState = {
+//   hints: Hint[];
+//   version: number;
+// };

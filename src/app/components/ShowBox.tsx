@@ -20,7 +20,8 @@ export function ShowBox({
   black,
   arrowRight,
   arrowDown,
-  stop,
+  stopDown,
+  stopRight,
   hint,
 }: ShowBoxProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -59,13 +60,13 @@ export function ShowBox({
       >
         {letter}
       </button>
-      {stop === 'bottom' && (
+      {stopDown && (
         <div
           className="absolute bottom-0 left-0 h-[3px] w-full bg-black"
           data-stop="bottom"
         />
       )}
-      {stop === 'right' && (
+      {stopRight && (
         <div
           className="absolute right-0 top-0 h-full w-[3px] bg-black"
           data-stop="right"

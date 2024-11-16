@@ -45,7 +45,7 @@ src/
 │   │   └── Settings.tsx        # Configuration panel
 │   └── page.tsx                # Main page
 ├── hooks/
-│   ├── useGridReducer.ts       # Grid state management
+│   ├── useGrid.ts       # Grid state management
 │   └── useGridNavigation.ts    # Keyboard navigation
 ├── types/
 │   └── index.ts               # Type definitions
@@ -184,3 +184,106 @@ Planned features:
 - [ ] Multiple box selection
 - [ ] Drag to create links
 - [ ] Import from text
+
+## 🏗 Architecture
+
+### State Management
+
+The application uses a custom state management pattern built on React's useReducer, with clear separation of concerns:
+
+#### 1. Reducer (Pure State Updates)
+
+- Lives in `src/reducers/gridReducer.ts`
+- Handles pure state transitions
+- Contains no side effects or external dependencies
+- Easy to test and predict
+
+```typescript
+// Example of pure state update in reducer
+case 'ADD_HINT': {
+return {
+...state,
+hints: [...state.hints, {
+id: action.id,
+boxId: action.boxId,
+direction: action.direction,
+length: action.length,
+number: action.number,
+text: '',
+}],
+boxes: state.boxes.map(box =>
+getId(box) === action.boxId
+? { ...box, hint: action.number }
+: box
+)
+};
+}
+```
+
+#### 2. Hook (Logic & Side Effects)
+
+- Lives in `src/hooks/useGrid.ts`
+- Orchestrates complex state interactions
+- Handles side effects (API, localStorage)
+- Provides the public API for components
+- Manages external store synchronization
+
+````typescript
+// Example of logic orchestration in hook
+const toggleHint = useCallback((id: string) => {
+const box = state.boxes.find(box => getId(box) === id);
+if (!box) return;
+if (box.hint) {
+dispatch({ type: 'REMOVE_HINT', id });
+} else {
+const direction = calculateHintDirection(state.boxes, box);
+const length = calculateHintLength(state.boxes, box, direction);
+const nextNumber = getNextHintNumber();
+dispatch({
+type: 'ADD_HINT',
+id: uuidv4(),
+boxId: id,
+direction,
+length,
+number: nextNumber,
+});
+}
+}, [state.boxes, getNextHintNumber]);```
+
+#### 3. Components (UI & User Interaction)
+- Live in `src/app/components/`
+- Handle user interactions
+- Render UI based on state
+- Call hook methods to update state
+
+### External Store Synchronization
+
+State changes are synchronized with external stores (database/localStorage) using effects at the hook level:
+
+```typescript
+useEffect(() => {
+  if (!project || project.id !== prevProjectIdRef.current) return;
+
+  const hasStateChanged = checkStateChanges(state, prevStateRef.current);
+  if (hasStateChanged) {
+    prevStateRef.current = state;
+    debouncedSave(state);
+  }
+}, [state, project]);
+````
+
+### Key Principles
+
+1. **Single Source of Truth**: All state manipulation logic lives in the reducer
+2. **Predictable Updates**: Reducers are pure functions with no side effects
+3. **Clear Boundaries**: Separation between state transitions, business logic, and UI
+4. **Side Effects**: Handled in the hook layer using useEffect
+5. **External Sync**: Database/localStorage synchronization managed through effects
+
+This architecture provides:
+
+- 🧪 Better testability
+- 🔍 Easier debugging
+- 📦 Modular code organization
+- 🔄 Predictable state updates
+- 🎯 Clear separation of concerns

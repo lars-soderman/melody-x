@@ -1,7 +1,7 @@
 import { Box, Project } from '@/types';
 import { useEffect, useState } from 'react';
 
-import { DownloadButton } from './DownloadButton';
+// import { DownloadButton } from './DownloadButton';
 import { ExportButton } from './ExportButton';
 import { FontSelector } from './FontSelector';
 import { Popover } from './Popover';
@@ -150,10 +150,10 @@ export function Settings({
             <ExportButton {...exportProps} />
           </div>
 
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Download as JSON</span>
             <DownloadButton project={project} />
-          </div>
+          </div> */}
         </div>
       </Popover>
     </div>

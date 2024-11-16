@@ -1,10 +1,8 @@
 import { AuthProvider } from '@/contexts/AuthContext';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { getServerSession } from '@/lib/getServerSession';
 import type { Metadata } from 'next';
 import { Creepster } from 'next/font/google';
 import localFont from 'next/font/local';
-import { cookies } from 'next/headers';
-import { AuthWrapper } from './components/AuthWrapper';
 import './globals.css';
 
 const geistMono = localFont({
@@ -26,22 +24,17 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+}) {
+  const initialSession = await getServerSession();
 
   return (
     <html lang="en">
       <body
         className={`${geistMono.variable} ${creepster.variable} absolute inset-0 antialiased`}
       >
-        <AuthProvider serverSession={session}>
-          <AuthWrapper>{children}</AuthWrapper>
-        </AuthProvider>
+        <AuthProvider initialSession={initialSession}>{children}</AuthProvider>
       </body>
     </html>
   );

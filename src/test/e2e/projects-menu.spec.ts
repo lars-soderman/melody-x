@@ -1,8 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Projects Menu', () => {
+test.describe('Projects List', () => {
   test.beforeEach(async ({ page }) => {
-    // Set storage to be unavailable for all tests
     await page.addInitScript(() => {
       // @ts-expect-error - we know this exists in our app
       window.storage?.setStorageAvailable(false);
@@ -10,14 +9,14 @@ test.describe('Projects Menu', () => {
     await page.goto('/');
   });
 
-  test('can open projects menu', async ({ page }) => {
-    await page.getByTestId('projects-menu-button').click();
-    await expect(page.getByTestId('new-project-button')).toBeVisible();
+  test('shows projects heading', async ({ page }) => {
+    await expect(
+      page.getByRole('heading', { name: 'Melodikryss' })
+    ).toBeVisible();
   });
 
   test('can create new project', async ({ page }) => {
-    await page.getByTestId('projects-menu-button').click();
-    await page.getByTestId('new-project-button').click();
+    await page.getByRole('button', { name: 'New Project' }).click();
 
     const input = page.getByPlaceholder('Project name');
     await expect(input).toBeVisible();

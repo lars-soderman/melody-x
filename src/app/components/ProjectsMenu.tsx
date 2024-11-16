@@ -1,11 +1,9 @@
-import { Toast } from '@/app/components/Toast';
+import { useState } from 'react';
+
 import { Project } from '@/types';
-import { compressProject, decompressProject } from '@/utils/compression';
-import { decodeProject, encodeProject } from '@/utils/urlEncoding';
-import { useEffect, useState } from 'react';
-import { AuthButton } from './AuthButton';
-import { ImportButton } from './ImportButton';
-import { Popover } from './Popover';
+import { AuthButton } from '@components/AuthButton';
+import { ImportButton } from '@components/ImportButton';
+import { Popover } from '@components/Popover';
 
 type ProjectsMenuProps = {
   createProject: (name: string) => void;
@@ -35,28 +33,27 @@ export function ProjectsMenu({
     null
   );
   const [isCreatingInProgress, setIsCreatingInProgress] = useState(false);
-  const [showToast, setShowToast] = useState(false);
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const encodedProject = url.searchParams.get('project');
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+  //   const encodedProject = url.searchParams.get('project');
 
-    if (encodedProject) {
-      try {
-        const decodedProject = decodeProject(encodedProject);
-        if (decodedProject) {
-          const decompressedProject = decompressProject(decodedProject);
-          importProject(decompressedProject);
+  //   if (encodedProject) {
+  //     try {
+  //       const decodedProject = decodeProject(encodedProject);
+  //       if (decodedProject) {
+  //         const decompressedProject = decompressProject(decodedProject);
+  //         importProject(decompressedProject);
 
-          // Clear the URL parameter after importing
-          url.searchParams.delete('project');
-          window.history.replaceState({}, '', url.toString());
-        }
-      } catch (error) {
-        console.error('Failed to import project from URL:', error);
-      }
-    }
-  }, [importProject]); // Run once on mount
+  //         // Clear the URL parameter after importing
+  //         url.searchParams.delete('project');
+  //         window.history.replaceState({}, '', url.toString());
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to import project from URL:', error);
+  //     }
+  //   }
+  // }, [importProject]); // Run once on mount
 
   const handleCreateProject = async () => {
     const trimmedName = newProjectName.trim();
@@ -81,16 +78,16 @@ export function ProjectsMenu({
     setEditingProjectId(null);
   };
 
-  const handleShareProject = (project: Project) => {
-    const compressedProject = compressProject(project);
-    const encodedProject = encodeProject(compressedProject);
+  // const handleShareProject = (project: Project) => {
+  //   const compressedProject = compressProject(project);
+  //   const encodedProject = encodeProject(compressedProject);
 
-    // Create share URL
-    const url = new URL(window.location.href);
-    url.searchParams.set('project', encodedProject ?? '');
-    navigator.clipboard.writeText(url.toString());
-    setShowToast(true);
-  };
+  //   // Create share URL
+  //   const url = new URL(window.location.href);
+  //   url.searchParams.set('project', encodedProject ?? '');
+  //   navigator.clipboard.writeText(url.toString());
+  //   setShowToast(true);
+  // };
 
   return (
     <div className="relative">
@@ -134,7 +131,7 @@ export function ProjectsMenu({
               <h2 className="text-lg font-medium text-gray-700">Projects</h2>
               <div className="flex gap-1">
                 {/* Copy link to project */}
-                <button
+                {/* <button
                   className="flex w-8 rounded p-1 text-gray-400 hover:bg-gray-100"
                   title="Copy link to project"
                   onClick={() => handleShareProject(currentProject)}
@@ -157,13 +154,13 @@ export function ProjectsMenu({
                       />
                     </svg>
                   )}
-                </button>
-                {showToast && (
+                </button> */}
+                {/* {showToast && (
                   <Toast
                     message="Link copied to clipboard!"
                     onClose={() => setShowToast(false)}
                   />
-                )}
+                )} */}
                 {/* import project */}
                 <ImportButton
                   onImport={(project) => {

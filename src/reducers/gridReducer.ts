@@ -1,287 +1,196 @@
-import { DEFAULT_STATE } from '@/constants';
+import { INITIAL_GRID_SIZE } from '@/constants';
 import { GridState } from '@/types';
 import { createInitialBoxes, getId } from '@/utils/grid';
 import { GridAction } from './types/gridActions';
 
 export function gridReducer(state: GridState, action: GridAction): GridState {
-  let newState: GridState = state;
-
-  try {
-    switch (action.type) {
-      case 'UPDATE_LETTER':
-        newState = {
-          ...state,
-          boxes: state.boxes.map((box) =>
-            getId(box) === action.id
-              ? { ...box, letter: action.letter.toUpperCase() }
-              : box
-          ),
-        };
-        break;
-
-      case 'UPDATE_ARROW_DOWN':
-        newState = {
-          ...state,
-          boxes: state.boxes.map((box) =>
-            getId(box) === action.id
-              ? { ...box, arrowDown: !box.arrowDown }
-              : box
-          ),
-        };
-        break;
-
-      case 'UPDATE_ARROW_RIGHT':
-        newState = {
-          ...state,
-          boxes: state.boxes.map((box) =>
-            getId(box) === action.id
-              ? { ...box, arrowRight: !box.arrowRight }
-              : box
-          ),
-        };
-        break;
-
-      case 'UPDATE_BLACK':
-        newState = {
-          ...state,
-          boxes: state.boxes.map((box) =>
-            getId(box) === action.id ? { ...box, black: action.black } : box
-          ),
-        };
-        break;
-
-      case 'REMOVE_ROW': {
-        const newBoxes = state.boxes
+  switch (action.type) {
+    case 'REMOVE_ROW':
+      return {
+        ...state,
+        boxes: state.boxes
           .filter((box) => box.row !== action.rowIndex)
-          .map((box) => ({
-            ...box,
-            row: box.row > action.rowIndex ? box.row - 1 : box.row,
-          }));
+          .map((box) =>
+            box.row > action.rowIndex ? { ...box, row: box.row - 1 } : box
+          ),
+        rows: state.rows - 1,
+        version: state.version + 1,
+      };
 
-        if (newBoxes.length === state.boxes.length) {
-          console.warn(
-            'No boxes were removed when removing row:',
-            action.rowIndex
-          );
-        }
-
-        newState = {
-          ...state,
-          boxes: newBoxes,
-          rows: state.rows - 1,
-        };
-        break;
-      }
-
-      case 'REMOVE_COLUMN': {
-        const newBoxes = state.boxes
+    case 'REMOVE_COLUMN':
+      return {
+        ...state,
+        boxes: state.boxes
           .filter((box) => box.col !== action.colIndex)
-          .map((box) => ({
-            ...box,
-            col: box.col > action.colIndex ? box.col - 1 : box.col,
-          }));
-
-        if (newBoxes.length === state.boxes.length) {
-          console.warn(
-            'No boxes were removed when removing column:',
-            action.colIndex
-          );
-        }
-
-        newState = {
-          ...state,
-          boxes: newBoxes,
-          cols: state.cols - 1,
-        };
-        break;
-      }
-
-      case 'ADD_ROW': {
-        const currentMaxRow = Math.max(...state.boxes.map((box) => box.row));
-        const currentMaxCol = Math.max(...state.boxes.map((box) => box.col));
-
-        if (action.position === 'top') {
-          // For top insertion, first shift all existing boxes down
-          const shiftedBoxes = state.boxes.map((box) => ({
-            ...box,
-            row: box.row + 1,
-          }));
-
-          // Then create new row at position 0
-          const newRowBoxes = Array.from(
-            { length: currentMaxCol + 1 },
-            (_, col) => ({
-              row: 0,
-              col,
-              letter: null,
-            })
-          );
-
-          newState = {
-            ...state,
-            boxes: [...newRowBoxes, ...shiftedBoxes],
-            rows: state.rows + 1,
-          };
-        } else {
-          // For bottom insertion, simply append new row
-          const newRowBoxes = Array.from(
-            { length: currentMaxCol + 1 },
-            (_, col) => ({
-              row: currentMaxRow + 1,
-              col,
-              letter: null,
-            })
-          );
-
-          newState = {
-            ...state,
-            boxes: [...state.boxes, ...newRowBoxes],
-            rows: state.rows + 1,
-          };
-        }
-        break;
-      }
-
-      case 'ADD_COLUMN': {
-        const newBoxes = [...state.boxes];
-        const currentMaxCol = Math.max(...newBoxes.map((box) => box.col));
-        const newCol = action.position === 'left' ? 0 : currentMaxCol + 1;
-
-        // Add new boxes for the new column
-        for (
-          let row = 0;
-          row <= Math.max(...newBoxes.map((box) => box.row));
-          row++
-        ) {
-          newBoxes.push({
-            row,
-            col: newCol,
-            letter: null,
-          });
-        }
-
-        // If adding at left, shift all existing boxes right
-        if (action.position === 'left') {
-          newBoxes.forEach((box) => {
-            if (box.col !== newCol) {
-              box.col += 1;
-            }
-          });
-        }
-
-        newState = {
-          ...state,
-          boxes: newBoxes,
-          cols: state.cols + 1,
-        };
-        break;
-      }
-
-      case 'UPDATE_BOX_SIZE':
-        newState = {
-          ...state,
-          boxSize: Math.max(action.size, 4),
-        };
-        // saveToStorage(newState);
-        return newState;
-
-      case 'UPDATE_STOP':
-        newState = {
-          ...state,
-          boxes: state.boxes.map((box) =>
-            getId(box) === action.id ? { ...box, stop: action.stop } : box
+          .map((box) =>
+            box.col > action.colIndex ? { ...box, col: box.col - 1 } : box
           ),
-        };
-        // saveToStorage(newState);
-        return newState;
+        cols: state.cols - 1,
+        version: state.version + 1,
+      };
 
-      case 'SET_HINT':
-        newState = {
-          ...state,
-          boxes: state.boxes.map((box) =>
-            getId(box) === action.id ? { ...box, hint: action.hint } : box
-          ),
-        };
-        // saveToStorage(newState);
-        return newState;
+    case 'ADD_ROW':
+      return {
+        ...state,
+        boxes:
+          action.position === 'top'
+            ? state.boxes.map((box) => ({ ...box, row: box.row + 1 }))
+            : state.boxes,
+        rows: state.rows + 1,
+        version: state.version + 1,
+      };
 
-      case 'RESET':
-        return {
-          ...DEFAULT_STATE,
-          boxes: createInitialBoxes(state.rows, state.cols),
-          version: 1,
-        };
+    case 'ADD_COLUMN':
+      return {
+        ...state,
+        boxes:
+          action.position === 'left'
+            ? state.boxes.map((box) => ({ ...box, col: box.col + 1 }))
+            : state.boxes,
+        cols: state.cols + 1,
+        version: state.version + 1,
+      };
 
-      case 'UPDATE_GRID_SIZE': {
-        const updatedBoxes = state.boxes
-          .map((box) => ({
-            ...box,
-            row: Math.min(box.row, action.rows - 1),
-            col: Math.min(box.col, action.cols - 1),
-          }))
-          .filter(
-            (box, index, self) =>
-              self.findIndex((b) => b.row === box.row && b.col === box.col) ===
-              index
-          );
+    case 'UPDATE_GRID_SIZE':
+      return {
+        ...state,
+        rows: action.rows,
+        cols: action.cols,
+        version: state.version + 1,
+      };
 
-        // Add new boxes for expanded areas
-        for (let row = 0; row < action.rows; row++) {
-          for (let col = 0; col < action.cols; col++) {
-            const existingBox = updatedBoxes.find(
-              (box) => box.row === row && box.col === col
-            );
+    case 'UPDATE_FONT':
+      return {
+        ...state,
+        font: action.font,
+        version: state.version + 1,
+      };
 
-            if (!existingBox) {
-              updatedBoxes.push({
-                row,
-                col,
-                letter: null,
-              });
-            }
-          }
-        }
+    case 'RESET':
+      return {
+        ...state,
+        boxes: createInitialBoxes(
+          INITIAL_GRID_SIZE.rows,
+          INITIAL_GRID_SIZE.cols
+        ),
+        cols: INITIAL_GRID_SIZE.cols,
+        rows: INITIAL_GRID_SIZE.rows,
+        font: 'var(--font-default)',
+        hints: [],
+        version: state.version + 1,
+      };
 
-        newState = {
-          ...state,
-          rows: action.rows,
-          cols: action.cols,
-          boxes: updatedBoxes,
-        };
-        break;
-      }
-
-      case 'UPDATE_FONT':
-        newState = {
-          ...state,
-          font: action.font,
-        };
-        break;
-
-      case 'SET_STATE':
-        return action.state;
-
-      default:
-        throw new Error(
-          `Unhandled action type: ${(action as { type: string }).type}`
-        );
+    case 'ADD_HINT': {
+      return {
+        ...state,
+        hints: [
+          ...state.hints,
+          {
+            id: action.boxId,
+            boxId: action.boxId,
+            direction: action.direction,
+            length: action.length,
+            number: action.number,
+            text: '',
+          },
+        ],
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.boxId ? { ...box, hint: action.number } : box
+        ),
+      };
     }
 
-    // Validate the new state
-    if (!newState.boxes || !Array.isArray(newState.boxes)) {
-      throw new Error('Invalid state: boxes must be an array');
-    }
-    if (newState.rows < 1 || newState.cols < 1) {
-      throw new Error(
-        `Invalid dimensions: rows=${newState.rows}, cols=${newState.cols}`
-      );
+    case 'REMOVE_HINT':
+      return {
+        ...state,
+        hints: state.hints.filter((hint) => hint.id !== action.id),
+      };
+
+    case 'UPDATE_HINT_TEXT':
+      return {
+        ...state,
+        hints: state.hints.map((hint) =>
+          hint.id === action.id ? { ...hint, text: action.text } : hint
+        ),
+      };
+
+    case 'REMOVE_HINT':
+      return {
+        ...state,
+        hints: state.hints.filter((hint) => hint.id !== action.id),
+      };
+
+    case 'UPDATE_HINT_NUMBER':
+      return {
+        ...state,
+        hints: state.hints.map((hint) =>
+          hint.id === action.id ? { ...hint, number: action.number } : hint
+        ),
+      };
+
+    case 'UPDATE_LETTER':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, letter: action.letter } : box
+        ),
+      };
+
+    case 'TOGGLE_ARROW_DOWN':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, arrowDown: !box.arrowDown } : box
+        ),
+      };
+
+    case 'TOGGLE_ARROW_RIGHT':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id
+            ? { ...box, arrowRight: !box.arrowRight }
+            : box
+        ),
+      };
+
+    case 'TOGGLE_BLACK':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, black: !box.black } : box
+        ),
+      };
+
+    case 'TOGGLE_STOP_DOWN':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, stopDown: !box.stopDown } : box
+        ),
+      };
+
+    case 'TOGGLE_STOP_RIGHT':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, stopRight: !box.stopRight } : box
+        ),
+      };
+
+    case 'SET_HINT':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id ? { ...box, hint: action.hint } : box
+        ),
+      };
+
+    case 'SET_STATE': {
+      return action.state;
     }
 
-    return newState;
-  } catch (error) {
-    console.error('Error in grid reducer:', error);
-    console.error('Action:', action);
-    console.error('Current state:', state);
-    return state;
+    default:
+      return state;
   }
 }

@@ -7,16 +7,15 @@ import { ShowBox } from './ShowBox';
 
 type GridCellProps = {
   box: Box;
-
   editingBox: Box | null;
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
-  onUpdateArrowDown: (id: string) => void;
-  onUpdateArrowRight: (id: string) => void;
-  onUpdateBlack: (id: string, isBlack: boolean) => void;
-  onUpdateStopDown: (id: string) => void;
-  onUpdateStopRight: (id: string) => void;
+  onToggleArrowDown: (id: string) => void;
+  onToggleArrowRight: (id: string) => void;
+  onToggleBlack: (id: string, isBlack: boolean) => void;
+  onToggleStopDown: (id: string) => void;
+  onToggleStopRight: (id: string) => void;
   toggleHint: (id: string) => void;
 };
 
@@ -24,13 +23,13 @@ export const GridCell = memo(function GridCell({
   box,
   editingBox,
   onLetterChange,
-  onUpdateArrowDown,
-  onUpdateArrowRight,
-  onUpdateBlack,
+  onToggleArrowDown,
+  onToggleArrowRight,
+  onToggleBlack,
   onNavigate,
   onSetEditingBox,
-  onUpdateStopDown,
-  onUpdateStopRight,
+  onToggleStopDown,
+  onToggleStopRight,
   toggleHint,
 }: GridCellProps) {
   const boxSize = INITIAL_BOX_SIZE;
@@ -54,13 +53,13 @@ export const GridCell = memo(function GridCell({
           isSelected={editingBox === box}
           letter={box.letter}
           toggleHint={toggleHint}
-          onArrowDown={() => onUpdateArrowDown(getId(box))}
-          onArrowRight={() => onUpdateArrowRight(getId(box))}
-          onBlack={() => onUpdateBlack(getId(box), !box.black)}
+          onArrowDown={() => onToggleArrowDown(getId(box))}
+          onArrowRight={() => onToggleArrowRight(getId(box))}
+          onBlack={() => onToggleBlack(getId(box), !box.black)}
           onLetterChange={onLetterChange}
           onNavigate={(direction) => onNavigate(box, direction)}
-          onStopDown={() => onUpdateStopDown(getId(box))}
-          onStopRight={() => onUpdateStopRight(getId(box))}
+          onStopDown={() => onToggleStopDown(getId(box))}
+          onStopRight={() => onToggleStopRight(getId(box))}
         />
       ) : (
         <ShowBox

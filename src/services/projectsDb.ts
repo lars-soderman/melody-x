@@ -42,17 +42,20 @@ function dbToAppProject(dbProject: DbProject): Project {
     })
   );
 
-  // Parse and validate hints from JSON
-  const hints = ((dbProject.hints as DbHint[]) || []).map(
-    (hint): Hint => ({
-      boxId: hint.boxId,
-      direction: hint.direction as HintDirection,
-      id: hint.id,
-      length: hint.length,
-      number: hint.number,
-      text: hint.text,
-    })
-  );
+  // Parse and validate hints from JSON, ensuring numbers are valid
+  const hints = ((dbProject.hints as DbHint[]) || [])
+    .map(
+      (hint): Hint => ({
+        boxId: hint.boxId,
+        direction: hint.direction as HintDirection,
+        id: hint.id,
+        length: hint.length,
+        number:
+          typeof hint.number === 'number' && hint.number > 0 ? hint.number : 1,
+        text: hint.text,
+      })
+    )
+    .sort((a, b) => a.number - b.number); // Sort by number to ensure sequential ordering
 
   return {
     id: dbProject.id,

@@ -17,11 +17,11 @@ type CrosswordGridProps = {
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
-  onUpdateArrowDown: (id: string) => void;
-  onUpdateArrowRight: (id: string) => void;
-  onUpdateBlack: (id: string, isBlack: boolean) => void;
-  onUpdateStopDown: (id: string) => void;
-  onUpdateStopRight: (id: string) => void;
+  onToggleArrowDown: (id: string) => void;
+  onToggleArrowRight: (id: string) => void;
+  onToggleBlack: (id: string, isBlack: boolean) => void;
+  onToggleStopDown: (id: string) => void;
+  onToggleStopRight: (id: string) => void;
   toggleHint: (id: string) => void;
 };
 
@@ -31,11 +31,11 @@ export function CrosswordGrid({
   minCol,
   maxCol,
   onLetterChange,
-  onUpdateArrowDown,
-  onUpdateArrowRight,
-  onUpdateBlack,
-  onUpdateStopDown,
-  onUpdateStopRight,
+  onToggleArrowDown,
+  onToggleArrowRight,
+  onToggleBlack,
+  onToggleStopDown,
+  onToggleStopRight,
   onNavigate,
   onSetEditingBox,
   toggleHint,
@@ -57,11 +57,11 @@ export function CrosswordGrid({
             onLetterChange={onLetterChange}
             onNavigate={onNavigate}
             onSetEditingBox={onSetEditingBox}
-            onUpdateArrowDown={onUpdateArrowDown}
-            onUpdateArrowRight={onUpdateArrowRight}
-            onUpdateBlack={onUpdateBlack}
-            onUpdateStopDown={onUpdateStopDown}
-            onUpdateStopRight={onUpdateStopRight}
+            onToggleArrowDown={onToggleArrowDown}
+            onToggleArrowRight={onToggleArrowRight}
+            onToggleBlack={onToggleBlack}
+            onToggleStopDown={onToggleStopDown}
+            onToggleStopRight={onToggleStopRight}
           />
         ))
       )}

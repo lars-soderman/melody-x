@@ -26,13 +26,13 @@ describe('CrosswordGrid', () => {
     onNavigate: jest.fn(),
     onSetEditingBox: jest.fn(),
     onUpdateArrow: jest.fn(),
-    onUpdateBlack: jest.fn(),
+    onToggleBlack: jest.fn(),
     onUpdateStop: jest.fn(),
     toggleHint: jest.fn(),
     handleRemoveColumn: jest.fn(),
     handleRemoveRow: jest.fn(),
-    onUpdateArrowDown: jest.fn(),
-    onUpdateArrowRight: jest.fn(),
+    onToggleArrowDown: jest.fn(),
+    onToggleArrowRight: jest.fn(),
   };
 
   it('renders grid cells', () => {
