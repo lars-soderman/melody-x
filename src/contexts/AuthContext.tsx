@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: getRedirectUrl(),
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -107,17 +107,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-export function getRedirectUrl() {
-  // During SSR, use environment variable
-  if (typeof window === 'undefined') {
-    return `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
-  }
-
-  // In the browser, use the current origin
-  return `${window.location.origin}/auth/callback`;
-}
-
-console.log('redirect url', getRedirectUrl());
 
 export const useAuth = () => useContext(AuthContext);

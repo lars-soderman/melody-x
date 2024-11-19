@@ -8,7 +8,6 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 
 type UserMetadata = {
   [key: string]: string | number | boolean | null;
@@ -117,7 +116,26 @@ export async function signOut() {
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
   await supabase.auth.signOut();
-  redirect('/login');
+
+  // Clear all auth-related cookies
+  const cookiesToClear = [
+    'sb-access-token',
+    'sb-refresh-token',
+    'sb-auth-token',
+  ];
+
+  cookiesToClear.forEach((name) => {
+    cookieStore.set(name, '', {
+      expires: new Date(0),
+      maxAge: 0,
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+  });
+
+  revalidatePath('/', 'layout');
+  return { success: true };
 }
 
 export async function handleAuthStateChange(

@@ -1,6 +1,7 @@
 'use client';
 
 import { getProjects } from '@/app/actions';
+import { SignOutButton } from '@/components/auth/SignOutButton';
 import { useAuth } from '@/contexts/AuthContext';
 import type { AppProject } from '@/types';
 import { useEffect, useState } from 'react';
@@ -37,12 +38,7 @@ export function ProjectListWrapper({ userId }: Props) {
     <>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Projects</h1>
-        <button
-          className="rounded bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600"
-          onClick={() => signOut()}
-        >
-          Logout
-        </button>
+        <SignOutButton />
       </div>
       {isLoading ? (
         <div>Loading projects...</div>
