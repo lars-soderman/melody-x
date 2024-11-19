@@ -4,9 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LoadingScreen } from './LoadingScreen';
 
 export function AuthWrapper({ children }: { children: React.ReactNode }) {
-  const { isInitialized } = useAuth();
+  const { isInitialized, isLoading } = useAuth();
 
-  if (!isInitialized) {
+  if (!isInitialized || isLoading) {
     return <LoadingScreen />;
   }
 

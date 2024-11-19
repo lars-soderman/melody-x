@@ -1,6 +1,6 @@
 import { Box } from '@/types';
 import { getId } from '@/utils/grid';
-import { GridCell } from './GridCell';
+import { GridCell } from './cell/GridCell';
 
 type CrosswordGridProps = {
   boxes: Box[];

@@ -1,28 +1,19 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 
 export function AuthButton() {
-  const { user, signOut, signInWithGoogle } = useAuth();
-  const router = useRouter();
+  const { user, signInWithGoogle, signOut } = useAuth();
 
-  const handleAuth = async (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    if (user) {
-      try {
+  const handleAuth = async () => {
+    try {
+      if (user) {
         await signOut();
-        router.push('/');
-      } catch (error) {
-        console.error('Error signing out:', error);
-      }
-    } else {
-      try {
+      } else {
         await signInWithGoogle();
-      } catch (error) {
-        console.error('Error signing in:', error);
       }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 

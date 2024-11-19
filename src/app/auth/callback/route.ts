@@ -5,29 +5,46 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-
-  if (code) {
+  try {
+    const requestUrl = new URL(request.url);
+    const code = requestUrl.searchParams.get('code');
     const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
-    try {
-      await supabase.auth.exchangeCodeForSession(code);
-
-      // Get the session to verify it worked
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (session) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-      }
-    } catch (error) {
-      console.error('Auth callback error:', error);
+    if (!code) {
+      console.error('No code in callback');
+      return NextResponse.redirect(
+        new URL('/login?error=No code provided', requestUrl.origin)
+      );
     }
-  }
 
-  // If anything fails, redirect to home
-  return NextResponse.redirect(new URL('/', request.url));
+    const supabase = createRouteHandlerClient({
+      cookies: () => cookieStore,
+    });
+
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error || !session) {
+      console.error('Session error:', error || 'No session created');
+      return NextResponse.redirect(
+        new URL('/login?error=Session creation failed', requestUrl.origin)
+      );
+    }
+
+    // Create response with redirect
+    const response = NextResponse.redirect(new URL('/', requestUrl.origin));
+
+    // Let Supabase handle the cookie setting
+    await supabase.auth.setSession(session);
+
+    console.log('Callback successful - session set');
+    return response;
+  } catch (error) {
+    console.error('Callback error:', error);
+    return NextResponse.redirect(
+      new URL('/login?error=Authentication failed', request.url)
+    );
+  }
 }

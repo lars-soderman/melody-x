@@ -1,77 +1,97 @@
 'use client';
+import { handleAuthStateChange, signOut as signOutAction } from '@/app/actions';
 import { supabase } from '@/lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type AuthContextType = {
+export type AuthContextType = {
   isInitialized: boolean;
   isLoading: boolean;
-  session: Session | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: () => Promise<{ provider: string; url: string } | void>;
   signOut: () => Promise<void>;
-  user: User | null;
+  user: Session['user'] | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   isInitialized: false,
   isLoading: true,
-  session: null,
-  user: null,
   signIn: async () => {},
-  signInWithGoogle: async () => {},
+  signInWithGoogle: async () => ({ provider: '', url: '' }),
   signOut: async () => {},
+  user: null,
 });
 
-type AuthProviderProps = {
-  children: React.ReactNode;
-  initialSession: Session | null;
-};
-
-export function AuthProvider({ children, initialSession }: AuthProviderProps) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<Session['user'] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [session, setSession] = useState<Session | null>(initialSession);
-  const [user, setUser] = useState<User | null>(initialSession?.user ?? null);
+  const router = useRouter();
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-      setIsInitialized(true);
+    let mounted = true;
+
+    console.log('🔍 Auth: Initializing...');
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (mounted) {
+        console.log('🔍 Auth: Initial session check:', !!session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+        setIsInitialized(true);
+      }
     });
 
-    // Set initialized to true even if no auth change event fires
-    setIsInitialized(true);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔍 Auth: State change:', event, !!session);
+      await handleAuthStateChange(event, session);
 
-    return () => subscription.unsubscribe();
+      if (event === 'SIGNED_IN') {
+        setUser(session?.user ?? null);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      console.log('🔍 Auth: Cleanup');
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    setIsLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    setIsLoading(false);
     if (error) throw error;
   };
 
   const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+
+    if (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      await signOutAction();
+    } catch (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
   };
 
   return (
@@ -79,11 +99,10 @@ export function AuthProvider({ children, initialSession }: AuthProviderProps) {
       value={{
         isInitialized,
         isLoading,
-        session,
-        user,
         signIn,
         signInWithGoogle,
         signOut,
+        user,
       }}
     >
       {children}
@@ -91,10 +110,4 @@ export function AuthProvider({ children, initialSession }: AuthProviderProps) {
   );
 }
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

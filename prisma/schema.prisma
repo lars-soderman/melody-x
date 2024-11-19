@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  gridData  Json     @map("grid_data")
+  hints     Json?
+  isPublic  Boolean? @default(false) @map("is_public")
+  ownerId   String   @map("owner_id")
+
+  // Relations
+  owner         User                 @relation(fields: [ownerId], references: [id])
+  collaborators ProjectCollaborator[]
+
+  @@map("projects")
+}
+
+model User {
+  id              String  @id
+  email           String  @unique
+  rawUserMetaData Json    @map("raw_user_meta_data")
+
+  // Relations
+  ownedProjects         Project[]            @relation
+  collaborations        ProjectCollaborator[] @relation("collaborations")
+  addedCollaborations   ProjectCollaborator[] @relation("added_collaborations")
+
+  @@map("users")
+}
+
+model ProjectCollaborator {
+  projectId String    @map("project_id")
+  userId    String    @map("user_id")
+  addedAt   DateTime? @default(now()) @map("added_at")
+  addedById String?   @map("added_by")
+
+  // Relations
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation("collaborations", fields: [userId], references: [id])
+  addedBy   User?   @relation("added_collaborations", fields: [addedById], references: [id])
+
+  @@id([projectId, userId])
+  @@map("project_collaborators")
+}

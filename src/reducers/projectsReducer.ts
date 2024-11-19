@@ -1,6 +1,12 @@
 import { storage } from '@/utils/storage';
 import { ProjectsAction, ProjectsState } from './types/projectActions';
 
+// const initialState: ProjectsState = {
+//   ownedProjects: [],
+//   sharedProjects: [],
+//   isLoading: true,
+// };
+
 export const projectsReducer = (
   state: ProjectsState,
   action: ProjectsAction
@@ -9,35 +15,50 @@ export const projectsReducer = (
     case 'LOAD_PROJECTS':
       return {
         ...state,
-        projects: action.projects,
+        ownedProjects: action.ownedProjects,
+        sharedProjects: action.sharedProjects,
       };
 
     case 'CREATE_PROJECT': {
       return {
+        ...state,
         currentProjectId: action.project.id,
-        projects: [...state.projects, action.project],
+        ownedProjects: [...state.ownedProjects, action.project],
       };
     }
 
     case 'UPDATE_PROJECT': {
-      const updatedProjects = state.projects.map((p) =>
+      const updatedOwnedProjects = state.ownedProjects.map((p) =>
+        p.id === action.project.id ? action.project : p
+      );
+      const updatedSharedProjects = state.sharedProjects.map((p) =>
         p.id === action.project.id ? action.project : p
       );
 
       return {
         ...state,
-        projects: updatedProjects,
+        ownedProjects: updatedOwnedProjects,
+        sharedProjects: updatedSharedProjects,
       };
     }
 
     case 'DELETE_PROJECT': {
-      const updatedProjects = state.projects.filter((p) => p.id !== action.id);
+      const updatedOwnedProjects = state.ownedProjects.filter(
+        (p) => p.id !== action.id
+      );
+      const updatedSharedProjects = state.sharedProjects.filter(
+        (p) => p.id !== action.id
+      );
 
       const newState = {
-        projects: updatedProjects,
+        ...state,
+        ownedProjects: updatedOwnedProjects,
+        sharedProjects: updatedSharedProjects,
         currentProjectId:
           state.currentProjectId === action.id
-            ? (updatedProjects[0]?.id ?? null)
+            ? (updatedOwnedProjects[0]?.id ??
+              updatedSharedProjects[0]?.id ??
+              null)
             : state.currentProjectId,
       };
 
@@ -60,7 +81,8 @@ export const projectsReducer = (
     case 'IMPORT_PROJECT': {
       const newState = {
         ...state,
-        projects: [...state.projects, action.project],
+        ownedProjects: [...state.ownedProjects, action.project],
+        sharedProjects: [...state.sharedProjects, action.project],
         currentProjectId: action.project.id,
       };
 

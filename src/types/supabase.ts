@@ -23,58 +23,66 @@ export type Database = {
       [_ in never]: never;
     };
     Tables: {
+      project_collaborators: {
+        Insert: {
+          added_at?: string | null;
+          added_by?: string | null;
+          project_id: string;
+          user_id: string;
+        };
+        Relationships: [
+          {
+            columns: ['project_id'];
+            foreignKeyName: 'fk_project';
+            isOneToOne: false;
+            referencedColumns: ['id'];
+            referencedRelation: 'projects';
+          },
+        ];
+        Row: {
+          added_at: string | null;
+          added_by: string | null;
+          project_id: string;
+          user_id: string;
+        };
+        Update: {
+          added_at?: string | null;
+          added_by?: string | null;
+          project_id?: string;
+          user_id?: string;
+        };
+      };
       projects: {
         Insert: {
-          box_size?: number | null;
-          boxes?: Json | null;
-          cols?: number | null;
-          compressed?: boolean | null;
           created_at?: string;
-          created_by: string;
-          font?: string | null;
-          grid_data?: Json;
+          grid_data: Json;
           hints?: Json | null;
           id?: string;
           is_public?: boolean | null;
           name: string;
-          rows?: number | null;
+          owner_id?: string;
           updated_at?: string;
-          user_id: string;
         };
         Relationships: [];
         Row: {
-          box_size: number | null;
-          boxes: Json | null;
-          cols: number | null;
-          compressed: boolean | null;
           created_at: string;
-          created_by: string;
-          font: string | null;
           grid_data: Json;
           hints: Json | null;
           id: string;
           is_public: boolean | null;
           name: string;
-          rows: number | null;
+          owner_id: string;
           updated_at: string;
-          user_id: string;
         };
         Update: {
-          box_size?: number | null;
-          boxes?: Json | null;
-          cols?: number | null;
-          compressed?: boolean | null;
           created_at?: string;
-          created_by?: string;
-          font?: string | null;
           grid_data?: Json;
           hints?: Json | null;
           id?: string;
           is_public?: boolean | null;
           name?: string;
-          rows?: number | null;
+          owner_id?: string;
           updated_at?: string;
-          user_id?: string;
         };
       };
     };

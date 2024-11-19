@@ -19,8 +19,9 @@ export type GridState = {
   version: number;
 };
 
-export type Project = {
+export type CrosswordProject = {
   boxes: Box[];
+  collaborators?: ProjectCollaborator[];
   cols: number;
   createdAt: string;
   createdBy: string;
@@ -28,7 +29,9 @@ export type Project = {
   hints: Hint[];
   id: string;
   isPublic?: boolean;
+  is_shared?: boolean;
   name: string;
+  owner_id: string;
   rows: number;
   updatedAt: string;
 };
@@ -44,7 +47,15 @@ export type Hint = {
   text: string;
 };
 
-// export type HintState = {
-//   hints: Hint[];
-//   version: number;
-// };
+export type ProjectCollaborator = {
+  added_at: string;
+  added_by: string;
+  project_id: string;
+  user?: {
+    display_name?: string;
+    email: string;
+  };
+  user_id: string;
+};
+
+export type ProjectAccess = 'owner' | 'collaborator' | 'none';

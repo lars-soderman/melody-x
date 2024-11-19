@@ -1,12 +1,19 @@
 import { Project } from '@/types';
 
 export type ProjectsState = {
-  currentProjectId: string;
+  currentProjectId: string | null;
+  isLoading: boolean;
+  ownedProjects: Project[];
   projects: Project[];
+  sharedProjects: Project[];
 };
 
 export type ProjectsAction =
-  | { projects: Project[]; type: 'LOAD_PROJECTS' }
+  | {
+      ownedProjects: Project[];
+      sharedProjects: Project[];
+      type: 'LOAD_PROJECTS';
+    }
   | { project: Project; type: 'CREATE_PROJECT' }
   | { project: Project; type: 'UPDATE_PROJECT' }
   | { id: string; type: 'DELETE_PROJECT' }

@@ -1,7 +1,7 @@
 'use client';
+import { ArrowDown } from '@/components/ui/icons/arrowDown';
+import { ArrowRight } from '@/components/ui/icons/arrowRight';
 import { Box } from '@types';
-import { ArrowDown } from '../icons/arrowDown';
-import { ArrowRight } from '../icons/arrowRight';
 
 type ShowBoxProps = Box & {
   black?: boolean;

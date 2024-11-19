@@ -1,6 +1,6 @@
 'use client';
 
-import { OptionsButton } from '@components/OptionsButton';
+import { OptionsButton } from '@/components/grid/settings/OptionsButton';
 import { useRef } from 'react';
 
 type BoxInputProps = {

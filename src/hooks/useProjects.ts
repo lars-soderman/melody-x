@@ -1,10 +1,12 @@
 import { createDefaultProject } from '@/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import { projectsReducer } from '@/reducers/projectsReducer';
+import { ProjectsAction, ProjectsState } from '@/reducers/types/projectActions';
 import {
   createProjectDB,
   deleteProjectDB,
-  getProjectsDB,
+  getOwnedProjects,
+  getSharedProjects,
   updateProjectDB,
 } from '@/services/projectsDb';
 import { Project } from '@/types';
@@ -12,27 +14,45 @@ import { useCallback, useEffect, useReducer } from 'react';
 
 export function useProjects() {
   const { user } = useAuth();
-  const [state, dispatch] = useReducer(projectsReducer, {
-    currentProjectId: '',
+  const [state, dispatch] = useReducer<
+    React.Reducer<ProjectsState, ProjectsAction>
+  >(projectsReducer, {
+    currentProjectId: null,
+    ownedProjects: [],
     projects: [],
+    sharedProjects: [],
+    isLoading: true,
   });
 
-  useEffect(() => {
-    if (!user) {
-      dispatch({ type: 'LOAD_PROJECTS', projects: [] });
-    }
-  }, [user]);
-
   const loadProjects = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      dispatch({
+        type: 'LOAD_PROJECTS',
+        ownedProjects: [],
+        sharedProjects: [],
+      });
+      return;
+    }
 
     try {
-      const projects = await getProjectsDB();
-      dispatch({ type: 'LOAD_PROJECTS', projects });
+      const [ownedProjects, sharedProjects] = await Promise.all([
+        getOwnedProjects(user.id) as Promise<Project[]>,
+        getSharedProjects(user.id),
+      ]);
+
+      dispatch({
+        type: 'LOAD_PROJECTS',
+        ownedProjects,
+        sharedProjects,
+      });
     } catch (error) {
       console.error('Error loading projects:', error);
     }
   }, [user]);
+
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
 
   const createProject = useCallback(
     async (name: string) => {
@@ -81,9 +101,9 @@ export function useProjects() {
 
   return {
     ...state,
+    loadProjects,
     createProject,
     deleteProject,
-    loadProjects,
     updateProject,
     setCurrentProjectId: (id: string) =>
       dispatch({ type: 'SELECT_PROJECT', id }),

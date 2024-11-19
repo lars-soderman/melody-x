@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
+import { ImportButton } from '@/components/projects/ImportButton';
 import { Project } from '@/types';
 import { AuthButton } from '@components/AuthButton';
-import { ImportButton } from '@components/ImportButton';
 import { Popover } from '@components/Popover';
 
 type ProjectsMenuProps = {

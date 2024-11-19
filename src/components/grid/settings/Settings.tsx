@@ -1,10 +1,10 @@
-import { Box, Project } from '@/types';
+import { Box, CrosswordProject } from '@/types';
 import { useEffect, useState } from 'react';
 
 // import { DownloadButton } from './DownloadButton';
-import { ExportButton } from './ExportButton';
-import { FontSelector } from './FontSelector';
-import { Popover } from './Popover';
+import { ExportButton } from '@/components/grid/settings/ExportButton';
+import { FontSelector } from '@/components/grid/settings/FontSelector';
+import { Popover } from '@/components/ui/Popover';
 import { ResetButton } from './ResetButton';
 
 interface ExportProps {
@@ -23,7 +23,7 @@ interface SettingsProps {
   onBoxSizeChange: (size: number) => void;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
-  project: Project;
+  project: CrosswordProject;
   rows: number;
   showGridResize: boolean;
   toggleGridResize: () => void;
@@ -36,7 +36,6 @@ export function Settings({
   font,
   onGridSizeChange,
   onReset,
-  project,
   rows,
   updateFont,
   showGridResize,
@@ -149,11 +148,6 @@ export function Settings({
             </span>
             <ExportButton {...exportProps} />
           </div>
-
-          {/* <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Download as JSON</span>
-            <DownloadButton project={project} />
-          </div> */}
         </div>
       </Popover>
     </div>

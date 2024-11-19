@@ -287,3 +287,46 @@ This architecture provides:
 - 📦 Modular code organization
 - 🔄 Predictable state updates
 - 🎯 Clear separation of concerns
+
+## Component Organization
+
+### Shared Components (`src/components/`)
+
+- Components used across multiple routes or other components
+- Generic UI components
+- Feature-specific reusable components
+
+### Route Components (`src/app/components/`)
+
+- Components specific to a single route
+- Components only used by one other component
+
+## 🔧 Technical Debt & Improvements
+
+1. **Component Organization**
+
+   - Move shared components to appropriate locations
+   - Standardize component imports
+   - Document component dependencies
+
+2. **State Management**
+
+   - Split grid reducer into smaller modules
+   - Move action types to separate file
+
+3. **Performance**
+
+   - Virtualize grid for large puzzles
+   - Optimize re-renders
+   - Memoize expensive calculations
+
+4. **Type Safety**
+   - Stricter action types
+   - Branded types for IDs
+   - Better grid-cols TypeScript support
+
+### Code Cleanup
+
+- Clean up commented code
+- Remove console.logs
+- Standardize prop patterns

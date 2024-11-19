@@ -1,6 +1,6 @@
+import { ArrowDown } from '@/components/ui/icons/arrowDown';
+import { ArrowRight } from '@/components/ui/icons/arrowRight';
 import { useState } from 'react';
-import { ArrowDown } from '../icons/arrowDown';
-import { ArrowRight } from '../icons/arrowRight';
 
 type OptionsButtonProps = {
   onArrowDown: () => void;

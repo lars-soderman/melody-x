@@ -1,35 +1,30 @@
-import { useAuth } from '@/hooks/useAuth';
+'use client';
+
+import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { LoadingScreen } from './LoadingScreen';
 
-type ProtectedRouteProps = {
+type Props = {
   children: React.ReactNode;
   redirectTo?: string;
 };
 
-export function ProtectedRoute({
-  children,
-  redirectTo = '/login',
-}: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+export function ProtectedRoute({ children, redirectTo = '/login' }: Props) {
+  const { user, isLoading, isInitialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      // Store the attempted URL to redirect back after login
+    if (isInitialized && !isLoading && !user) {
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
       }
       router.push(redirectTo);
     }
-  }, [user, isLoading, router, redirectTo]);
+  }, [isInitialized, isLoading, user, router, redirectTo]);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
-    );
+  if (!isInitialized || isLoading) {
+    return <LoadingScreen />;
   }
 
   return user ? <>{children}</> : null;
