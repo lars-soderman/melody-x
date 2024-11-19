@@ -1,9 +1,8 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium } from '@playwright/test';
 
-export async function globalSetup(config: FullConfig) {
+export async function globalSetup() {
   const browser = await chromium.launch();
   const context = await browser.newContext();
-  const page = await context.newPage();
 
   // Add crypto and localStorage polyfills
   await context.addInitScript(() => {
@@ -43,5 +42,4 @@ export async function globalSetup(config: FullConfig) {
 
   await browser.close();
 }
-
 export default globalSetup;

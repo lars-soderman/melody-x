@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Editor } from '@/components/grid/Editor';
 import { mapProjectFromDB } from '@/lib/mappers';
 import { prisma } from '@/lib/prisma';

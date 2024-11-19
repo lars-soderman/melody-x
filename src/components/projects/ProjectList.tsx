@@ -1,11 +1,11 @@
 'use client';
 
-import { CrosswordProject } from '@/types';
+import { AppProject } from '@/types';
 import { CreateProjectButton } from './CreateProjectButton';
 import { ProjectCard } from './ProjectCard';
 
 type Props = {
-  projects: CrosswordProject[];
+  projects: AppProject[];
   userId: string;
 };
 

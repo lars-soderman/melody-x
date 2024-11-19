@@ -2,7 +2,6 @@
 import { handleAuthStateChange, signOut as signOutAction } from '@/app/actions';
 import { supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 export type AuthContextType = {
@@ -27,7 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<Session['user'] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     let mounted = true;

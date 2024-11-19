@@ -1,7 +1,6 @@
-import type { Project } from '@/types';
+import type { AppProject, Box, Hint } from '@/types';
 import type { Prisma } from '@prisma/client';
 
-// Define the exact type that Prisma returns
 type PrismaProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
     collaborators: {
@@ -15,19 +14,9 @@ type PrismaProjectWithRelations = Prisma.ProjectGetPayload<{
 
 export function mapProjectFromDB(
   dbProject: PrismaProjectWithRelations
-): Project {
+): AppProject {
   const gridData = dbProject.gridData as {
-    boxes: Array<{
-      arrowDown?: boolean;
-      arrowRight?: boolean;
-      black?: boolean;
-      col: number;
-      hint?: number;
-      letter?: string;
-      row: number;
-      stopDown?: boolean;
-      stopRight?: boolean;
-    }>;
+    boxes: Box[];
     cols: number;
     font: string;
     rows: number;
@@ -42,7 +31,7 @@ export function mapProjectFromDB(
     cols: gridData.cols,
     rows: gridData.rows,
     font: gridData.font,
-    hints: (dbProject.hints as any[]) || [],
+    hints: (dbProject.hints as Hint[]) || [],
     createdBy: dbProject.ownerId,
     owner_id: dbProject.ownerId,
     isPublic: dbProject.isPublic || false,

@@ -1,4 +1,4 @@
-import { Project } from '@/types';
+import { AppProject } from '@/types';
 
 const STORAGE_PREFIX = 'melody-x';
 const STORAGE_INDEX = `${STORAGE_PREFIX}:index`;
@@ -109,7 +109,7 @@ export const storage = {
     storage.setItem(STORAGE_INDEX, JSON.stringify(index));
   },
 
-  getProject: (id: string): Project | null => {
+  getProject: (id: string): AppProject | null => {
     try {
       // Find project by ID in all stored projects
       const key = Object.keys(storageManager.data).find(
@@ -126,7 +126,7 @@ export const storage = {
     }
   },
 
-  saveProject: (project: Project): boolean => {
+  saveProject: (project: AppProject): boolean => {
     try {
       if (!project.id.includes('new-') && !canCreateProject()) {
         return false;

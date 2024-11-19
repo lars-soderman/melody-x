@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { LoginForm } from '@/components/auth/LoginForm';
 import { getUser } from '@/lib/auth';
 import { redirect } from 'next/navigation';

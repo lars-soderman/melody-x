@@ -2,7 +2,7 @@
 
 import { getProjects } from '@/app/actions';
 import { useAuth } from '@/contexts/AuthContext';
-import type { CrosswordProject } from '@/types';
+import type { AppProject } from '@/types';
 import { useEffect, useState } from 'react';
 import { ProjectList } from './ProjectList';
 
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function ProjectListWrapper({ userId }: Props) {
-  const [projects, setProjects] = useState<CrosswordProject[]>([]);
+  const [projects, setProjects] = useState<AppProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { signOut } = useAuth();
 

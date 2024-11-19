@@ -1,15 +1,16 @@
+import {
+  createProject,
+  deleteProject,
+  getProjects,
+  updateProject,
+} from '@/app/actions';
 import { createDefaultProject } from '@/constants';
 import { useAuth } from '@/contexts/AuthContext';
+import { mapProjectFromDB } from '@/lib/mappers';
 import { projectsReducer } from '@/reducers/projectsReducer';
 import { ProjectsAction, ProjectsState } from '@/reducers/types/projectActions';
-import {
-  createProjectDB,
-  deleteProjectDB,
-  getOwnedProjects,
-  getSharedProjects,
-  updateProjectDB,
-} from '@/services/projectsDb';
-import { Project } from '@/types';
+import type { AppProject } from '@/types';
+import type { CreateProjectInput } from '@/types/project';
 import { useCallback, useEffect, useReducer } from 'react';
 
 export function useProjects() {
@@ -35,10 +36,9 @@ export function useProjects() {
     }
 
     try {
-      const [ownedProjects, sharedProjects] = await Promise.all([
-        getOwnedProjects(user.id) as Promise<Project[]>,
-        getSharedProjects(user.id),
-      ]);
+      const projects = await getProjects(user.id);
+      const ownedProjects = projects.filter((p) => p.owner_id === user.id);
+      const sharedProjects = projects.filter((p) => p.owner_id !== user.id);
 
       dispatch({
         type: 'LOAD_PROJECTS',
@@ -54,14 +54,30 @@ export function useProjects() {
     loadProjects();
   }, [loadProjects]);
 
-  const createProject = useCallback(
+  const create = useCallback(
     async (name: string) => {
       if (!user) return false;
 
       try {
-        const project = createDefaultProject(name, user.id);
-        const createdProject = await createProjectDB(project);
-        dispatch({ type: 'CREATE_PROJECT', project: createdProject });
+        const defaultProject = createDefaultProject(name, user.id);
+
+        const createInput: CreateProjectInput = {
+          name: defaultProject.name,
+          ownerId: user.id,
+          gridData: {
+            boxes: defaultProject.boxes,
+            cols: defaultProject.cols,
+            rows: defaultProject.rows,
+            font: defaultProject.font,
+          },
+          hints: defaultProject.hints,
+          isPublic: defaultProject.isPublic,
+        };
+
+        const prismaProject = await createProject(createInput);
+        const appProject = mapProjectFromDB(prismaProject);
+
+        dispatch({ type: 'CREATE_PROJECT', project: appProject });
         return true;
       } catch (error) {
         console.error('Error creating project:', error);
@@ -71,12 +87,12 @@ export function useProjects() {
     [user]
   );
 
-  const deleteProject = useCallback(
+  const remove = useCallback(
     async (id: string) => {
       if (!user) return;
 
       try {
-        await deleteProjectDB(id);
+        await deleteProject(id);
         dispatch({ type: 'DELETE_PROJECT', id });
       } catch (error) {
         console.error('Error deleting project:', error);
@@ -85,13 +101,14 @@ export function useProjects() {
     [user]
   );
 
-  const updateProject = useCallback(
-    async (project: Project) => {
+  const update = useCallback(
+    async (project: AppProject) => {
       if (!user) return;
 
       try {
-        await updateProjectDB(project.id, project);
-        dispatch({ type: 'UPDATE_PROJECT', project });
+        const prismaProject = await updateProject(project.id, project);
+        const appProject = mapProjectFromDB(prismaProject);
+        dispatch({ type: 'UPDATE_PROJECT', project: appProject });
       } catch (error) {
         console.error('Error updating project:', error);
       }
@@ -101,13 +118,8 @@ export function useProjects() {
 
   return {
     ...state,
-    loadProjects,
-    createProject,
-    deleteProject,
-    updateProject,
-    setCurrentProjectId: (id: string) =>
-      dispatch({ type: 'SELECT_PROJECT', id }),
-    importProject: (project: Project) =>
-      dispatch({ type: 'IMPORT_PROJECT', project }),
+    create,
+    update,
+    remove,
   };
 }

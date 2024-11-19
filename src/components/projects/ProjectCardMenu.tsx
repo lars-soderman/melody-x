@@ -1,10 +1,10 @@
-import { Project } from '@/types';
+import { AppProject } from '@/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type ProjectCardMenuProps = {
   onDelete: () => void;
   onRename: () => void;
-  project: Project;
+  project: AppProject;
 };
 
 export function ProjectCardMenu({

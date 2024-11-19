@@ -1,13 +1,10 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createRouteHandlerClient({
-    cookies: () => cookies(),
-  });
+  const supabase = createMiddlewareClient({ req, res });
 
   const {
     data: { session },
@@ -22,10 +19,11 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith('/auth');
 
   if (!session && !isPublicRoute) {
-    console.log('No session, redirecting to login');
-    return NextResponse.redirect(new URL('/login', req.url));
+    const redirectUrl = new URL('/login', req.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
+  // Return the response with any modified cookies
   return res;
 }
 

@@ -1,12 +1,12 @@
 'use client';
 
 import { DEFAULT_STATE, INITIAL_GRID_SIZE } from '@/constants';
-import { GridState, Project } from '@/types';
+import { AppProject, GridState } from '@/types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { gridReducer } from '../reducers/gridReducer';
 
-const getInitialState = (project: Project | null): GridState => {
+const getInitialState = (project: AppProject | null): GridState => {
   if (project) {
     return {
       boxes: project.boxes,
@@ -27,8 +27,8 @@ const getInitialState = (project: Project | null): GridState => {
 };
 
 export function useGrid(
-  project: Project | null,
-  onProjectChange: (updatedProject: Project) => void
+  project: AppProject | null,
+  onProjectChange: (updatedProject: AppProject) => void
 ) {
   const [state, dispatch] = useReducer(gridReducer, getInitialState(project));
   const prevProjectIdRef = useRef<string | null>(project?.id ?? null);

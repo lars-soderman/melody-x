@@ -1,9 +1,9 @@
-import { Project } from '@/types';
+import { AppProject } from '@/types';
 
 const CELL_SIZE = 10;
 const STROKE_WIDTH = 0.5;
 
-export const RenderGrid = ({ project }: { project: Project }) => {
+export const RenderGrid = ({ project }: { project: AppProject }) => {
   const width = project.cols * CELL_SIZE;
   const height = project.rows * CELL_SIZE;
 

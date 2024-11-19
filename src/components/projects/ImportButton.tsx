@@ -1,8 +1,8 @@
-import { Project } from '@/types';
+import { AppProject } from '@/types';
 import { useRef } from 'react';
 
 type ImportButtonProps = {
-  onImport: (project: Project) => void;
+  onImport: (project: AppProject) => void;
 };
 
 export function ImportButton({ onImport }: ImportButtonProps) {
@@ -16,7 +16,7 @@ export function ImportButton({ onImport }: ImportButtonProps) {
 
     try {
       const text = await file.text();
-      const project: Project = JSON.parse(text);
+      const project: AppProject = JSON.parse(text);
       if (
         !project.id ||
         !project.name ||

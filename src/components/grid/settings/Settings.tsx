@@ -1,4 +1,4 @@
-import { Box, CrosswordProject } from '@/types';
+import { AppProject, Box } from '@/types';
 import { useEffect, useState } from 'react';
 
 // import { DownloadButton } from './DownloadButton';
@@ -23,7 +23,7 @@ interface SettingsProps {
   onBoxSizeChange: (size: number) => void;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
-  project: CrosswordProject;
+  project: AppProject;
   rows: number;
   showGridResize: boolean;
   toggleGridResize: () => void;

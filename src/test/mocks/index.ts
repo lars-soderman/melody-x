@@ -1,6 +1,7 @@
-import { Project } from '@/types';
+import { AppProject } from '@/types';
 
-export const mockProject: Project = {
+export const mockProject: AppProject = {
+  owner_id: 'test-user',
   id: 'test-id',
   name: 'Test Project',
   rows: 9,

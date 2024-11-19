@@ -1,18 +1,18 @@
 import { useState } from 'react';
 
+import { AuthButton } from '@/app/components/AuthButton';
 import { ImportButton } from '@/components/projects/ImportButton';
-import { Project } from '@/types';
-import { AuthButton } from '@components/AuthButton';
-import { Popover } from '@components/Popover';
+import { Popover } from '@/components/ui/Popover';
+import { AppProject } from '@/types';
 
 type ProjectsMenuProps = {
   createProject: (name: string) => void;
-  currentProject: Project | null;
+  currentProject: AppProject | null;
   deleteProject: (id: string) => void;
-  importProject: (project: Project) => void;
+  importProject: (project: AppProject) => void;
   onSelectProject: (projectId: string) => void;
-  projects: Project[];
-  updateProject: (project: Project) => void;
+  projects: AppProject[];
+  updateProject: (project: AppProject) => void;
 };
 
 export function ProjectsMenu({
@@ -67,7 +67,7 @@ export function ProjectsMenu({
     }
   };
 
-  const handleUpdateName = (project: Project) => {
+  const handleUpdateName = (project: AppProject) => {
     if (editingName.trim() && editingName !== project.name) {
       updateProject({
         ...project,

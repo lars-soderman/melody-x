@@ -1,12 +1,18 @@
 'use server';
 
+import { mapProjectFromDB } from '@/lib/mappers';
 import { prisma } from '@/lib/prisma';
-import { CrosswordProject } from '@/types';
+import { AppProject } from '@/types';
 import { CreateProjectInput } from '@/types/project';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+
+type UserMetadata = {
+  [key: string]: string | number | boolean | null;
+};
 
 export async function createProject(data: CreateProjectInput) {
   try {
@@ -31,7 +37,7 @@ export async function createProject(data: CreateProjectInput) {
         data: {
           id: data.ownerId,
           email: supabaseUser.email!,
-          rawUserMetaData: supabaseUser.user_metadata || {},
+          rawUserMetaData: (supabaseUser.user_metadata as UserMetadata) || {},
         },
       });
     }
@@ -65,20 +71,32 @@ export async function createProject(data: CreateProjectInput) {
 
 export async function updateProject(
   projectId: string,
-  data: Partial<CrosswordProject>
+  data: Partial<AppProject>
 ) {
   try {
     const project = await prisma.project.update({
       where: { id: projectId },
       data: {
-        gridData: data.gridData,
+        gridData: {
+          boxes: data.boxes,
+          cols: data.cols,
+          rows: data.rows,
+          font: data.font,
+        },
         hints: data.hints,
         name: data.name,
         updatedAt: new Date(),
       },
+      include: {
+        owner: true,
+        collaborators: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
-    // Revalidate the projects list and project page
     revalidatePath('/');
     revalidatePath(`/project/${projectId}`);
 
@@ -102,38 +120,43 @@ export async function signOut() {
   redirect('/login');
 }
 
-export async function handleAuthStateChange(event: string, session: any) {
+export async function handleAuthStateChange(
+  event: AuthChangeEvent,
+  session: Session | null
+) {
   const cookieStore = cookies();
 
   if (event === 'SIGNED_OUT') {
     // Clear auth cookies
     cookieStore.set('sb-auth-token', '', { maxAge: 0 });
     cookieStore.set('sb-refresh-token', '', { maxAge: 0 });
-  } else if (event === 'SIGNED_IN' && session) {
-    // Set auth cookies
-    cookieStore.set('sb-auth-token', session.access_token, {
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
-
-    if (session.refresh_token) {
-      cookieStore.set('sb-refresh-token', session.refresh_token, {
+  } else if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (session) {
+      // Set auth cookies
+      cookieStore.set('sb-auth-token', session.access_token, {
         path: '/',
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 1 week
       });
+
+      if (session.refresh_token) {
+        cookieStore.set('sb-refresh-token', session.refresh_token, {
+          path: '/',
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+        });
+      }
     }
   }
 }
 
-export async function getProjects(userId: string): Promise<CrosswordProject[]> {
+export async function getProjects(userId: string): Promise<AppProject[]> {
   if (!userId) return [];
 
   try {
-    const projects = await prisma.project.findMany({
+    const prismaProjects = await prisma.project.findMany({
       where: {
         ownerId: userId,
       },
@@ -150,7 +173,7 @@ export async function getProjects(userId: string): Promise<CrosswordProject[]> {
       },
     });
 
-    return projects;
+    return prismaProjects.map(mapProjectFromDB);
   } catch (error) {
     console.error('Error fetching projects:', error);
     return [];

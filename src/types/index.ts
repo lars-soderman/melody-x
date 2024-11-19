@@ -19,7 +19,7 @@ export type GridState = {
   version: number;
 };
 
-export type CrosswordProject = {
+export type AppProject = {
   boxes: Box[];
   collaborators?: ProjectCollaborator[];
   cols: number;

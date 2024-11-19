@@ -1,10 +1,10 @@
 'use client';
 
-import { CrosswordProject } from '@/types';
+import { AppProject } from '@/types';
 import { useRouter } from 'next/navigation';
 
 type Props = {
-  project: CrosswordProject;
+  project: AppProject;
 };
 
 export function ProjectCard({ project }: Props) {

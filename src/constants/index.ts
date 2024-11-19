@@ -1,4 +1,4 @@
-import { Box, Project } from '@/types';
+import { AppProject, Box } from '@/types';
 import { createInitialBoxes } from '@/utils/grid';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,10 +16,11 @@ export const DEFAULT_STATE = {
   font: 'var(--font-default)',
 } as const;
 
-export function createDefaultProject(name: string, userId: string): Project {
+export function createDefaultProject(name: string, userId: string): AppProject {
   return {
     id: uuidv4(),
     name,
+    owner_id: userId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     ...DEFAULT_STATE,

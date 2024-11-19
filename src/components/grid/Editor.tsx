@@ -5,7 +5,7 @@ import { CrosswordGrid } from '@/components/grid/CrosswordGrid';
 import { INITIAL_BOX_SIZE } from '@/constants';
 import { useGrid } from '@/hooks/useGrid';
 import { useGridNavigation } from '@/hooks/useGridNavigation';
-import { Box, CrosswordProject } from '@/types';
+import { AppProject, Box } from '@/types';
 import {
   getMaxCol,
   getMaxRow,
@@ -19,26 +19,24 @@ import { AddGridButtons } from './AddGridButtons';
 import { RemoveButtons } from './RemoveButtons';
 import { Settings } from './settings/Settings';
 
-export function Editor({ project }: { project: CrosswordProject }) {
+export function Editor({ project }: { project: AppProject }) {
   const [confirmingRemove, setConfirmingRemove] = useState<{
     index: number;
     type: 'row' | 'column';
   } | null>(null);
   const [showGridResize, setShowGridResize] = useState(false);
 
-  const saveProject = useCallback(async (updatedProject: CrosswordProject) => {
+  const saveProject = useCallback(async (updatedProject: AppProject) => {
     try {
-      const projectData: Partial<CrosswordProject> = {
+      const projectData: Partial<AppProject> = {
         name: updatedProject.name,
-        gridData: {
-          boxes: updatedProject.boxes,
-          cols: updatedProject.cols,
-          font: updatedProject.font,
-          rows: updatedProject.rows,
-        },
+        boxes: updatedProject.boxes,
+        cols: updatedProject.cols,
+        font: updatedProject.font,
+        rows: updatedProject.rows,
         hints: updatedProject.hints.map((hint) => ({
           ...hint,
-          direction: hint.direction === 'vertical' ? 'down' : 'across',
+          direction: hint.direction === 'vertical' ? 'vertical' : 'horizontal',
         })),
         isPublic: updatedProject.isPublic,
       };
