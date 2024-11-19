@@ -1,4 +1,8 @@
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const generateStaticParams = () => {
+  return [];
+};
 
 import { Editor } from '@/components/grid/Editor';
 import { mapProjectFromDB } from '@/lib/mappers';
@@ -10,7 +14,6 @@ export default async function EditorPage({
 }: {
   params: { projectId: string };
 }) {
-  console.log('===  page.tsx [10] ===');
   const prismaProject = await prisma.project.findUnique({
     where: { id: params.projectId },
     include: {
