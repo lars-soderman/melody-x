@@ -20,7 +20,6 @@ interface SettingsProps {
   cols: number;
   exportProps: ExportProps;
   font: string;
-  onBoxSizeChange: (size: number) => void;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
   project: AppProject;

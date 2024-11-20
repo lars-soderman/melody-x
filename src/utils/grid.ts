@@ -38,13 +38,16 @@ export const createInitialBoxes = (rows: number, cols: number): Box[] => {
 };
 
 export const getMaxRow = (boxes: Box[]) =>
-  Math.max(...boxes.map((box) => box.row));
+  boxes.length ? Math.max(...boxes.map((box) => box.row)) : 0;
+
 export const getMaxCol = (boxes: Box[]) =>
-  Math.max(...boxes.map((box) => box.col));
+  boxes.length ? Math.max(...boxes.map((box) => box.col)) : 0;
+
 export const getMinRow = (boxes: Box[]) =>
-  Math.min(...boxes.map((box) => box.row));
+  boxes.length ? Math.min(...boxes.map((box) => box.row)) : 0;
+
 export const getMinCol = (boxes: Box[]) =>
-  Math.min(...boxes.map((box) => box.col));
+  boxes.length ? Math.min(...boxes.map((box) => box.col)) : 0;
 
 export const toGrid = (
   boxes: Box[],

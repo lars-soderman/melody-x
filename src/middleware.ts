@@ -10,25 +10,27 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Log session state for debugging
-  console.log('Middleware session state:', !!session);
+  // Define routes that require auth
+  const isProtectedRoute =
+    req.nextUrl.pathname.startsWith('/editor') ||
+    req.nextUrl.pathname.startsWith('/project');
 
-  // Don't redirect for public routes
-  const isPublicRoute =
-    req.nextUrl.pathname.startsWith('/login') ||
-    req.nextUrl.pathname.startsWith('/auth');
+  // Define routes that should redirect if authenticated
+  const isAuthRoute = req.nextUrl.pathname.startsWith('/login');
 
-  if (!session && !isPublicRoute) {
-    const redirectUrl = new URL('/login', req.url);
-    return NextResponse.redirect(redirectUrl);
+  // If on login page and has session, redirect to home
+  if (session && isAuthRoute) {
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
-  // Return the response with any modified cookies
+  // If on protected route and no session, redirect to login
+  if (!session && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
   return res;
 }
-
+// Update matcher to only check specific routes
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/editor/:path*', '/project/:path*', '/login'],
 };

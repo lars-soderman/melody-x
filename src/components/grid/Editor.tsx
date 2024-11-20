@@ -50,10 +50,8 @@ export function Editor({ project }: { project: AppProject }) {
 
   const {
     boxes,
-
     rows,
     cols,
-    updateBoxSize,
     updateGridSize,
     addRow,
     addColumn,
@@ -170,7 +168,6 @@ export function Editor({ project }: { project: AppProject }) {
               minCol,
               maxCol,
             }}
-            onBoxSizeChange={updateBoxSize}
             onGridSizeChange={updateGridSize}
             onReset={reset}
           />
