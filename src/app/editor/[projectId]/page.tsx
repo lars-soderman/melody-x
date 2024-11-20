@@ -1,4 +1,4 @@
-import { Editor } from '@/components/grid/Editor';
+import { ServerEditorWrapper } from '@/components/grid/ServerEditorWrapper';
 import { getUser } from '@/lib/auth';
 import { mapProjectFromDB } from '@/lib/mappers';
 import { prisma } from '@/lib/prisma';
@@ -44,5 +44,10 @@ export default async function EditorPage({
 
   const project = mapProjectFromDB(prismaProject);
 
-  return <Editor project={project} />;
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center p-6">
+      <h1 className="mb-6 text-4xl font-bold text-gray-800">melody-x</h1>
+      <ServerEditorWrapper project={project} />;
+    </div>
+  );
 }

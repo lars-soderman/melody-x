@@ -20,8 +20,13 @@ export function ServerEditorWrapper({ project }: { project: AppProject }) {
       console.error('Error saving project:', error);
     }
   };
+  console.log('project', project);
 
   return (
-    <Editor initialProject={project} onProjectChange={handleProjectChange} />
+    <Editor
+      showBackButton
+      initialProject={project}
+      onProjectChange={handleProjectChange}
+    />
   );
 }
