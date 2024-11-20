@@ -1,9 +1,15 @@
 'use client';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function SignOutButton() {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
   const handleSignOut = async () => {
+    setIsLoading(true);
     try {
       const supabase = createClientComponentClient();
 
@@ -19,15 +25,18 @@ export function SignOutButton() {
       window.location.href = '/login';
     } catch (error) {
       console.error('Error signing out:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <button
-      className="rounded bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600"
+      className="rounded bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200 disabled:opacity-50"
+      disabled={isLoading}
       onClick={handleSignOut}
     >
-      Sign out
+      {isLoading ? 'Signing out...' : 'Sign out'}
     </button>
   );
 }

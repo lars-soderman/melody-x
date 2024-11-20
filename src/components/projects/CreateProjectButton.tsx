@@ -43,7 +43,7 @@ export function CreateProjectButton({ userId }: Props) {
   return (
     <div>
       <button
-        className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+        className="rounded bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200 disabled:opacity-50"
         disabled={isCreating}
         onClick={handleCreate}
       >

@@ -2,25 +2,20 @@ import { createDefaultProject } from '@/constants';
 import { AppProject } from '@/types';
 import { useEffect, useState } from 'react';
 
-const LOCAL_STORAGE_KEY = 'melody-x-demo-project';
-
-const DEFAULT_PROJECT = createDefaultProject('Demo Project', 'demo');
-
-export function useLocalProject() {
-  const [project, setProject] = useState<AppProject>(DEFAULT_PROJECT);
+export function useLocalProject(storageKey: string, projectName: string) {
+  const [project, setProject] = useState<AppProject | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (stored) {
-      setProject(JSON.parse(stored));
-    }
-  }, []);
+    const stored = localStorage.getItem(storageKey);
+    setProject(
+      stored ? JSON.parse(stored) : createDefaultProject(projectName, 'demo')
+    );
+  }, [projectName, storageKey]);
 
-  const updateLocalProject = (updates: Partial<AppProject>) => {
-    const updated = { ...project, ...updates };
-    setProject(updated);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+  const updateProject = (updatedProject: AppProject) => {
+    setProject(updatedProject);
+    localStorage.setItem(storageKey, JSON.stringify(updatedProject));
   };
 
-  return { project, updateLocalProject };
+  return { project, updateProject };
 }

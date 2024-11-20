@@ -12,7 +12,7 @@ type Props = {
 export function ProjectList({ projects, userId }: Props) {
   return (
     <div>
-      <div className="mb-6 flex justify-end">
+      <div className="mb-6 flex justify-start">
         <CreateProjectButton userId={userId} />
       </div>
 

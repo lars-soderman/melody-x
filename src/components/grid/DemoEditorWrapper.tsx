@@ -31,13 +31,13 @@ export function DemoEditorWrapper() {
       initialProject={project}
       renderHeader={() => (
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Demo Editor</h1>
-          <a
+          <h1 className="text-l">Local project</h1>
+          {/* <a
             className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
             href="/login"
           >
             Sign in to save your work
-          </a>
+          </a> */}
         </div>
       )}
       onProjectChange={handleProjectChange}

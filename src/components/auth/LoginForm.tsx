@@ -27,7 +27,7 @@ export function LoginForm() {
         <div className="rounded bg-red-100 p-3 text-red-700">{error}</div>
       )}
       <button
-        className="rounded bg-blue-500 px-6 py-3 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+        className="rounded bg-gray-200 px-6 py-3 text-black transition-colors hover:bg-gray-400 hover:text-white disabled:opacity-50"
         disabled={isLoading}
         onClick={handleLogin}
       >

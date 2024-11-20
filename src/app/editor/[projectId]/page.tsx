@@ -46,7 +46,6 @@ export default async function EditorPage({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
-      <h1 className="mb-6 text-4xl font-bold text-gray-800">melody-x</h1>
       <ServerEditorWrapper project={project} />;
     </div>
   );
