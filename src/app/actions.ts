@@ -15,23 +15,27 @@ type UserMetadata = {
 
 export async function createProject(data: CreateProjectInput) {
   try {
+    console.log('Creating project with data:', data);
+
     // First, ensure the user exists
     const user = await prisma.user.findUnique({
       where: { id: data.ownerId },
     });
+    console.log('Found user:', user);
 
     if (!user) {
-      // Get the user's email from Supabase
+      console.log('User not found, creating new user');
       const supabase = createRouteHandlerClient({ cookies: () => cookies() });
       const {
         data: { user: supabaseUser },
       } = await supabase.auth.getUser();
+      console.log('Supabase user:', supabaseUser);
 
       if (!supabaseUser) {
         throw new Error('User not authenticated');
       }
 
-      // Create the user in our database with required fields
+      // Create the user in our database
       await prisma.user.create({
         data: {
           id: data.ownerId,
@@ -171,15 +175,19 @@ export async function handleAuthStateChange(
 }
 
 export async function getProjects(userId: string): Promise<AppProject[]> {
-  if (!userId) return [];
+  console.log('🔍 getProjects - userId:', userId);
 
   try {
+    // Debug check for user in our DB
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    console.log('🔍 DB User state:', dbUser);
+
+    // If no projects found, that's fine - return empty array
     const prismaProjects = await prisma.project.findMany({
       where: {
         ownerId: userId,
-      },
-      orderBy: {
-        updatedAt: 'desc',
       },
       include: {
         owner: true,
@@ -191,9 +199,11 @@ export async function getProjects(userId: string): Promise<AppProject[]> {
       },
     });
 
+    console.log('🔍 Found projects:', prismaProjects);
     return prismaProjects.map(mapProjectFromDB);
   } catch (error) {
-    console.error('Error fetching projects:', error);
+    console.error('❌ Error in getProjects:', error);
+    // Instead of throwing, return empty array to prevent 500
     return [];
   }
 }

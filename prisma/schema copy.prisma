@@ -1,10 +1,12 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["public", "auth"]
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 model Project {
@@ -18,6 +20,8 @@ model Project {
   ownerId      String
   owner        User                @relation(fields: [ownerId], references: [id])
   collaborators ProjectCollaborator[]
+
+  @@schema("public")
 }
 
 model ProjectCollaborator {
@@ -29,6 +33,8 @@ model ProjectCollaborator {
   project   Project  @relation(fields: [projectId], references: [id])
   user      User     @relation("collaborator", fields: [userId], references: [id])
   addedBy   User     @relation("added_by", fields: [addedById], references: [id])
+
+  @@schema("public")
 }
 
 model User {
@@ -38,4 +44,6 @@ model User {
   projects        Project[]
   collaborating   ProjectCollaborator[] @relation("collaborator")
   added           ProjectCollaborator[] @relation("added_by")
+
+  @@schema("public")
 }

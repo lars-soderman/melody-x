@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 // import { DownloadButton } from './DownloadButton';
 import { ExportButton } from '@/components/grid/settings/ExportButton';
 import { FontSelector } from '@/components/grid/settings/FontSelector';
+import { SaveToServerButton } from '@/components/projects/SaveToServerButton';
 import { Popover } from '@/components/ui/Popover';
 import { ResetButton } from './ResetButton';
 
@@ -20,6 +21,7 @@ interface SettingsProps {
   cols: number;
   exportProps: ExportProps;
   font: string;
+  isLocalProject?: boolean;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
   project: AppProject;
@@ -33,12 +35,14 @@ export function Settings({
   cols,
   exportProps,
   font,
+  isLocalProject,
   onGridSizeChange,
   onReset,
   rows,
   updateFont,
   showGridResize,
   toggleGridResize,
+  project,
 }: SettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
@@ -54,6 +58,7 @@ export function Settings({
     document.addEventListener('keydown', handleEscKey);
     return () => document.removeEventListener('keydown', handleEscKey);
   }, [isOpen]);
+  console.log('isLocalProject', isLocalProject);
 
   return (
     <div className="absolute right-4 top-4">
@@ -147,6 +152,8 @@ export function Settings({
             </span>
             <ExportButton {...exportProps} />
           </div>
+
+          {isLocalProject && <SaveToServerButton project={project} />}
         </div>
       </Popover>
     </div>

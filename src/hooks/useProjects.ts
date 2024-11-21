@@ -26,7 +26,9 @@ export function useProjects() {
   });
 
   const loadProjects = useCallback(async () => {
+    console.log('Loading projects for user:', user);
     if (!user) {
+      console.log('No user, clearing projects');
       dispatch({
         type: 'LOAD_PROJECTS',
         ownedProjects: [],
@@ -37,8 +39,13 @@ export function useProjects() {
 
     try {
       const projects = await getProjects(user.id);
+      console.log('Fetched projects:', projects);
+
       const ownedProjects = projects.filter((p) => p.owner_id === user.id);
       const sharedProjects = projects.filter((p) => p.owner_id !== user.id);
+
+      console.log('Owned projects:', ownedProjects);
+      console.log('Shared projects:', sharedProjects);
 
       dispatch({
         type: 'LOAD_PROJECTS',

@@ -18,16 +18,14 @@ import { Settings } from './settings/Settings';
 
 type EditorProps = {
   initialProject: AppProject;
-  onProjectChange: (project: AppProject) => void | Promise<void>;
-  // renderHeader?: () => React.ReactNode;
-  // showBackButton?: boolean;
+  isLocalProject?: boolean;
+  onProjectChange: (project: AppProject) => void;
 };
 
 export function Editor({
   initialProject,
+  isLocalProject,
   onProjectChange,
-  // renderHeader,
-  // showBackButton,
 }: EditorProps) {
   const [confirmingRemove, setConfirmingRemove] = useState<{
     index: number;
@@ -117,37 +115,10 @@ export function Editor({
       className="flex min-h-screen flex-col gap-4 p-4"
       onClick={() => setConfirmingRemove(null)}
     >
-      {/* {showBackButton && (
-        <a
-          className="fixed left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200"
-          href="/"
-          title="Back to projects"
-        >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M15 19l-7-7 7-7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-            />
-          </svg>
-        </a>
-      )} */}
-
-      {/* {renderHeader?.() || (
-        <div className="flex items-center justify-between pl-16">
-          <h1 className="text-2xl font-bold">{initialProject.name}</h1>
-        </div>
-      )} */}
-
       <Settings
         cols={cols}
         font={font}
+        isLocalProject={isLocalProject}
         project={initialProject}
         rows={rows}
         showGridResize={showGridResize}
