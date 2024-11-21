@@ -1,3 +1,4 @@
+import { EditorHeader } from '@/components/editor/EditorHeader';
 import { ServerEditorWrapper } from '@/components/grid/ServerEditorWrapper';
 import { getUser } from '@/lib/auth';
 import { mapProjectFromDB } from '@/lib/mappers';
@@ -46,6 +47,7 @@ export default async function EditorPage({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
+      <EditorHeader project={project} />
       <ServerEditorWrapper project={project} />;
     </div>
   );

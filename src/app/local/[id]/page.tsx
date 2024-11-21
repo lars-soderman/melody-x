@@ -1,5 +1,6 @@
 'use client';
 
+import { EditorHeader } from '@/components/editor/EditorHeader';
 import { Editor } from '@/components/grid/Editor';
 import { useLocalProjects } from '@/hooks/useLocalProjects';
 import { useParams } from 'next/navigation';
@@ -14,14 +15,9 @@ export default function LocalProjectPage() {
   }
 
   return (
-    <Editor
-      initialProject={project}
-      renderHeader={() => (
-        <div className="flex items-center justify-between">
-          <h1 className="text-l">Local project: {project.name}</h1>
-        </div>
-      )}
-      onProjectChange={update}
-    />
+    <div className="flex min-h-screen flex-col items-center justify-center p-6">
+      <EditorHeader isLocalProject project={project} />
+      <Editor initialProject={project} onProjectChange={update} />
+    </div>
   );
 }

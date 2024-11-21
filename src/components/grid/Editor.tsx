@@ -19,15 +19,15 @@ import { Settings } from './settings/Settings';
 type EditorProps = {
   initialProject: AppProject;
   onProjectChange: (project: AppProject) => void | Promise<void>;
-  renderHeader?: () => React.ReactNode;
-  showBackButton?: boolean;
+  // renderHeader?: () => React.ReactNode;
+  // showBackButton?: boolean;
 };
 
 export function Editor({
   initialProject,
   onProjectChange,
-  renderHeader,
-  showBackButton,
+  // renderHeader,
+  // showBackButton,
 }: EditorProps) {
   const [confirmingRemove, setConfirmingRemove] = useState<{
     index: number;
@@ -117,7 +117,7 @@ export function Editor({
       className="flex min-h-screen flex-col gap-4 p-4"
       onClick={() => setConfirmingRemove(null)}
     >
-      {showBackButton && (
+      {/* {showBackButton && (
         <a
           className="fixed left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200"
           href="/"
@@ -137,13 +137,13 @@ export function Editor({
             />
           </svg>
         </a>
-      )}
+      )} */}
 
-      {renderHeader?.() || (
+      {/* {renderHeader?.() || (
         <div className="flex items-center justify-between pl-16">
           <h1 className="text-2xl font-bold">{initialProject.name}</h1>
         </div>
-      )}
+      )} */}
 
       <Settings
         cols={cols}

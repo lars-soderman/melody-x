@@ -2,6 +2,7 @@
 
 import { updateProject } from '@/app/actions';
 import { AppProject } from '@/types';
+// import { EditorHeader } from '../editor/EditorHeader';
 import { Editor } from './Editor';
 
 export function ServerEditorWrapper({ project }: { project: AppProject }) {
@@ -24,8 +25,8 @@ export function ServerEditorWrapper({ project }: { project: AppProject }) {
 
   return (
     <Editor
-      showBackButton
       initialProject={project}
+      //   renderHeader={() => <EditorHeader project={project} />}
       onProjectChange={handleProjectChange}
     />
   );
