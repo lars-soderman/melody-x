@@ -1,6 +1,7 @@
 'use client';
 
 import { createProject } from '@/app/actions';
+import { createDefaultProject } from '@/constants';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -18,15 +19,17 @@ export function CreateProjectButton({ userId }: Props) {
     setError(null);
 
     try {
+      const defaultProject = createDefaultProject('New Project', userId);
+
       const project = await createProject({
-        name: 'New Project',
+        name: defaultProject.name,
         gridData: {
-          boxes: [],
-          cols: 15,
-          rows: 15,
-          font: 'mono',
+          boxes: defaultProject.boxes,
+          cols: defaultProject.cols,
+          rows: defaultProject.rows,
+          font: defaultProject.font,
         },
-        hints: [],
+        hints: defaultProject.hints,
         isPublic: false,
         ownerId: userId,
       });

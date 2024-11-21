@@ -9,7 +9,7 @@ export default function Error({
 }) {
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-4">
-      <h2 className="text-xl font-bold">Something went wrong!</h2>
+      <h2 className="text-xl">Something went wrong!</h2>
       <button
         className="rounded bg-blue-500 px-4 py-2 text-white"
         onClick={() => reset()}

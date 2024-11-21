@@ -8,34 +8,20 @@ generator client {
 }
 
 model Project {
-  id           String               @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
   gridData     Json
-  hints        Json                 @default("[]")
-  isPublic     Boolean             @default(false)
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  hints        Json     @default("[]")
+  isPublic     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   ownerId      String
-  owner        User                @relation(fields: [ownerId], references: [id])
-  collaborators ProjectCollaborator[]
-}
-
-model ProjectCollaborator {
-  id        String   @id @default(cuid())
-  projectId String
-  userId    String
-  addedById String
-  createdAt DateTime @default(now())
-  project   Project  @relation(fields: [projectId], references: [id])
-  user      User     @relation("collaborator", fields: [userId], references: [id])
-  addedBy   User     @relation("added_by", fields: [addedById], references: [id])
+  owner        User     @relation(fields: [ownerId], references: [id])
 }
 
 model User {
-  id              String               @id
-  email           String              @unique
+  id              String    @id
+  email           String    @unique
   rawUserMetaData Json
   projects        Project[]
-  collaborating   ProjectCollaborator[] @relation("collaborator")
-  added           ProjectCollaborator[] @relation("added_by")
 }

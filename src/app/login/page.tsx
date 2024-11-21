@@ -30,7 +30,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md space-y-4 rounded-lg border p-8">
-        <h1 className="text-2xl font-bold">Login</h1>
+        <h1 className="text-2xl">Login</h1>
 
         <button
           className="flex w-full items-center justify-center gap-2 rounded bg-white px-4 py-2 text-gray-700 shadow hover:bg-gray-50"

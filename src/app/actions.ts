@@ -2,65 +2,49 @@
 
 import { mapProjectFromDB } from '@/lib/mappers';
 import { prisma } from '@/lib/prisma';
-import { AppProject } from '@/types';
-import { CreateProjectInput } from '@/types/project';
+import { AppProject, Box, Hint } from '@/types';
+import { CreateProjectInput, GridData } from '@/types/project';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
-type UserMetadata = {
-  [key: string]: string | number | boolean | null;
-};
-
 export async function createProject(data: CreateProjectInput) {
   try {
-    console.log('Creating project with data:', data);
+    const supabase = createRouteHandlerClient({ cookies: () => cookies() });
+    const {
+      data: { user: supabaseUser },
+    } = await supabase.auth.getUser();
 
-    // First, ensure the user exists
-    const user = await prisma.user.findUnique({
-      where: { id: data.ownerId },
-    });
-    console.log('Found user:', user);
-
-    if (!user) {
-      console.log('User not found, creating new user');
-      const supabase = createRouteHandlerClient({ cookies: () => cookies() });
-      const {
-        data: { user: supabaseUser },
-      } = await supabase.auth.getUser();
-      console.log('Supabase user:', supabaseUser);
-
-      if (!supabaseUser) {
-        throw new Error('User not authenticated');
-      }
-
-      // Create the user in our database
-      await prisma.user.create({
-        data: {
-          id: data.ownerId,
-          email: supabaseUser.email!,
-          rawUserMetaData: (supabaseUser.user_metadata as UserMetadata) || {},
-        },
-      });
+    if (!supabaseUser) {
+      throw new Error('Not authenticated');
     }
 
-    // Now create the project
+    // First, create or find the user
+    const user = await prisma.user.upsert({
+      where: { id: supabaseUser.id },
+      update: {
+        email: supabaseUser.email!,
+        rawUserMetaData: supabaseUser.user_metadata || {},
+      },
+      create: {
+        id: supabaseUser.id,
+        email: supabaseUser.email!,
+        rawUserMetaData: supabaseUser.user_metadata || {},
+      },
+    });
+
+    // Then create the project
     const project = await prisma.project.create({
       data: {
         name: data.name,
         gridData: data.gridData,
         hints: data.hints || [],
         isPublic: data.isPublic,
-        owner: {
-          connect: { id: data.ownerId },
-        },
+        ownerId: user.id,
       },
       include: {
         owner: true,
-        collaborators: {
-          include: { user: true },
-        },
       },
     });
 
@@ -74,39 +58,62 @@ export async function createProject(data: CreateProjectInput) {
 
 export async function updateProject(
   projectId: string,
-  data: Partial<AppProject>
+  data: {
+    boxes?: Box[];
+    cols?: number;
+    font?: string;
+    hints?: Hint[];
+    isPublic?: boolean;
+    name?: string;
+    rows?: number;
+  }
 ) {
   try {
-    const project = await prisma.project.update({
-      where: { id: projectId },
-      data: {
-        gridData: {
-          boxes: data.boxes,
-          cols: data.cols,
-          rows: data.rows,
-          font: data.font,
+    // If only updating name, use simple update
+    if (Object.keys(data).length === 1 && 'name' in data) {
+      return await prisma.project.update({
+        where: { id: projectId },
+        data: { name: data.name },
+        include: {
+          owner: true,
         },
-        hints: data.hints,
-        name: data.name,
-        updatedAt: new Date(),
-      },
+      });
+    }
+
+    // For grid updates, reconstruct the gridData object
+    const gridData: Partial<GridData> = {};
+    if (data.boxes) gridData.boxes = data.boxes;
+    if (data.cols) gridData.cols = data.cols;
+    if (data.rows) gridData.rows = data.rows;
+    if (data.font) gridData.font = data.font;
+
+    const updateData: {
+      gridData?: GridData;
+      hints?: Hint[];
+      isPublic?: boolean;
+      name?: string;
+    } = {};
+
+    if (Object.keys(gridData).length > 0) {
+      updateData.gridData = gridData as GridData;
+    }
+    if (data.hints) updateData.hints = data.hints;
+    if (data.name) updateData.name = data.name;
+    if (data.isPublic !== undefined) updateData.isPublic = data.isPublic;
+
+    const updatedProject = await prisma.project.update({
+      where: { id: projectId },
+      data: updateData,
       include: {
         owner: true,
-        collaborators: {
-          include: {
-            user: true,
-          },
-        },
       },
     });
 
-    revalidatePath('/');
-    revalidatePath(`/project/${projectId}`);
-
-    return project;
+    revalidatePath(`/editor/${projectId}`);
+    return updatedProject;
   } catch (error) {
-    console.error('Error updating project:', error);
-    throw new Error('Failed to update project');
+    console.error('Update project error:', error);
+    throw error;
   }
 }
 
@@ -191,11 +198,6 @@ export async function getProjects(userId: string): Promise<AppProject[]> {
       },
       include: {
         owner: true,
-        collaborators: {
-          include: {
-            user: true,
-          },
-        },
       },
     });
 

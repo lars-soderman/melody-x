@@ -25,7 +25,7 @@ export function OptionsButton({
     <>
       <button
         aria-label="Show options"
-        className={`rounded-2 absolute right-[2px] top-[2px] z-20 flex ${isOpen ? 'h-3' : 'h-6'} w-4 cursor-pointer items-center justify-center border-none bg-transparent text-xl font-bold hover:bg-gray-100 active:bg-gray-200`}
+        className={`rounded-2 absolute right-[2px] top-[2px] z-20 flex ${isOpen ? 'h-3' : 'h-6'} w-4 cursor-pointer items-center justify-center border-none bg-transparent text-xl hover:bg-gray-100 active:bg-gray-200`}
         title="Show options"
         onClick={() => setIsOpen(!isOpen)}
       >

@@ -31,11 +31,6 @@ export default async function EditorPage({
     where: { id: params.projectId },
     include: {
       owner: true,
-      collaborators: {
-        include: {
-          user: true,
-        },
-      },
     },
   });
 

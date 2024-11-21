@@ -16,7 +16,7 @@ export default function LocalProjectPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
-      <EditorHeader isLocalProject={true} project={project} />
+      <EditorHeader project={project} />
       <Editor
         initialProject={project}
         isLocalProject={true}

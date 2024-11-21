@@ -1,15 +1,17 @@
 import type { Box, Hint } from '@/types';
 import type { User } from '@prisma/client';
 
+export type GridData = {
+  boxes: Box[];
+  cols: number;
+  font: string;
+  rows: number;
+};
+
 // Database/Prisma types
 export type PrismaProject = {
   createdAt: Date;
-  gridData: {
-    boxes: Box[];
-    cols: number;
-    font: string;
-    rows: number;
-  };
+  gridData: GridData;
   hints: Hint[];
   id: string;
   isPublic: boolean | null;

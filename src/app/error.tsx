@@ -25,7 +25,7 @@ export default function Error({
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="rounded-lg border bg-white p-8 shadow-lg">
-        <h2 className="mb-4 text-xl font-bold">Something went wrong!</h2>
+        <h2 className="mb-4 text-xl">Something went wrong!</h2>
         <button
           className="mr-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           onClick={reset}
