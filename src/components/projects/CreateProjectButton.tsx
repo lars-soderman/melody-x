@@ -47,7 +47,7 @@ export function CreateProjectButton({ userId }: Props) {
         disabled={isCreating}
         onClick={handleCreate}
       >
-        {isCreating ? 'Creating...' : 'New Project'}
+        {isCreating ? 'Creating...' : 'Create New Project on Server'}
       </button>
       {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
     </div>

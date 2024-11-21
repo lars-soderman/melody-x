@@ -32,7 +32,7 @@ export function SignOutButton() {
 
   return (
     <button
-      className="rounded bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200 disabled:opacity-50"
+      className="my-4 rounded bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200 disabled:opacity-50"
       disabled={isLoading}
       onClick={handleSignOut}
     >

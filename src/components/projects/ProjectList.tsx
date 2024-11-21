@@ -1,8 +1,8 @@
 'use client';
 
+import { ProjectCard } from '@/components/projects/ProjectCard';
 import { AppProject } from '@/types';
 import { CreateProjectButton } from './CreateProjectButton';
-import { ProjectCard } from './ProjectCard';
 
 type Props = {
   projects: AppProject[];
@@ -17,9 +17,15 @@ export function ProjectList({ projects, userId }: Props) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
+        {projects.length === 0 ? (
+          <p className="text-gray-500">
+            No projects yet. Create one to get started!
+          </p>
+        ) : (
+          projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))
+        )}
       </div>
     </div>
   );

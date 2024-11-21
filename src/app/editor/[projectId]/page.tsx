@@ -23,7 +23,7 @@ export default async function EditorPage({
   const user = await getUser();
 
   if (!user) {
-    redirect('/login');
+    redirect('/');
   }
 
   const prismaProject = await prisma.project.findUnique({
