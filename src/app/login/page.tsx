@@ -1,26 +1,15 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const supabase = createClientComponentClient();
+  const { signInWithGoogle } = useAuth();
 
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        setError(error.message);
-      }
+      await signInWithGoogle();
     } catch (err) {
       console.error('Login error:', err);
       setError('An unexpected error occurred');
