@@ -63,7 +63,7 @@ export function BoxInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const validLetterRegex = /^[a-zA-ZÅÄÖ]$/i;
+    const validLetterRegex = /^[a-zA-ZÅÄÖ-]$/i;
 
     if (value === '' || validLetterRegex.test(value)) {
       onLetterChange(id, value.toUpperCase());
