@@ -37,17 +37,25 @@ export const createInitialBoxes = (rows: number, cols: number): Box[] => {
   return result;
 };
 
-export const getMaxRow = (boxes: Box[]) =>
-  boxes.length ? Math.max(...boxes.map((box) => box.row)) : 0;
+export const getMaxRow = (boxes: Box[]): number => {
+  if (!boxes || boxes.length === 0) return 0;
+  return Math.max(...boxes.map((box) => box.row));
+};
 
-export const getMaxCol = (boxes: Box[]) =>
-  boxes.length ? Math.max(...boxes.map((box) => box.col)) : 0;
+export const getMaxCol = (boxes: Box[]): number => {
+  if (!boxes || boxes.length === 0) return 0;
+  return Math.max(...boxes.map((box) => box.col));
+};
 
-export const getMinRow = (boxes: Box[]) =>
-  boxes.length ? Math.min(...boxes.map((box) => box.row)) : 0;
+export const getMinRow = (boxes: Box[]): number => {
+  if (!boxes || boxes.length === 0) return 0;
+  return Math.min(...boxes.map((box) => box.row));
+};
 
-export const getMinCol = (boxes: Box[]) =>
-  boxes.length ? Math.min(...boxes.map((box) => box.col)) : 0;
+export const getMinCol = (boxes: Box[]): number => {
+  if (!boxes || boxes.length === 0) return 0;
+  return Math.min(...boxes.map((box) => box.col));
+};
 
 export const toGrid = (
   boxes: Box[],

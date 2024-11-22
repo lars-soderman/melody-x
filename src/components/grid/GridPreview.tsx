@@ -14,19 +14,6 @@ export function GridPreview({ boxes, cols, rows, className = '' }: Props) {
   const padding = 2;
   const width = cols * cellSize + padding * 2;
   const height = rows * cellSize + padding * 2;
-  const arrowSize = cellSize * 0.4;
-
-  // Create empty grid
-  const grid = Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => false)
-  );
-
-  // Mark used cells
-  boxes.forEach((box) => {
-    if (box.row < rows && box.col < cols) {
-      grid[box.row][box.col] = true;
-    }
-  });
 
   return (
     <svg
@@ -35,9 +22,9 @@ export function GridPreview({ boxes, cols, rows, className = '' }: Props) {
       viewBox={`0 0 ${width} ${height}`}
       width={width}
     >
-      {/* Grid lines */}
-      {grid.map((row, rowIndex) =>
-        row.map((_, colIndex) => {
+      {/* Grid background */}
+      {Array.from({ length: rows }, (_, rowIndex) =>
+        Array.from({ length: cols }, (_, colIndex) => {
           const box = boxes.find(
             (b) => b.row === rowIndex && b.col === colIndex
           );
@@ -57,7 +44,7 @@ export function GridPreview({ boxes, cols, rows, className = '' }: Props) {
         })
       )}
 
-      {/* Arrows and hints */}
+      {/* Letters, arrows, and hints */}
       {boxes.map((box) => {
         if (box.row >= rows || box.col >= cols) return null;
 
@@ -68,23 +55,59 @@ export function GridPreview({ boxes, cols, rows, className = '' }: Props) {
 
         return (
           <g key={`${box.row}-${box.col}`}>
-            {/* Down arrow */}
-            {box.arrowDown && (
-              <path
+            {/* Letter */}
+            {box.letter && !box.black && (
+              <text
+                dominantBaseline="middle"
+                fill="black"
+                fontSize={cellSize * 0.6}
+                textAnchor="middle"
+                x={centerX}
+                y={centerY + cellSize * 0.1}
+              >
+                {box.letter}
+              </text>
+            )}
+
+            {/* Hint number */}
+            {box.hint && (
+              <text
+                dominantBaseline="hanging"
                 fill={box.black ? 'white' : 'black'}
-                d={`M ${centerX} ${y} l ${arrowSize} ${arrowSize} l -${
-                  arrowSize * 2
-                } 0 z`}
-              />
+                fontSize={cellSize * 0.3}
+                textAnchor="start"
+                x={x + cellSize * 0.1}
+                y={y + cellSize * 0.1}
+              >
+                {box.hint}
+              </text>
             )}
 
             {/* Right arrow */}
             {box.arrowRight && (
               <path
-                fill={box.black ? 'white' : 'black'}
-                d={`M ${x + cellSize - arrowSize} ${centerY} l ${arrowSize} -${arrowSize} l 0 ${
-                  arrowSize * 2
-                } z`}
+                fill="none"
+                stroke={box.black ? 'white' : 'black'}
+                strokeWidth="0.3"
+                d={`M ${x + cellSize * 0.3} ${y + cellSize * 0.5}
+                    L ${x + cellSize * 0.7} ${y + cellSize * 0.5}
+                    L ${x + cellSize * 0.6} ${y + cellSize * 0.3}
+                    M ${x + cellSize * 0.7} ${y + cellSize * 0.5}
+                    L ${x + cellSize * 0.6} ${y + cellSize * 0.7}`}
+              />
+            )}
+
+            {/* Down arrow */}
+            {box.arrowDown && (
+              <path
+                fill="none"
+                stroke={box.black ? 'white' : 'black'}
+                strokeWidth="0.3"
+                d={`M ${x + cellSize * 0.5} ${y + cellSize * 0.3}
+                    L ${x + cellSize * 0.5} ${y + cellSize * 0.7}
+                    L ${x + cellSize * 0.3} ${y + cellSize * 0.6}
+                    M ${x + cellSize * 0.5} ${y + cellSize * 0.7}
+                    L ${x + cellSize * 0.7} ${y + cellSize * 0.6}`}
               />
             )}
 
@@ -109,18 +132,6 @@ export function GridPreview({ boxes, cols, rows, className = '' }: Props) {
                 y1={y + cellSize - 0.5}
                 y2={y + cellSize - 0.5}
               />
-            )}
-
-            {/* Hint number */}
-            {box.hint && (
-              <text
-                fill={box.black ? 'white' : 'black'}
-                fontSize={1.5}
-                x={x + 0.8}
-                y={y + 1.6}
-              >
-                {box.hint}
-              </text>
             )}
           </g>
         );

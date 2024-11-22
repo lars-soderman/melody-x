@@ -32,6 +32,10 @@ export function Editor({
     type: 'row' | 'column';
   } | null>(null);
   const [showGridResize, setShowGridResize] = useState(false);
+  const [project, setProject] = useState<AppProject>(() => ({
+    ...initialProject,
+    boxes: initialProject.boxes || [],
+  }));
 
   const {
     boxes,
@@ -52,7 +56,10 @@ export function Editor({
     toggleHint,
     toggleStopDown,
     toggleStopRight,
-  } = useGrid(initialProject, onProjectChange);
+  } = useGrid(project, (updatedProject) => {
+    setProject(updatedProject);
+    onProjectChange?.(updatedProject);
+  });
 
   const {
     editingBox,
@@ -65,10 +72,12 @@ export function Editor({
     return <div>Loading...</div>;
   }
 
-  const minRow = getMinRow(boxes);
-  const maxRow = getMaxRow(boxes);
-  const minCol = getMinCol(boxes);
-  const maxCol = getMaxCol(boxes);
+  const safeBoxes = boxes || [];
+
+  const minRow = getMinRow(safeBoxes);
+  const maxRow = getMaxRow(safeBoxes);
+  const minCol = getMinCol(safeBoxes);
+  const maxCol = getMaxCol(safeBoxes);
 
   const grid = toGrid(boxes, minRow, maxRow, minCol, maxCol);
 
