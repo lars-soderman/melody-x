@@ -4,6 +4,7 @@ import { mapProjectFromDB } from '@/lib/mappers';
 import { prisma } from '@/lib/prisma';
 import { AppProject, Box, Hint } from '@/types';
 import { CreateProjectInput, GridData } from '@/types/project';
+import { Prisma } from '@prisma/client';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
@@ -20,19 +21,39 @@ export async function createProject(data: CreateProjectInput) {
       throw new Error('Not authenticated');
     }
 
-    // First, create or find the user
-    const user = await prisma.user.upsert({
+    // First, try to find the user by ID
+    let user = await prisma.user.findUnique({
       where: { id: supabaseUser.id },
-      update: {
-        email: supabaseUser.email!,
-        rawUserMetaData: supabaseUser.user_metadata || {},
-      },
-      create: {
-        id: supabaseUser.id,
-        email: supabaseUser.email!,
-        rawUserMetaData: supabaseUser.user_metadata || {},
-      },
     });
+
+    if (!user) {
+      try {
+        user = await prisma.user.create({
+          data: {
+            id: supabaseUser.id,
+            email: supabaseUser.email!,
+            rawUserMetaData: supabaseUser.user_metadata || {},
+          },
+        });
+      } catch (e) {
+        console.error('Error creating user:', e);
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        ) {
+          console.log('Email conflict, trying to find and update user...');
+          user = await prisma.user.update({
+            where: { email: supabaseUser.email },
+            data: {
+              id: supabaseUser.id,
+              rawUserMetaData: supabaseUser.user_metadata || {},
+            },
+          });
+        } else {
+          throw e;
+        }
+      }
+    }
 
     // Then create the project
     const project = await prisma.project.create({
