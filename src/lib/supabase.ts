@@ -1,3 +1,4 @@
+// Client-side only
 import { type Database } from '@/types/supabase';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 

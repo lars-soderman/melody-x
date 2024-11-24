@@ -1,19 +1,14 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 
 export function SignOutButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
-      const supabase = createClientComponentClient();
-
-      // Clear client-side session
       await supabase.auth.signOut();
 
       // Manually clear cookies from the browser

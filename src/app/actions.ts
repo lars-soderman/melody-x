@@ -2,17 +2,17 @@
 
 import { mapProjectFromDB } from '@/lib/mappers';
 import { prisma } from '@/lib/prisma';
+import { createServerClient } from '@/lib/supabase-server';
 import { AppProject, Box, Hint } from '@/types';
 import { CreateProjectInput, GridData } from '@/types/project';
 import { Prisma } from '@prisma/client';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 export async function createProject(data: CreateProjectInput) {
   try {
-    const supabase = createRouteHandlerClient({ cookies: () => cookies() });
+    const supabase = createServerClient();
     const {
       data: { user: supabaseUser },
     } = await supabase.auth.getUser();
@@ -145,7 +145,7 @@ export async function deleteProject(id: string) {
 
 export async function signOut() {
   const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const supabase = createServerClient();
 
   await supabase.auth.signOut();
 
