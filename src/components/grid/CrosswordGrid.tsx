@@ -41,30 +41,42 @@ export function CrosswordGrid({
   toggleHint,
   font,
 }: CrosswordGridProps) {
+  const cols = maxCol - minCol + 1;
+  const rows = grid.length;
+
   return (
-    <div
-      className={`grid grid-cols-${maxCol - minCol + 1} border-collapse gap-0 border-2 border-black`}
-      id="crossword-grid"
-      style={{ fontFamily: font }}
-    >
-      {grid.map((row) =>
-        row.map((box) => (
-          <GridCell
-            key={getId(box)}
-            box={box}
-            editingBox={editingBox}
-            toggleHint={toggleHint}
-            onLetterChange={onLetterChange}
-            onNavigate={onNavigate}
-            onSetEditingBox={onSetEditingBox}
-            onToggleArrowDown={onToggleArrowDown}
-            onToggleArrowRight={onToggleArrowRight}
-            onToggleBlack={onToggleBlack}
-            onToggleStopDown={onToggleStopDown}
-            onToggleStopRight={onToggleStopRight}
-          />
-        ))
-      )}
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-fit p-4">
+        <div
+          className="grid border-collapse gap-0 border-2 border-black"
+          id="crossword-grid"
+          style={{
+            gridTemplateColumns: `repeat(${cols}, minmax(24px, 64px))`,
+            width: `clamp(${cols * 24}px, 100%, ${cols * 64}px)`,
+            aspectRatio: `${cols} / ${rows}`,
+            fontFamily: font,
+          }}
+        >
+          {grid.map((row) =>
+            row.map((box) => (
+              <GridCell
+                key={getId(box)}
+                box={box}
+                editingBox={editingBox}
+                toggleHint={toggleHint}
+                onLetterChange={onLetterChange}
+                onNavigate={onNavigate}
+                onSetEditingBox={onSetEditingBox}
+                onToggleArrowDown={onToggleArrowDown}
+                onToggleArrowRight={onToggleArrowRight}
+                onToggleBlack={onToggleBlack}
+                onToggleStopDown={onToggleStopDown}
+                onToggleStopRight={onToggleStopRight}
+              />
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -35,12 +35,10 @@ export const GridCell = memo(function GridCell({
   const boxSize = INITIAL_BOX_SIZE;
   return (
     <div
-      className="relative flex"
-      data-testid={`grid-cell`}
+      className="relative flex aspect-square"
+      data-testid="grid-cell"
       style={{
-        width: `${boxSize}px`,
-        height: `${boxSize}px`,
-        borderWidth: `${boxSize * 0.03}px`,
+        borderWidth: '0.15vw',
         borderStyle: 'solid',
         borderColor: 'black',
       }}

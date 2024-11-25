@@ -48,54 +48,64 @@ export function ShowBox({
   return (
     <>
       <button
-        data-letter={letter ? 'true' : undefined}
+        data-letter={!!letter}
         data-position={id}
         data-testid={`grid-cell-${id}`}
         tabIndex={0}
-        className={`relative w-full cursor-pointer text-center text-4xl uppercase md:text-4xl ${
-          black ? 'bg-black text-white' : 'bg-white'
+        className={`relative w-full cursor-pointer text-center uppercase ${
+          black ? 'bg-black' : 'bg-white'
         }`}
         onClick={onClick}
-        onKeyDown={handleKeyDown}
       >
-        {letter}
+        {letter && (
+          <span
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              fontSize: 'clamp(12px, 4vw, 32px)',
+              color: black ? 'white' : 'black',
+            }}
+          >
+            {letter}
+          </span>
+        )}
+        {hint && (
+          <div
+            className="absolute flex h-5 w-5 items-center justify-center rounded-full"
+            data-hint={true}
+            style={{
+              left: '3px',
+              top: '3px',
+              border: '2px solid',
+              borderColor: black ? 'white' : 'black',
+              fontSize: 'clamp(8px, 1.5vw, 12px)',
+            }}
+          >
+            <span>{hint}</span>
+          </div>
+        )}
+        {stopDown && (
+          <div
+            className="absolute bottom-0 left-0 h-[3px] w-full bg-black"
+            data-stop="bottom"
+          />
+        )}
+        {stopRight && (
+          <div
+            className="absolute right-0 top-0 h-full w-[3px] bg-black"
+            data-stop="right"
+          />
+        )}
+        {arrowRight && (
+          <div className="absolute bottom-1 left-1" data-testid="arrow-right">
+            <ArrowRight className="h-4 w-4 text-black" />
+          </div>
+        )}
+        {arrowDown && (
+          <div className="absolute right-1 top-1" data-testid="arrow-down">
+            <ArrowDown className="h-4 w-4 text-black" />
+          </div>
+        )}
       </button>
-      {stopDown && (
-        <div
-          className="absolute bottom-0 left-0 h-[3px] w-full bg-black"
-          data-stop="bottom"
-        />
-      )}
-      {stopRight && (
-        <div
-          className="absolute right-0 top-0 h-full w-[3px] bg-black"
-          data-stop="right"
-        />
-      )}
-      {hint && (
-        <div
-          className="absolute flex h-5 w-5 items-center justify-center rounded-full"
-          data-hint="true"
-          style={{
-            left: '3px',
-            top: '3px',
-            border: '2px solid black',
-            fontFamily: 'var(--font-default)',
-          }}
-        >
-          <span className="text-xs">{hint}</span>
-        </div>
-      )}
-      {arrowRight && (
-        <div className="absolute bottom-1 left-1" data-testid="arrow-right">
-          <ArrowRight className="h-4 w-4 text-black" />
-        </div>
-      )}
-      {arrowDown && (
-        <div className="absolute right-1 top-1" data-testid="arrow-down">
-          <ArrowDown className="h-4 w-4 text-black" />
-        </div>
-      )}
     </>
   );
 }
