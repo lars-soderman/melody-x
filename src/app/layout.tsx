@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { Creepster } from 'next/font/google';
 import localFont from 'next/font/local';
 
-import { Sidebar } from '@/components/layout/Sidebar';
+import { Topnav } from '@/components/layout/Topnav';
 import './globals.css';
 
 const geistMono = localFont({
@@ -35,9 +35,9 @@ export default function RootLayout({
         className={`${geistMono.variable} ${creepster.variable} absolute inset-0 antialiased`}
       >
         <AuthProvider>
-          {/* <Sidebar /> */}
-          <div className="flex">
-            <Sidebar />
+          {/* <Topnav /> */}
+          <div className="flex flex-col">
+            <Topnav />
             <div className="flex-1">{children}</div>
           </div>
         </AuthProvider>
