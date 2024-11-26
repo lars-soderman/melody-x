@@ -30,13 +30,10 @@ export function ExportButton({}: ExportButtonProps) {
       // Hide letters but preserve structural elements
       const style = document.createElement('style');
       style.textContent = `
-        [data-letter] {
+        [data-letter] > span:not([data-hint] span) {
           color: transparent !important;
-        }
-        [data-hint] span {
-          position: absolute;
-          top: -7px;
-        }
+        };
+
       `;
       document.head.appendChild(style);
 

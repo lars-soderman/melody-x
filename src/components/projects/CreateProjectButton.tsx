@@ -59,7 +59,7 @@ export function CreateProjectButton({ userId }: Props) {
           className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
           onClick={() => setIsOpen(true)}
         >
-          Create New Project on Server
+          New Project
         </button>
       }
       onClose={() => {
