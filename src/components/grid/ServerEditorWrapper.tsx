@@ -2,30 +2,40 @@
 
 import { updateProject } from '@/app/actions';
 import { AppProject } from '@/types';
+import { useState } from 'react';
 import { Editor } from './Editor';
 
-export function ServerEditorWrapper({ project }: { project: AppProject }) {
-  const handleProjectChange = async (updatedProject: AppProject) => {
-    try {
-      await updateProject(updatedProject.id, {
-        name: updatedProject.name,
-        boxes: updatedProject.boxes,
-        cols: updatedProject.cols,
-        font: updatedProject.font,
-        rows: updatedProject.rows,
-        hints: updatedProject.hints,
-        isPublic: updatedProject.isPublic,
+export function ServerEditorWrapper({
+  project: initialProject,
+}: {
+  project: AppProject;
+}) {
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleProjectChange = (updatedProject: AppProject) => {
+    setIsSyncing(true);
+    updateProject(updatedProject.id, {
+      name: updatedProject.name,
+      boxes: updatedProject.boxes,
+      cols: updatedProject.cols,
+      font: updatedProject.font,
+      rows: updatedProject.rows,
+      hints: updatedProject.hints,
+      isPublic: updatedProject.isPublic,
+    })
+      .catch((error) => {
+        console.error('Error saving project:', error);
+      })
+      .finally(() => {
+        setIsSyncing(false);
       });
-    } catch (error) {
-      console.error('Error saving project:', error);
-    }
   };
-  console.log('project', project);
 
   return (
     <Editor
-      initialProject={project}
+      initialProject={initialProject}
       isLocalProject={false}
+      isSyncing={isSyncing}
       onProjectChange={handleProjectChange}
     />
   );

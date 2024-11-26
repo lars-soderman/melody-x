@@ -32,6 +32,40 @@ export function useGrid(
 ) {
   const [state, dispatch] = useReducer(gridReducer, getInitialState(project));
   const updateTimeoutRef = useRef<NodeJS.Timeout>();
+  const prevStateRef = useRef(state);
+
+  useEffect(() => {
+    if (!project) return;
+
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+
+    updateTimeoutRef.current = setTimeout(() => {
+      const hasChanged =
+        JSON.stringify(prevStateRef.current) !== JSON.stringify(state);
+
+      if (hasChanged) {
+        const updatedProject = {
+          ...project,
+          boxes: state.boxes,
+          cols: state.cols,
+          rows: state.rows,
+          font: state.font,
+          hints: state.hints,
+        };
+
+        prevStateRef.current = state;
+        onProjectChange(updatedProject);
+      }
+    }, 500);
+
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, [state, project, onProjectChange]);
 
   const getNextHintNumber = useCallback(() => {
     // Get all currently used hint numbers
@@ -188,7 +222,6 @@ export function useGrid(
 
   const getNextAvailableNumber = useCallback(() => {
     const usedNumbers = state.hints.map((h) => h.number);
-    console.log('usedNumbers', usedNumbers);
 
     let nextNumber = 1;
 

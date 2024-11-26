@@ -19,12 +19,14 @@ import { Settings } from './settings/Settings';
 type EditorProps = {
   initialProject: AppProject;
   isLocalProject?: boolean;
+  isSyncing?: boolean;
   onProjectChange: (project: AppProject) => void;
 };
 
 export function Editor({
   initialProject,
   isLocalProject,
+  isSyncing,
   onProjectChange,
 }: EditorProps) {
   const [confirmingRemove, setConfirmingRemove] = useState<{
@@ -117,6 +119,9 @@ export function Editor({
       className="flex min-h-screen flex-col gap-4"
       onClick={() => setConfirmingRemove(null)}
     >
+      {isSyncing && (
+        <div className="absolute right-0 top-0 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+      )}
       <Settings
         cols={cols}
         font={font}

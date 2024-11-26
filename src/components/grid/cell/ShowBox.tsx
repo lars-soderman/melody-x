@@ -70,13 +70,11 @@ export function ShowBox({
         )}
         {hint && (
           <div
-            className="absolute flex h-5 w-5 items-center justify-center rounded-full"
+            className="absolute flex h-5 w-5 items-center justify-center"
             data-hint={true}
             style={{
-              left: '3px',
-              top: '3px',
-              border: '2px solid',
-              borderColor: black ? 'white' : 'black',
+              left: '2px',
+              top: '2px',
               fontSize: 'clamp(8px, 1.5vw, 12px)',
             }}
           >

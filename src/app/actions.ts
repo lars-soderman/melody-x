@@ -130,7 +130,8 @@ export async function updateProject(
       },
     });
 
-    revalidatePath(`/editor/${projectId}`);
+    // Remove revalidatePath call since we don't want to trigger a re-render
+    // revalidatePath(`/editor/${projectId}`);
     return updatedProject;
   } catch (error) {
     console.error('Update project error:', error);
