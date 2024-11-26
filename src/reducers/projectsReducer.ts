@@ -1,12 +1,6 @@
 import { storage } from '@/utils/storage';
 import { ProjectsAction, ProjectsState } from './types/projectActions';
 
-// const initialState: ProjectsState = {
-//   ownedProjects: [],
-//   sharedProjects: [],
-//   isLoading: true,
-// };
-
 export const projectsReducer = (
   state: ProjectsState,
   action: ProjectsAction

@@ -4,11 +4,6 @@ import { createDefaultProject } from '@/constants';
 import { AppProject } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
 
-interface LocalProjectsMetadata {
-  lastSelectedId: string | null;
-  projectIds: string[];
-}
-
 const PROJECT_PREFIX = 'melody-x-project-';
 
 export function useLocalProjects() {
