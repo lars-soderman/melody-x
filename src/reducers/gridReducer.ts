@@ -51,13 +51,40 @@ export function gridReducer(state: GridState, action: GridAction): GridState {
         version: state.version + 1,
       };
 
-    case 'UPDATE_GRID_SIZE':
+    case 'UPDATE_GRID_SIZE': {
+      console.log('Before update:', {
+        currentRows: state.rows,
+        currentCols: state.cols,
+        currentBoxes: state.boxes,
+      });
+
+      // Create array for all possible positions in new grid
+      const newBoxes = Array.from({ length: action.rows }, (_, row) =>
+        Array.from({ length: action.cols }, (_, col) => {
+          // Try to find existing box at this position
+          const existingBox = state.boxes.find(
+            (box) => box.row === row && box.col === col
+          );
+
+          // Return existing box or create new empty one
+          return (
+            existingBox || {
+              row,
+              col,
+              letter: null,
+            }
+          );
+        })
+      ).flat();
+
       return {
         ...state,
+        boxes: newBoxes,
         rows: action.rows,
         cols: action.cols,
         version: state.version + 1,
       };
+    }
 
     case 'UPDATE_FONT':
       return {

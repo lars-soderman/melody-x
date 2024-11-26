@@ -32,10 +32,6 @@ export function Editor({
     type: 'row' | 'column';
   } | null>(null);
   const [showGridResize, setShowGridResize] = useState(false);
-  const [project, setProject] = useState<AppProject>(() => ({
-    ...initialProject,
-    boxes: initialProject.boxes || [],
-  }));
 
   const {
     boxes,
@@ -56,10 +52,7 @@ export function Editor({
     toggleHint,
     toggleStopDown,
     toggleStopRight,
-  } = useGrid(project, (updatedProject) => {
-    setProject(updatedProject);
-    onProjectChange?.(updatedProject);
-  });
+  } = useGrid(initialProject, onProjectChange);
 
   const {
     editingBox,

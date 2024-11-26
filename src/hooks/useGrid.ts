@@ -1,6 +1,6 @@
 'use client';
 
-import { DEFAULT_STATE, INITIAL_GRID_SIZE } from '@/constants';
+import { DEFAULT_STATE } from '@/constants';
 import { AppProject, GridState } from '@/types';
 import { createInitialBoxes, getId } from '@utils/grid';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
@@ -31,8 +31,6 @@ export function useGrid(
   onProjectChange: (updatedProject: AppProject) => void
 ) {
   const [state, dispatch] = useReducer(gridReducer, getInitialState(project));
-  const prevProjectIdRef = useRef<string | null>(project?.id ?? null);
-  const prevStateRef = useRef(state);
   const updateTimeoutRef = useRef<NodeJS.Timeout>();
 
   const getNextHintNumber = useCallback(() => {
@@ -58,25 +56,11 @@ export function useGrid(
     return nextNumber;
   }, [state.boxes]);
 
-  // Effect for loading from project
+  // Single effect for project syncing
   useEffect(() => {
-    if (!project) {
-      // Reset to default state when project is null
-      dispatch({
-        type: 'SET_STATE',
-        state: {
-          boxes: [],
-          cols: INITIAL_GRID_SIZE.cols,
-          rows: INITIAL_GRID_SIZE.rows,
-          font: 'var(--font-default)',
-          hints: [],
-          version: 1,
-        } satisfies GridState,
-      });
-      return;
-    }
+    if (!project) return;
 
-    // Set state from project
+    // Update state when project changes
     dispatch({
       type: 'SET_STATE',
       state: {
@@ -86,61 +70,32 @@ export function useGrid(
         font: project.font,
         hints: project.hints,
         version: 1,
-      } satisfies GridState,
+      },
     });
 
-    prevProjectIdRef.current = project.id;
-  }, [project]);
-
-  // Effect for syncing state changes back to project
-  useEffect(() => {
-    if (!project || project.id !== prevProjectIdRef.current) return;
-
-    const currentStateString = JSON.stringify({
-      boxes: state.boxes,
-      rows: state.rows,
-      cols: state.cols,
-      font: state.font,
-      hints: state.hints,
-    });
-
-    const prevStateString = JSON.stringify({
-      boxes: prevStateRef.current.boxes,
-      rows: prevStateRef.current.rows,
-      cols: prevStateRef.current.cols,
-      font: prevStateRef.current.font,
-      hints: prevStateRef.current.hints,
-    });
-
-    if (currentStateString !== prevStateString) {
-      prevStateRef.current = state;
-
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
-
-      updateTimeoutRef.current = setTimeout(() => {
-        onProjectChange({
-          ...project,
-          boxes: state.boxes,
-          rows: state.rows,
-          cols: state.cols,
-          font: state.font,
-          hints: state.hints,
-          updatedAt: new Date().toISOString(),
-        });
-      }, 500);
-    }
-  }, [state, project, onProjectChange]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
+    // Cleanup timeout on unmount or project change
     return () => {
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
     };
-  }, []);
+  }, [project]);
+
+  const updateGridSize = useCallback(
+    (rows: number, cols: number) => {
+      dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
+
+      if (project) {
+        onProjectChange({
+          ...project,
+          rows,
+          cols,
+          boxes: state.boxes.filter((box) => box.row < rows && box.col < cols),
+        });
+      }
+    },
+    [project, onProjectChange, state.boxes]
+  );
 
   const toggleHint = useCallback(
     (id: string) => {
@@ -156,7 +111,7 @@ export function useGrid(
         dispatch({ type: 'SET_HINT', id, hint: nextNumber });
       }
     },
-    [state.boxes, getNextHintNumber]
+    [state.boxes]
   );
 
   const updateBoxSize = useCallback((size: number) => {
@@ -207,22 +162,6 @@ export function useGrid(
     dispatch({ type: 'TOGGLE_STOP_RIGHT', id });
   }, []);
 
-  const updateGridSize = useCallback(
-    (rows: number, cols: number) => {
-      dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
-
-      // Update project with new dimensions
-      if (project) {
-        onProjectChange({
-          ...project,
-          rows,
-          cols,
-        });
-      }
-    },
-    [project, onProjectChange]
-  );
-
   const updateFont = (font: string) => dispatch({ type: 'UPDATE_FONT', font });
 
   const getNextAvailableNumber = useCallback(() => {
@@ -238,58 +177,28 @@ export function useGrid(
     return nextNumber;
   }, [state.hints]);
 
-  // const addHint = useCallback(
-  //   (boxId: string, direction: 'vertical' | 'horizontal', length: number) => {
-  //     const nextNumber = getNextAvailableNumber();
-  //     dispatch({
-  //       type: 'ADD_HINT',
-  //       boxId,
-  //       direction,
-  //       length,
-  //       number: nextNumber,
-  //     });
-  //     return nextNumber;
-  //   },
-  //   [getNextAvailableNumber]
-  // );
-
   const updateHintText = useCallback((id: string, text: string) => {
     dispatch({ type: 'UPDATE_HINT_TEXT', id, text });
   }, []);
 
-  // const removeHint = useCallback((id: string) => {
-  //   dispatch({ type: 'REMOVE_HINT', id });
-  // }, []);
-
-  // const updateHintNumber = useCallback((id: string, number: number) => {
-  //   dispatch({ type: 'UPDATE_HINT_NUMBER', id, number });
-  // }, []);
-
   return {
-    boxes: state.boxes,
+    ...state,
+    updateGridSize,
+    toggleHint,
     updateBoxSize,
     updateLetter,
     toggleArrowDown,
     toggleArrowRight,
-    toggleBlack,
     removeRow,
     removeColumn,
     addRow,
     addColumn,
     reset,
+    toggleBlack,
     toggleStopDown,
     toggleStopRight,
-    toggleHint,
-    rows: state.rows,
-    cols: state.cols,
-    updateGridSize,
-    font: state.font,
     updateFont,
-    hints: state.hints,
-    // addHint,
-    updateHintText,
-    // removeHint,
-    // updateHintNumber,
     getNextAvailableNumber,
+    updateHintText,
   };
 }
