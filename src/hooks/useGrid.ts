@@ -73,10 +73,12 @@ export function useGrid(
       },
     });
 
-    // Cleanup timeout on unmount or project change
+    // Store ref in variable for cleanup
+    const timeoutRef = updateTimeoutRef.current;
+
     return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
+      if (timeoutRef) {
+        clearTimeout(timeoutRef);
       }
     };
   }, [project]);
@@ -86,11 +88,31 @@ export function useGrid(
       dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
 
       if (project) {
+        const updatedBoxes = state.boxes.filter(
+          (box) => box.row < rows && box.col < cols
+        );
+
+        // Create new boxes for expanded grid
+        const newBoxes = Array.from({ length: rows }, (_, row) =>
+          Array.from({ length: cols }, (_, col) => {
+            const existingBox = updatedBoxes.find(
+              (box) => box.row === row && box.col === col
+            );
+            return (
+              existingBox || {
+                row,
+                col,
+                letter: null,
+              }
+            );
+          })
+        ).flat();
+
         onProjectChange({
           ...project,
           rows,
           cols,
-          boxes: state.boxes.filter((box) => box.row < rows && box.col < cols),
+          boxes: newBoxes,
         });
       }
     },
@@ -111,7 +133,7 @@ export function useGrid(
         dispatch({ type: 'SET_HINT', id, hint: nextNumber });
       }
     },
-    [state.boxes]
+    [getNextHintNumber, state.boxes]
   );
 
   const updateBoxSize = useCallback((size: number) => {

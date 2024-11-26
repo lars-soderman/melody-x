@@ -58,7 +58,6 @@ export function Settings({
     document.addEventListener('keydown', handleEscKey);
     return () => document.removeEventListener('keydown', handleEscKey);
   }, [isOpen]);
-  console.log('isLocalProject', isLocalProject);
 
   return (
     <div className="absolute right-4 top-4">
