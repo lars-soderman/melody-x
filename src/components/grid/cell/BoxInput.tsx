@@ -81,6 +81,10 @@ export function BoxInput({
         className={`z-10 w-full cursor-pointer text-center text-4xl uppercase ${
           black ? 'bg-black text-white' : 'bg-white'
         } focus:outline-blue-500 focus:ring-blue-500 focus-visible:outline-8`}
+        style={{
+          fontSize: 'clamp(12px, 4vw, 32px)',
+          color: black ? 'white' : 'black',
+        }}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onFocus={(e) => {

@@ -46,7 +46,7 @@ export function CrosswordGrid({
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="min-w-fit p-4">
+      <div className="min-w-fit">
         <div
           className="grid border-collapse gap-0 border-2 border-black"
           id="crossword-grid"

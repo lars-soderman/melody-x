@@ -207,9 +207,21 @@ export function useGrid(
     dispatch({ type: 'TOGGLE_STOP_RIGHT', id });
   }, []);
 
-  const updateGridSize = useCallback((rows: number, cols: number) => {
-    dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
-  }, []);
+  const updateGridSize = useCallback(
+    (rows: number, cols: number) => {
+      dispatch({ type: 'UPDATE_GRID_SIZE', rows, cols });
+
+      // Update project with new dimensions
+      if (project) {
+        onProjectChange({
+          ...project,
+          rows,
+          cols,
+        });
+      }
+    },
+    [project, onProjectChange]
+  );
 
   const updateFont = (font: string) => dispatch({ type: 'UPDATE_FONT', font });
 

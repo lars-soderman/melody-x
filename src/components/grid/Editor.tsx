@@ -121,7 +121,7 @@ export function Editor({
 
   return (
     <div
-      className="flex min-h-screen flex-col gap-4 p-4"
+      className="flex min-h-screen flex-col gap-4"
       onClick={() => setConfirmingRemove(null)}
     >
       <Settings
