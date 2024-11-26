@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useLocalProjects } from '@/hooks/useLocalProjects';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SignInButton } from '../auth/SignInButton';
@@ -9,6 +10,10 @@ import { SignOutButton } from '../auth/SignOutButton';
 export function Topnav() {
   const { user } = useAuth();
   const pathname = usePathname();
+  const { projects } = useLocalProjects();
+
+  const hasLocalProjects = projects.length > 0;
+  const showLocalProjects = !user || (user && hasLocalProjects);
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -35,16 +40,18 @@ export function Topnav() {
               Server Projects
             </Link>
           )}
-          <Link
-            href="/local"
-            className={`rounded-lg p-2 transition-colors ${
-              isActive('/local')
-                ? 'bg-blue-50 text-blue-600'
-                : 'hover:bg-gray-100'
-            }`}
-          >
-            Local Projects
-          </Link>
+          {showLocalProjects && (
+            <Link
+              href="/local"
+              className={`rounded-lg p-2 transition-colors ${
+                isActive('/local')
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'hover:bg-gray-100'
+              }`}
+            >
+              Local Projects
+            </Link>
+          )}
         </nav>
       </div>
 
