@@ -52,12 +52,6 @@ export function gridReducer(state: GridState, action: GridAction): GridState {
       };
 
     case 'UPDATE_GRID_SIZE': {
-      console.log('Before update:', {
-        currentRows: state.rows,
-        currentCols: state.cols,
-        currentBoxes: state.boxes,
-      });
-
       // Create array for all possible positions in new grid
       const newBoxes = Array.from({ length: action.rows }, (_, row) =>
         Array.from({ length: action.cols }, (_, col) => {
