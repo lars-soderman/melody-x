@@ -8,20 +8,40 @@ generator client {
 }
 
 model Project {
-  id           String   @id @default(cuid())
-  name         String
-  gridData     Json
-  hints        Json     @default("[]")
-  isPublic     Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  ownerId      String
-  owner        User     @relation(fields: [ownerId], references: [id])
+  id            String               @id @default(cuid())
+  name          String
+  gridData      Json
+  hints         Json                 @default("[]")
+  isPublic      Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  ownerId       String
+  owner         User                @relation("owned_projects", fields: [ownerId], references: [id])
+  collaborators ProjectCollaborator[]
+  version       Int                 @default(1)
+  lastUpdatedBy String?
 }
 
 model User {
-  id              String    @id
-  email           String    @unique
-  rawUserMetaData Json
-  projects        Project[]
+  id                String               @id
+  email             String               @unique
+  rawUserMetaData   Json
+  ownedProjects     Project[]           @relation("owned_projects")
+  collaborations    ProjectCollaborator[] @relation("collaborator")
+  invitedProjects   ProjectCollaborator[] @relation("invited_by")
+}
+
+model ProjectCollaborator {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  addedById String
+  role      String   @default("editor")    // "editor" or "viewer"
+  status    String   @default("pending")   // "pending", "accepted", "rejected"
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation("collaborator", fields: [userId], references: [id])
+  addedBy   User     @relation("invited_by", fields: [addedById], references: [id])
+
+  @@unique([projectId, userId])
 }
