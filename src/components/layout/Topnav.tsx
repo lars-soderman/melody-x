@@ -13,7 +13,7 @@ export function Topnav() {
   const { projects } = useLocalProjects();
 
   const hasLocalProjects = projects.length > 0;
-  const showLocalProjects = !user || (user && hasLocalProjects);
+  const showLocalProjects = !user || hasLocalProjects;
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -37,7 +37,7 @@ export function Topnav() {
                 isActive('/') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-100'
               }`}
             >
-              Server Projects
+              Projects
             </Link>
           )}
           {showLocalProjects && (

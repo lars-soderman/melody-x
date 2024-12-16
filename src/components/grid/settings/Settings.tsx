@@ -63,6 +63,7 @@ export function Settings({
     <div className="absolute right-4 top-4">
       <Popover
         isOpen={isOpen}
+        positionX="left"
         trigger={
           <button
             aria-label="Settings"
