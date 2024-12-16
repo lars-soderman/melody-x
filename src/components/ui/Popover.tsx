@@ -81,9 +81,7 @@ export function Popover({
       {isOpen && (
         <div
           className={`absolute z-40 min-w-[300px] rounded-lg border border-gray-200 bg-white p-4 shadow-lg ${
-            position === 'top'
-              ? `${align === 'end' ? 'right-0' : 'left-0'} top-8`
-              : 'left-8 top-0'
+            position === 'top' ? 'left-0 top-8' : 'left-8 top-0'
           }`}
         >
           {children}
