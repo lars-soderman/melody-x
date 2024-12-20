@@ -26,7 +26,7 @@ export function Topnav() {
     <header className="flex h-24 w-screen items-center justify-between border-b bg-white p-4">
       <div className="flex items-center gap-4">
         <Link href="/">
-          <h1 className="text-xl">melody-x</h1>
+          <h1 className="text-xl">Melodikrysstvå</h1>
         </Link>
 
         <nav className="flex gap-2">

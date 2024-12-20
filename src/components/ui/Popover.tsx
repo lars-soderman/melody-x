@@ -16,11 +16,11 @@ export function Popover({
   isOpen,
   onClose,
   positionX = 'left',
-  positionY = 'top',
+  positionY = 'bottom',
   trigger,
 }: PopoverProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-
+  console.log(positionX, positionY);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -80,7 +80,7 @@ export function Popover({
       {trigger}
       {isOpen && (
         <div
-          className={`absolute z-40 min-w-[300px] rounded-lg border border-gray-200 bg-white p-4 shadow-lg ${positionY === 'top' ? 'top-0' : 'bottom-0'} ${positionX === 'left' ? 'right-0 top-8' : 'left-0 top-0'}`}
+          className={`absolute z-40 min-w-[300px] rounded-lg border border-gray-200 bg-white p-4 shadow-lg ${positionY === 'top' ? 'bottom-10' : 'top-10'} ${positionX === 'left' ? 'right-0' : 'left-0'}`}
         >
           {children}
         </div>
