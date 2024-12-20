@@ -15,10 +15,9 @@
     "test:e2e:debug": "playwright test --debug",
     "typecheck": "tsc --noEmit",
     "generate-types": "dotenv -e .env -- supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts",
-    "db:push": "source .env && DATABASE_URL=$MIGRATION_DATABASE_URL npx prisma db push",
-    "db:migrate": "dotenv -e .env -- prisma migrate dev",
-    "db:deploy": "dotenv -e .env -- prisma migrate deploy",
-    "db:studio": "dotenv -e .env -- prisma studio",
+    "db:push:dev": "source .env && DATABASE_URL=$MIGRATION_DATABASE_URL npx prisma db push",
+    "db:migrate:dev": "dotenv -e .env -- prisma migrate dev",
+    "db:migrate:prod": "DATABASE_URL=\"$DATABASE_URL_PROD\" MIGRATION_DATABASE_URL=\"$MIGRATION_DATABASE_URL_PROD\" prisma migrate deploy",
     "db:generate": "dotenv -e .env -- prisma generate",
     "postinstall": "prisma generate"
   },
