@@ -14,12 +14,12 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "typecheck": "tsc --noEmit",
-    "generate-types": "dotenv -e .env -- supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts",
-    "db:push:dev": "source .env && DATABASE_URL=$MIGRATION_DATABASE_URL npx prisma db push",
-    "db:migrate:dev": "source .env && DATABASE_URL=$MIGRATION_DATABASE_URL npx prisma migrate dev",
-    "db:migrate:prod": "source .env && DATABASE_URL=$DATABASE_URL_PROD MIGRATION_DATABASE_URL=$MIGRATION_DATABASE_URL_PROD npx prisma migrate deploy",
-    "db:generate": "dotenv -e .env -- prisma generate",
-    "postinstall": "prisma generate"
+    "db:dev:migrate": "prisma migrate dev",
+    "db:prod:migrate": "prisma migrate deploy",
+    "db:prod:backup": "pg_dump $DIRECT_URL_PROD --no-owner --clean > ./backups/$(date +%Y%m%d_%H%M%S)_prod_backup.sql",
+    "db:backup:init": "mkdir -p backups",
+    "postinstall": "prisma generate",
+    "generate-types": "supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

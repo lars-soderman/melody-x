@@ -26,8 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
-.env
+.env*
+!.env.example
 
 # vercel
 .vercel
@@ -41,3 +41,6 @@ test-results/.last-run.json
 **/test-results/
 **/playwright-report/
 **/playwright/.cache/
+
+# DB
+backups/
