@@ -15,11 +15,10 @@
     "test:e2e:debug": "playwright test --debug",
     "typecheck": "tsc --noEmit",
     "db:dev:migrate": "prisma migrate dev",
-    "db:prod:migrate": "prisma migrate deploy",
-    "db:prod:backup": "pg_dump $DIRECT_URL_PROD --no-owner --clean > ./backups/$(date +%Y%m%d_%H%M%S)_prod_backup.sql",
     "db:backup:init": "mkdir -p backups",
     "postinstall": "prisma generate",
-    "generate-types": "supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts"
+    "generate-types": "supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts",
+    "db:migration:generate": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migrations/$(date +%Y%m%d%H%M%S)_migration.sql"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
