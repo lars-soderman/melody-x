@@ -1,6 +1,7 @@
 'use client';
 
 import { GridPreview } from '@/components/grid/GridPreview';
+import { useTranslations } from '@/hooks/useTranslations';
 import { AppProject } from '@/types';
 import { useRouter } from 'next/navigation';
 
@@ -11,6 +12,7 @@ type Props = {
 
 export function LocalProjectCard({ project, onDelete }: Props) {
   const router = useRouter();
+  const t = useTranslations();
 
   return (
     <div
@@ -23,7 +25,8 @@ export function LocalProjectCard({ project, onDelete }: Props) {
             {project.name}
           </h3>
           <div className="text-sm text-gray-500">
-            Created {new Date(project.createdAt).toLocaleDateString()}
+            {t.project.created}{' '}
+            {new Date(project.createdAt).toLocaleDateString()}
           </div>
         </div>
 

@@ -86,7 +86,7 @@ export function ProjectCardMenu({
               <div className="my-1 border-t" />
               <div className="space-y-2 p-2 text-sm">
                 <div>
-                  <div className="text-gray-500">Created</div>
+                  <div className="text-gray-500">{t.project.created}</div>
                   <div>{new Date(project.createdAt).toLocaleString()}</div>
                 </div>
                 <div>

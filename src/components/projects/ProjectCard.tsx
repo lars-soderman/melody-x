@@ -1,6 +1,7 @@
 'use client';
 
 import { deleteProject, updateProject } from '@/app/actions';
+import { useTranslations } from '@/hooks/useTranslations';
 import { AppProject } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -16,6 +17,7 @@ export function ProjectCard({ project }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(project.name);
+  const t = useTranslations();
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this project?')) return;
@@ -98,7 +100,8 @@ export function ProjectCard({ project }: Props) {
           </div>
 
           <div className="text-sm text-gray-500">
-            Created {new Date(project.createdAt).toLocaleDateString()}
+            {t.project.created}{' '}
+            {new Date(project.createdAt).toLocaleDateString()}
           </div>
         </div>
 
