@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocalProjects } from '@/hooks/useLocalProjects';
+import { useTranslations } from '@/hooks/useTranslations';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SignInButton } from '../auth/SignInButton';
@@ -11,6 +12,7 @@ export function Topnav() {
   const { user } = useAuth();
   const pathname = usePathname();
   const { projects } = useLocalProjects();
+  const t = useTranslations();
 
   const hasLocalProjects = projects.length > 0;
   const showLocalProjects = !user || hasLocalProjects;
@@ -37,7 +39,7 @@ export function Topnav() {
                 isActive('/') ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-100'
               }`}
             >
-              Projects
+              {t.project.myProjects}
             </Link>
           )}
           {showLocalProjects && (
@@ -49,7 +51,7 @@ export function Topnav() {
                   : 'hover:bg-gray-100'
               }`}
             >
-              Local Projects
+              {t.project.localProjects}
             </Link>
           )}
         </nav>

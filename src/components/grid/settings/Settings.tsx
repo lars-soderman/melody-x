@@ -6,6 +6,7 @@ import { ExportButton } from '@/components/grid/settings/ExportButton';
 import { FontSelector } from '@/components/grid/settings/FontSelector';
 import { SaveToServerButton } from '@/components/projects/SaveToServerButton';
 import { Popover } from '@/components/ui/Popover';
+import { useTranslations } from '@/hooks/useTranslations';
 import { ResetButton } from './ResetButton';
 
 interface ExportProps {
@@ -40,12 +41,13 @@ export function Settings({
   onReset,
   rows,
   updateFont,
-  showGridResize,
-  toggleGridResize,
+  // showGridResize,
+  // toggleGridResize,
   project,
 }: SettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
+  const t = useTranslations();
 
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
@@ -80,7 +82,9 @@ export function Settings({
       >
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
-            <label className="text-sm text-gray-500">Grid Size</label>
+            <label className="text-sm text-gray-500">
+              {t.editor.grid.gridSize}
+            </label>
             <div className="flex items-center gap-2">
               <input
                 className="w-10 rounded border border-gray-300 p-1 text-sm"
@@ -108,7 +112,7 @@ export function Settings({
 
           <div className="flex items-center justify-between gap-4">
             <label className="text-sm text-gray-500" htmlFor="font-selector">
-              Font
+              {t.editor.grid.font}
             </label>
             <FontSelector
               id="font-selector"
@@ -116,8 +120,8 @@ export function Settings({
               onChange={updateFont}
             />
           </div>
-
-          <div className="flex items-center justify-between">
+          {/* TODO: fix or remove */}
+          {/* <div className="flex items-center justify-between">
             <label
               className="text-sm text-gray-500"
               htmlFor="grid-resize-toggle"
@@ -131,10 +135,10 @@ export function Settings({
               type="checkbox"
               onChange={toggleGridResize}
             />
-          </div>
+          </div> */}
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Reset Grid</span>
+            <span className="text-sm text-gray-500">{t.editor.grid.reset}</span>
             <ResetButton
               isConfirming={isConfirmingReset}
               onConfirmingChange={setIsConfirmingReset}
@@ -148,7 +152,8 @@ export function Settings({
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">
-              Export <span className="italic">kryssplan</span>
+              {t.editor.grid.export}{' '}
+              <span className="italic">{t.editor.grid.kryssplan}</span>
             </span>
             <ExportButton {...exportProps} />
           </div>

@@ -1,10 +1,12 @@
 'use client';
 
+import { useTranslations } from '@/hooks/useTranslations';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 
 export function SignOutButton() {
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations();
 
   const handleSignOut = async () => {
     setIsLoading(true);
@@ -31,7 +33,7 @@ export function SignOutButton() {
       disabled={isLoading}
       onClick={handleSignOut}
     >
-      {isLoading ? 'Signing out...' : 'Sign out'}
+      {isLoading ? t.auth.signingOut : t.auth.signOut}
     </button>
   );
 }

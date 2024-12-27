@@ -1,11 +1,13 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslations } from '@/hooks/useTranslations';
 import { useState } from 'react';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const { signInWithGoogle } = useAuth();
+  const t = useTranslations();
 
   const handleGoogleLogin = async () => {
     try {
@@ -19,7 +21,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md space-y-4 rounded-lg border p-8">
-        <h1 className="text-2xl">Login</h1>
+        <h1 className="text-2xl">{t.auth.signIn}</h1>
 
         <button
           className="flex w-full items-center justify-center gap-2 rounded bg-white px-4 py-2 text-gray-700 shadow hover:bg-gray-50"
@@ -44,7 +46,7 @@ export default function LoginPage() {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          {t.auth.signInWithGoogle}
         </button>
 
         {error && <div className="text-sm text-red-600">{error}</div>}

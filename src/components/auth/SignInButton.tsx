@@ -1,12 +1,14 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslations } from '@/hooks/useTranslations';
 import { useState } from 'react';
 
 export function SignInButton() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { signInWithGoogle } = useAuth();
+  const t = useTranslations();
 
   const handleSignIn = async () => {
     setIsLoading(true);
@@ -44,7 +46,7 @@ export function SignInButton() {
           fill="#EA4335"
         />
       </svg>
-      {isLoading ? 'Signing in...' : 'Sign in'}
+      {isLoading ? t.auth.signingIn : t.auth.signIn}
     </button>
   );
 }

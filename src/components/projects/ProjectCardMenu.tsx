@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/useTranslations';
 import { AppProject } from '@/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -15,6 +16,7 @@ export function ProjectCardMenu({
   const [isOpen, setIsOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -92,7 +94,7 @@ export function ProjectCardMenu({
                   <div>{new Date(project.updatedAt).toLocaleString()}</div>
                 </div>
                 <div>
-                  <div className="text-gray-500">Grid size</div>
+                  <div className="text-gray-500">{t.editor.grid.gridSize}</div>
                   <div>
                     {project.rows}×{project.cols}
                   </div>

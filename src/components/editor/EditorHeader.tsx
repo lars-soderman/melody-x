@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from '@/hooks/useTranslations';
 import { AppProject } from '@/types';
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
 };
 
 export function EditorHeader({ project }: Props) {
+  const t = useTranslations();
+
   return (
     <div className="mb-4 flex w-full items-center justify-between">
       <button
@@ -26,7 +29,7 @@ export function EditorHeader({ project }: Props) {
             strokeWidth={2}
           />
         </svg>
-        Back
+        {t.common.back}
       </button>
       <h1 className="text-xl font-bold">{project.name}</h1>
     </div>

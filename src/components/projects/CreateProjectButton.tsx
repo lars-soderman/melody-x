@@ -3,6 +3,7 @@
 import { createProject } from '@/app/actions';
 import { Popover } from '@/components/ui/Popover';
 import { createDefaultProject } from '@/constants';
+import { useTranslations } from '@/hooks/useTranslations';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -16,6 +17,8 @@ export function CreateProjectButton({ userId }: Props) {
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const t = useTranslations();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +64,7 @@ export function CreateProjectButton({ userId }: Props) {
           className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
           onClick={() => setIsOpen(true)}
         >
-          New Project
+          {t.project.new}
         </button>
       }
       onClose={() => {
@@ -70,12 +73,12 @@ export function CreateProjectButton({ userId }: Props) {
       }}
     >
       <form className="p-4" onSubmit={handleSubmit}>
-        <h3 className="mb-4 text-lg font-semibold">Create New Project</h3>
+        <h3 className="mb-4 text-lg font-semibold">{t.project.new}</h3>
         <input
           autoFocus
           className="mb-4 w-full rounded border border-gray-200 p-2"
           disabled={isCreating}
-          placeholder="Project name"
+          placeholder={t.project.name}
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
         />
@@ -90,14 +93,14 @@ export function CreateProjectButton({ userId }: Props) {
               setError(null);
             }}
           >
-            Cancel
+            {t.common.cancel}
           </button>
           <button
             className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600 disabled:opacity-50"
             disabled={isCreating}
             type="submit"
           >
-            {isCreating ? 'Creating...' : 'Create'}
+            {isCreating ? t.project.creating : t.common.create}
           </button>
         </div>
       </form>
