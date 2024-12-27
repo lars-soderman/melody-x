@@ -9,7 +9,7 @@ interface ClientHomeWrapperProps {
 
 export function ClientHomeWrapper({ user }: ClientHomeWrapperProps) {
   return (
-    <div className="p-6">
+    <div>
       {user ? (
         <ProjectListWrapper userId={user.id} />
       ) : (
