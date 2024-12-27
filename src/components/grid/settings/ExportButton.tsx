@@ -33,6 +33,11 @@ export function ExportButton({}: ExportButtonProps) {
       #crossword-grid [data-letter="true"] span {
         color: transparent !important;
       }
+      #crossword-grid [data-hint="true"] span {
+        position: relative !important;
+        top: -6px !important;
+        left: -2px !important;
+      }
 
 
     `;
