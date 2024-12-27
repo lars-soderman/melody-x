@@ -18,7 +18,8 @@
     "db:backup:init": "mkdir -p backups",
     "postinstall": "prisma generate",
     "generate-types": "supabase gen types typescript --project-id kpgrevswkmklxjqtroww --schema public > src/types/supabase.ts",
-    "db:migration:generate": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migrations/$(date +%Y%m%d%H%M%S)_migration.sql"
+    "db:migration:init": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migrations/$(date +%Y%m%d%H%M%S)_init.sql",
+    "db:migration:generate": "prisma migrate diff --from-schema-datamodel prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --script > migrations/$(date +%Y%m%d%H%M%S)_migration.sql"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
