@@ -1,6 +1,8 @@
 import { ClientHomeWrapper } from '@/components/ClientHomeWrapper';
 import { getUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const user = await getUser(false);
 

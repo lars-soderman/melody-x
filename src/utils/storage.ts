@@ -57,6 +57,7 @@ const initStorage = () => {
       }
     });
   } catch (e) {
+    console.error('Error initializing storage:', e);
     storageManager.persist = false;
   }
 };

@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useState } from 'react';
-import { GoogleIcon } from '../icons/GoogleIcon';
+import GoogleLogo from '../ui/icons/GoogleLogo';
 
 export function SignInButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ export function SignInButton() {
       disabled={isLoading}
       onClick={handleSignIn}
     >
-      <GoogleIcon />
+      <GoogleLogo />
       {isLoading ? t.auth.signingIn : t.auth.signInWithGoogle}
     </button>
   );

@@ -37,8 +37,6 @@ export function Editor({
     rows,
     cols,
     font,
-    addColumn,
-    addRow,
     removeColumn,
     removeRow,
     updateFont,

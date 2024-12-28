@@ -38,9 +38,6 @@ export function Settings({
   onReset,
   rows,
   updateFont,
-  // showGridResize,
-  // toggleGridResize,
-  project,
 }: SettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
