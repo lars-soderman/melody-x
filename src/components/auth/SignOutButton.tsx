@@ -13,13 +13,20 @@ export function SignOutButton() {
     try {
       await supabase.auth.signOut();
 
-      // Manually clear cookies from the browser
-      document.cookie = 'sb-access-token=; Max-Age=0; path=/;';
-      document.cookie = 'sb-refresh-token=; Max-Age=0; path=/;';
-      document.cookie = 'sb-auth-token=; Max-Age=0; path=/;';
+      // Clear all cookies
+      const cookiesToClear = [
+        'sb-access-token',
+        'sb-refresh-token',
+        'sb-auth-token',
+        'supabase-auth-token',
+      ];
+
+      cookiesToClear.forEach((name) => {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      });
 
       // Force a full page reload to clear all state
-      window.location.href = '/login';
+      window.location.href = '/';
     } catch (error) {
       console.error('Error signing out:', error);
     } finally {

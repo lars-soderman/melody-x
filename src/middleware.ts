@@ -11,26 +11,18 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession();
 
   // Define routes that require auth
-  const isProtectedRoute =
-    req.nextUrl.pathname.startsWith('/editor') ||
-    req.nextUrl.pathname.startsWith('/project');
+  const isProtectedRoute = req.nextUrl.pathname.startsWith('/editor');
 
-  // Define routes that should redirect if authenticated
-  const isAuthRoute = req.nextUrl.pathname.startsWith('/login');
-
-  // If on login page and has session, redirect to home
-  if (session && isAuthRoute) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  // If on protected route and no session, redirect to login
+  // If on protected route and no session, redirect to home with error
   if (!session && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/login', req.url));
+    const redirectUrl = new URL('/', req.url);
+    redirectUrl.searchParams.set('error', 'not_authenticated');
+    return NextResponse.redirect(redirectUrl);
   }
 
   return res;
 }
-// Update matcher to only check specific routes
+
 export const config = {
-  matcher: ['/editor/:path*', '/project/:path*', '/login'],
+  matcher: ['/editor/:path*'],
 };

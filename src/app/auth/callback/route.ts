@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     if (!code) {
       console.error('No code in callback');
       return NextResponse.redirect(
-        new URL('/login?error=No code provided', requestUrl.origin)
+        new URL('/?error=auth_failed', requestUrl.origin)
       );
     }
 
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     if (error || !session) {
       console.error('Session error:', error || 'No session created');
       return NextResponse.redirect(
-        new URL('/login?error=Session creation failed', requestUrl.origin)
+        new URL('/?error=auth_failed', requestUrl.origin)
       );
     }
 
@@ -43,8 +43,6 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error('Callback error:', error);
-    return NextResponse.redirect(
-      new URL('/login?error=Authentication failed', request.url)
-    );
+    return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
   }
 }

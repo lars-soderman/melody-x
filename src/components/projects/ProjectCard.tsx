@@ -3,6 +3,7 @@
 import { deleteProject, updateProject } from '@/app/actions';
 import { useTranslations } from '@/hooks/useTranslations';
 import { AppProject } from '@/types';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
@@ -19,7 +20,8 @@ export function ProjectCard({ project }: Props) {
   const [name, setName] = useState(project.name);
   const t = useTranslations();
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation
     if (!confirm('Are you sure you want to delete this project?')) return;
     setIsDeleting(true);
     try {
@@ -42,101 +44,91 @@ export function ProjectCard({ project }: Props) {
   }, 1000);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault(); // Prevent navigation
     const newName = e.target.value;
     setName(newName);
     debouncedUpdate(newName);
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    // Don't navigate if clicking input or buttons
-    if (
-      e.target instanceof HTMLInputElement ||
-      e.target instanceof HTMLButtonElement
-    ) {
-      return;
-    }
-    router.push(`/editor/${project.id}`);
-  };
-
   return (
-    <div className="relative h-32 overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md">
-      <div className="flex h-full cursor-pointer p-4" onClick={handleCardClick}>
-        <div className="flex flex-1 flex-col justify-between">
-          <div className="group flex items-center">
-            {isEditing ? (
-              <input
-                autoFocus
-                className="w-full rounded border px-2 py-1 text-lg"
-                value={name}
-                onBlur={() => setIsEditing(false)}
-                onChange={handleNameChange}
-              />
-            ) : (
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-medium text-gray-900">{name}</h3>
-                <button
-                  className="invisible rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 group-hover:visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsEditing(true);
-                  }}
-                >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+    <Link href={`/editor/${project.id}`}>
+      <div className="relative h-32 overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md">
+        <div className="flex h-full p-4">
+          <div className="flex flex-1 flex-col justify-between">
+            <div className="group flex items-center">
+              {isEditing ? (
+                <input
+                  autoFocus
+                  className="w-full rounded border px-2 py-1 text-lg"
+                  value={name}
+                  onBlur={() => setIsEditing(false)}
+                  onChange={handleNameChange}
+                  onClick={(e) => e.preventDefault()}
+                />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-medium text-gray-900">{name}</h3>
+                  <button
+                    className="invisible rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 group-hover:visible"
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent navigation
+                      setIsEditing(true);
+                    }}
                   >
-                    <path
-                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                    />
-                  </svg>
-                </button>
-              </div>
-            )}
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                      />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="text-sm text-gray-500">
+              {t.project.created}{' '}
+              {new Date(project.createdAt).toLocaleDateString()}
+            </div>
           </div>
 
-          <div className="text-sm text-gray-500">
-            {t.project.created}{' '}
-            {new Date(project.createdAt).toLocaleDateString()}
+          <div className="ml-4 flex items-center">
+            <GridPreview
+              boxes={project.boxes}
+              className="border border-gray-200"
+              cols={project.cols}
+              rows={project.rows}
+            />
           </div>
         </div>
 
-        <div className="ml-4 flex items-center">
-          <GridPreview
-            boxes={project.boxes}
-            className="border border-gray-200"
-            cols={project.cols}
-            rows={project.rows}
-          />
-        </div>
-      </div>
-
-      <button
-        className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-        disabled={isDeleting}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleDelete();
-        }}
-      >
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <button
+          className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          disabled={isDeleting}
+          onClick={handleDelete}
         >
-          <path
-            d="M6 18L18 6M6 6l12 12"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-          />
-        </svg>
-      </button>
-    </div>
+          <svg
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+            />
+          </svg>
+        </button>
+      </div>
+    </Link>
   );
 }

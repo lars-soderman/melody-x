@@ -18,7 +18,7 @@ export default function Error({
 
     // If not authenticated, redirect to login
     if (error.message === 'Not authenticated') {
-      router.push('/login');
+      router.push('/?error=not_authenticated');
     }
   }, [error, router]);
 

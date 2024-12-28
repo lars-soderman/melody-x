@@ -18,6 +18,7 @@ export const translations = {
     signingOut: 'Loggar ut...',
     signUp: 'Skapa konto',
     signInWithGoogle: 'Logga in med Google',
+    error: 'Inloggningen misslyckades. Försök igen.',
   },
   project: {
     new: 'Nytt melodikryss',

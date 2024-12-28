@@ -2,7 +2,13 @@
 import { handleAuthStateChange, signOut as signOutAction } from '@/app/actions';
 import { supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 export type AuthContextType = {
   isInitialized: boolean;
@@ -69,19 +75,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
   };
 
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+  const signInWithGoogle = useCallback(async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        skipBrowserRedirect: true,
       },
     });
 
-    if (error) {
-      console.error('Sign in error:', error);
-      throw error;
-    }
-  };
+    if (error) throw error;
+    return data;
+  }, []);
 
   const signOut = async () => {
     try {
