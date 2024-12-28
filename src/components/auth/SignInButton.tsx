@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useState } from 'react';
-import GoogleLogo from '../ui/icons/GoogleLogo';
+import { GoogleLogo } from '../ui/icons/GoogleLogo';
 
 export function SignInButton() {
   const [isLoading, setIsLoading] = useState(false);
