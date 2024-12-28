@@ -18,14 +18,14 @@ import { Settings } from './settings/Settings';
 
 type EditorProps = {
   initialProject: AppProject;
-  isLocalProject?: boolean;
+
   isSyncing?: boolean;
   onProjectChange: (project: AppProject) => void;
 };
 
 export function Editor({
   initialProject,
-  isLocalProject,
+
   isSyncing,
   onProjectChange,
 }: EditorProps) {
@@ -125,7 +125,6 @@ export function Editor({
       <Settings
         cols={cols}
         font={font}
-        isLocalProject={isLocalProject}
         project={initialProject}
         rows={rows}
         showGridResize={showGridResize}

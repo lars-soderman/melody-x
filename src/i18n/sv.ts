@@ -23,7 +23,6 @@ export const translations = {
     new: 'Nytt melodikryss',
     name: 'Namn',
     myProjects: 'Mina melodikryss',
-    localProjects: 'Lokala melodikryss',
     created: 'Skapad',
     creating: 'Skapar...',
     updating: 'Uppdaterar...',

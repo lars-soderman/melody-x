@@ -34,7 +34,6 @@ export function ServerEditorWrapper({
   return (
     <Editor
       initialProject={initialProject}
-      isLocalProject={false}
       isSyncing={isSyncing}
       onProjectChange={handleProjectChange}
     />

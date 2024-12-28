@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 // import { DownloadButton } from './DownloadButton';
 import { ExportButton } from '@/components/grid/settings/ExportButton';
 import { FontSelector } from '@/components/grid/settings/FontSelector';
-import { SaveToServerButton } from '@/components/projects/SaveToServerButton';
 import { Popover } from '@/components/ui/Popover';
 import { useTranslations } from '@/hooks/useTranslations';
 import { ResetButton } from './ResetButton';
@@ -22,7 +21,6 @@ interface SettingsProps {
   cols: number;
   exportProps: ExportProps;
   font: string;
-  isLocalProject?: boolean;
   onGridSizeChange: (rows: number, cols: number) => void;
   onReset: () => void;
   project: AppProject;
@@ -36,7 +34,6 @@ export function Settings({
   cols,
   exportProps,
   font,
-  isLocalProject,
   onGridSizeChange,
   onReset,
   rows,
@@ -120,22 +117,6 @@ export function Settings({
               onChange={updateFont}
             />
           </div>
-          {/* TODO: fix or remove */}
-          {/* <div className="flex items-center justify-between">
-            <label
-              className="text-sm text-gray-500"
-              htmlFor="grid-resize-toggle"
-            >
-              Show grid resize controls
-            </label>
-            <input
-              checked={showGridResize}
-              className="h-4 w-4 rounded border-gray-300"
-              id="grid-resize-toggle"
-              type="checkbox"
-              onChange={toggleGridResize}
-            />
-          </div> */}
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">{t.editor.grid.reset}</span>
@@ -157,8 +138,6 @@ export function Settings({
             </span>
             <ExportButton {...exportProps} />
           </div>
-
-          {isLocalProject && <SaveToServerButton project={project} />}
         </div>
       </Popover>
     </div>
