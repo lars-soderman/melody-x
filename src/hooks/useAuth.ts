@@ -16,7 +16,7 @@ export function useAuth() {
     if (auth.user) {
       timeoutRef.current = setTimeout(() => {
         auth.signOut();
-        router.push('/login');
+        router.push('/');
       }, TIMEOUT_DURATION);
     }
   }, [TIMEOUT_DURATION, auth, router]);

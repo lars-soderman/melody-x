@@ -18,7 +18,7 @@ export async function getUser(redirectToLogin = true) {
 
     if (!session?.user) {
       if (redirectToLogin) {
-        return redirect('/login');
+        return redirect('/');
       }
       return null;
     }
@@ -30,7 +30,7 @@ export async function getUser(redirectToLogin = true) {
     }
 
     if (redirectToLogin) {
-      return redirect('/login');
+      return redirect('/');
     }
     return null;
   }
