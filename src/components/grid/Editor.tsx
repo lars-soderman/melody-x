@@ -12,8 +12,6 @@ import {
   toGrid,
 } from '@/utils/grid';
 import { useState } from 'react';
-import { AddGridButtons } from './AddGridButtons';
-import { RemoveButtons } from './RemoveButtons';
 import { Settings } from './settings/Settings';
 
 type EditorProps = {
@@ -25,7 +23,6 @@ type EditorProps = {
 
 export function Editor({
   initialProject,
-
   isSyncing,
   onProjectChange,
 }: EditorProps) {
@@ -163,22 +160,6 @@ export function Editor({
         onToggleStopDown={toggleStopDown}
         onToggleStopRight={toggleStopRight}
       />
-
-      {showGridResize && (
-        <>
-          <AddGridButtons onAddColumn={addColumn} onAddRow={addRow} />
-          <RemoveButtons
-            confirmingRemove={confirmingRemove}
-            grid={grid}
-            handleRemoveColumn={handleRemoveColumn}
-            handleRemoveRow={handleRemoveRow}
-            maxCol={maxCol}
-            maxRow={maxRow}
-            minCol={minCol}
-            minRow={minRow}
-          />
-        </>
-      )}
     </div>
   );
 }

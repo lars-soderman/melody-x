@@ -29,7 +29,7 @@ export function OptionsButton({
         title="Show options"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {!isOpen ? '⋮' : '╳'}
+        {!isOpen ? '⋮' : '×'}
       </button>
 
       {isOpen && (

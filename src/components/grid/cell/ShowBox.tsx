@@ -16,7 +16,6 @@ export function ShowBox({
   letter,
   id,
   onClick,
-  // onNavigate,
   black,
   arrowRight,
   arrowDown,
@@ -24,27 +23,6 @@ export function ShowBox({
   stopRight,
   hint,
 }: ShowBoxProps) {
-  // const handleKeyDown = (e: React.KeyboardEvent) => {
-  //   switch (e.key) {
-  //     case 'ArrowUp':
-  //       e.preventDefault();
-  //       onNavigate('up');
-  //       break;
-  //     case 'ArrowDown':
-  //       e.preventDefault();
-  //       onNavigate('down');
-  //       break;
-  //     case 'ArrowLeft':
-  //       e.preventDefault();
-  //       onNavigate('left');
-  //       break;
-  //     case 'ArrowRight':
-  //       e.preventDefault();
-  //       onNavigate('right');
-  //       break;
-  //   }
-  // };
-
   return (
     <>
       <button
