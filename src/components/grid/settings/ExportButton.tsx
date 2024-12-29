@@ -30,10 +30,10 @@ export function ExportButton({}: ExportButtonProps) {
       // Hide letters but preserve structural elements
       const style = document.createElement('style');
       style.textContent = `
-      #crossword-grid [data-letter="true"] span {
+      #crossword-grid [data-hidden="true"] {
         color: transparent !important;
       }
-      #crossword-grid [data-hint="true"] span {
+      #crossword-grid [data-hint="true"] {
         position: relative !important;
         top: -6px !important;
         left: -2px !important;

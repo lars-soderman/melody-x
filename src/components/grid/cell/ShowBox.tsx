@@ -38,6 +38,7 @@ export function ShowBox({
         {letter && (
           <span
             className="absolute inset-0 flex items-center justify-center"
+            data-hidden={true}
             style={{
               fontSize: 'clamp(12px, 4vw, 32px)',
               color: black ? 'white' : 'black',
@@ -49,14 +50,13 @@ export function ShowBox({
         {hint && (
           <div
             className="absolute flex h-5 w-5 items-center justify-center"
-            data-hint={true}
             style={{
               left: '2px',
               top: '2px',
               fontSize: 'clamp(8px, 1.5vw, 12px)',
             }}
           >
-            <span>{hint}</span>
+            <span data-hint={true}>{hint}</span>
           </div>
         )}
         {stopDown && (
