@@ -9,12 +9,7 @@ export type Json =
 export type Database = {
   public: {
     CompositeTypes: {
-      grid_data: {
-        boxes: Json | null;
-        cols: number | null;
-        font: string | null;
-        rows: number | null;
-      };
+      [_ in never]: never;
     };
     Enums: {
       [_ in never]: never;
@@ -23,66 +18,121 @@ export type Database = {
       [_ in never]: never;
     };
     Tables: {
-      project_collaborators: {
+      Project: {
         Insert: {
-          added_at?: string | null;
-          added_by?: string | null;
-          project_id: string;
-          user_id: string;
+          createdAt?: string;
+          gridData: Json;
+          hints?: Json;
+          id: string;
+          isPublic?: boolean;
+          lastUpdatedBy?: string | null;
+          name: string;
+          ownerId: string;
+          updatedAt: string;
+          version?: number;
         };
         Relationships: [
           {
-            columns: ['project_id'];
-            foreignKeyName: 'fk_project';
+            columns: ['ownerId'];
+            foreignKeyName: 'Project_ownerId_fkey';
             isOneToOne: false;
             referencedColumns: ['id'];
-            referencedRelation: 'projects';
+            referencedRelation: 'User';
           },
         ];
         Row: {
-          added_at: string | null;
-          added_by: string | null;
-          project_id: string;
-          user_id: string;
+          createdAt: string;
+          gridData: Json;
+          hints: Json;
+          id: string;
+          isPublic: boolean;
+          lastUpdatedBy: string | null;
+          name: string;
+          ownerId: string;
+          updatedAt: string;
+          version: number;
         };
         Update: {
-          added_at?: string | null;
-          added_by?: string | null;
-          project_id?: string;
-          user_id?: string;
+          createdAt?: string;
+          gridData?: Json;
+          hints?: Json;
+          id?: string;
+          isPublic?: boolean;
+          lastUpdatedBy?: string | null;
+          name?: string;
+          ownerId?: string;
+          updatedAt?: string;
+          version?: number;
         };
       };
-      projects: {
+      ProjectCollaborator: {
         Insert: {
-          created_at?: string;
-          grid_data: Json;
-          hints?: Json | null;
+          addedById: string;
+          createdAt?: string;
+          id: string;
+          projectId: string;
+          role?: string;
+          status?: string;
+          userId: string;
+        };
+        Relationships: [
+          {
+            columns: ['addedById'];
+            foreignKeyName: 'ProjectCollaborator_addedById_fkey';
+            isOneToOne: false;
+            referencedColumns: ['id'];
+            referencedRelation: 'User';
+          },
+          {
+            columns: ['projectId'];
+            foreignKeyName: 'ProjectCollaborator_projectId_fkey';
+            isOneToOne: false;
+            referencedColumns: ['id'];
+            referencedRelation: 'Project';
+          },
+          {
+            columns: ['userId'];
+            foreignKeyName: 'ProjectCollaborator_userId_fkey';
+            isOneToOne: false;
+            referencedColumns: ['id'];
+            referencedRelation: 'User';
+          },
+        ];
+        Row: {
+          addedById: string;
+          createdAt: string;
+          id: string;
+          projectId: string;
+          role: string;
+          status: string;
+          userId: string;
+        };
+        Update: {
+          addedById?: string;
+          createdAt?: string;
           id?: string;
-          is_public?: boolean | null;
-          name: string;
-          owner_id?: string;
-          updated_at?: string;
+          projectId?: string;
+          role?: string;
+          status?: string;
+          userId?: string;
+        };
+      };
+      User: {
+        Insert: {
+          email: string;
+          id: string;
+          rawUserMetaData: Json;
         };
         Relationships: [];
         Row: {
-          created_at: string;
-          grid_data: Json;
-          hints: Json | null;
+          email: string;
           id: string;
-          is_public: boolean | null;
-          name: string;
-          owner_id: string;
-          updated_at: string;
+          rawUserMetaData: Json;
         };
         Update: {
-          created_at?: string;
-          grid_data?: Json;
-          hints?: Json | null;
+          email?: string;
           id?: string;
-          is_public?: boolean | null;
-          name?: string;
-          owner_id?: string;
-          updated_at?: string;
+          rawUserMetaData?: Json;
         };
       };
     };
