@@ -7,7 +7,9 @@ import { AppProject, Box, Hint } from '@/types';
 import { CreateProjectInput, GridData } from '@/types/project';
 import { revalidatePath } from 'next/cache';
 
-export async function createProject(data: CreateProjectInput) {
+export async function createProject(
+  data: CreateProjectInput
+): Promise<AppProject> {
   try {
     const supabase = createServerClient();
     const {

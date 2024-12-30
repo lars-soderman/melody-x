@@ -1,3 +1,5 @@
+import { JsonValue } from '@prisma/client/runtime/library';
+
 export type Box = {
   arrowDown?: boolean;
   arrowRight?: boolean;
@@ -31,7 +33,11 @@ export type AppProject = {
   isPublic?: boolean;
   is_shared?: boolean;
   name: string;
-  owner_id: string;
+  owner: {
+    email: string;
+    id: string;
+    rawUserMetaData: JsonValue;
+  };
   rows: number;
   updatedAt: string;
 };

@@ -1,7 +1,7 @@
 import { AppProject } from '@/types';
 
 export const mockProject: AppProject = {
-  owner_id: 'test-user',
+  owner: { id: 'test-user', email: 'test-user@test.com', rawUserMetaData: {} },
   id: 'test-id',
   name: 'Test Project',
   rows: 9,

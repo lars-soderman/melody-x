@@ -28,7 +28,11 @@ export function mapProjectFromDB(
     font: gridData.font,
     hints: (dbProject.hints as Hint[]) || [],
     createdBy: dbProject.ownerId,
-    owner_id: dbProject.ownerId,
+    owner: {
+      id: dbProject.ownerId,
+      email: dbProject.owner.email,
+      rawUserMetaData: dbProject.owner,
+    },
     isPublic: dbProject.isPublic || false,
   };
 }

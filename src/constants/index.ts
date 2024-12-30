@@ -20,7 +20,7 @@ export function createDefaultProject(name: string, userId: string): AppProject {
   return {
     id: uuidv4(),
     name,
-    owner_id: userId,
+    owner: { id: userId, email: '', rawUserMetaData: {} },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     ...DEFAULT_STATE,

@@ -41,8 +41,8 @@ export function useProjects() {
       const projects = await getProjects(user.id);
       console.log('Fetched projects:', projects);
 
-      const ownedProjects = projects.filter((p) => p.owner_id === user.id);
-      const sharedProjects = projects.filter((p) => p.owner_id !== user.id);
+      const ownedProjects = projects.filter((p) => p.owner.id === user.id);
+      const sharedProjects = projects.filter((p) => p.owner.id !== user.id);
 
       console.log('Owned projects:', ownedProjects);
       console.log('Shared projects:', sharedProjects);
@@ -81,10 +81,9 @@ export function useProjects() {
           isPublic: defaultProject.isPublic,
         };
 
-        const prismaProject = await createProject(createInput);
-        const appProject = mapProjectFromDB(prismaProject);
+        const project = await createProject(createInput);
 
-        dispatch({ type: 'CREATE_PROJECT', project: appProject });
+        dispatch({ type: 'CREATE_PROJECT', project });
         return true;
       } catch (error) {
         console.error('Error creating project:', error);
