@@ -1,6 +1,9 @@
+import { PrismaClient } from '@prisma/client';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+
+const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +34,29 @@ export async function GET(request: Request) {
       return NextResponse.redirect(
         new URL('/?error=auth_failed', requestUrl.origin)
       );
+    }
+
+    console.log('🔍 Auth callback - creating/updating user:', {
+      id: session.user.id,
+      email: session.user.email,
+    });
+
+    try {
+      const user = await prisma.user.upsert({
+        where: { id: session.user.id },
+        update: {
+          rawUserMetaData: session.user.user_metadata,
+        },
+        create: {
+          id: session.user.id,
+          email: session.user.email!,
+          rawUserMetaData: session.user.user_metadata || {},
+        },
+      });
+
+      console.log('✅ User upserted:', user);
+    } catch (error) {
+      console.error('❌ Error upserting user:', error);
     }
 
     // Create response with redirect

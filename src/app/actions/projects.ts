@@ -5,7 +5,6 @@ import { prisma } from '@/lib/prisma';
 import { createServerClient } from '@/lib/supabase-server';
 import { AppProject, Box, Hint } from '@/types';
 import { CreateProjectInput, GridData } from '@/types/project';
-import { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
 export async function createProject(data: CreateProjectInput) {
@@ -19,48 +18,11 @@ export async function createProject(data: CreateProjectInput) {
       throw new Error('Not authenticated');
     }
 
-    // First, try to find the user by ID
-    let user = await prisma.user.findUnique({
-      where: { id: supabaseUser.id },
-    });
-
-    if (!user) {
-      try {
-        user = await prisma.user.create({
-          data: {
-            id: supabaseUser.id,
-            email: supabaseUser.email!,
-            rawUserMetaData: supabaseUser.user_metadata || {},
-          },
-        });
-      } catch (e) {
-        console.error('Error creating user:', e);
-        if (
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === 'P2002'
-        ) {
-          console.log('Email conflict, trying to find and update user...');
-          user = await prisma.user.update({
-            where: { email: supabaseUser.email },
-            data: {
-              id: supabaseUser.id,
-              rawUserMetaData: supabaseUser.user_metadata || {},
-            },
-          });
-        } else {
-          throw e;
-        }
-      }
-    }
-
-    // Then create the project
+    // Assume user exists in DB since we create it in auth callback
     const project = await prisma.project.create({
       data: {
-        name: data.name,
-        gridData: data.gridData,
-        hints: data.hints || [],
-        isPublic: data.isPublic,
-        ownerId: user.id,
+        ...data,
+        ownerId: supabaseUser.id,
       },
       include: {
         owner: true,
@@ -68,7 +30,7 @@ export async function createProject(data: CreateProjectInput) {
     });
 
     revalidatePath('/');
-    return project;
+    return mapProjectFromDB(project);
   } catch (error) {
     console.error('Create project error:', error);
     throw error;
