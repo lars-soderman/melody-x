@@ -44,6 +44,11 @@ export const translations = {
       reset: 'Återställ',
       export: 'Exportera',
       kryssplan: 'kryssplan',
+      public: 'Publikt',
+      share: 'Dela melodikryss',
+      linkCopied: 'Kopierade länken! 🎵',
+      makePublicPrompt:
+        'Melodikrysset måste vara publikt för att delas. Gör det publikt?',
     },
     hints: {
       title: 'Ledtrådar',

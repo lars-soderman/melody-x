@@ -1,6 +1,9 @@
 'use client';
 
-import { CrosswordGrid } from '@/components/grid/CrosswordGrid';
+import {
+  CrosswordGrid,
+  GridOptionHandlers,
+} from '@/components/grid/CrosswordGrid';
 import { useGrid } from '@/hooks/useGrid';
 import { useGridNavigation } from '@/hooks/useGridNavigation';
 import { AppProject, Box } from '@/types';
@@ -109,6 +112,15 @@ export function Editor({
     }
   };
 
+  const optionHandlers: GridOptionHandlers = {
+    onToggleArrowDown: toggleArrowDown,
+    onToggleArrowRight: toggleArrowRight,
+    onToggleBlack: toggleBlack,
+    onToggleStopDown: toggleStopDown,
+    onToggleStopRight: toggleStopRight,
+    toggleHint: toggleHint,
+  };
+
   return (
     <div
       className="flex min-h-screen flex-col gap-4"
@@ -148,15 +160,10 @@ export function Editor({
         maxRow={maxRow}
         minCol={minCol}
         minRow={minRow}
-        toggleHint={toggleHint}
+        optionHandlers={optionHandlers}
         onLetterChange={handleLetterChange}
         onNavigate={handleBoxNavigation}
         onSetEditingBox={setEditingBox}
-        onToggleArrowDown={toggleArrowDown}
-        onToggleArrowRight={toggleArrowRight}
-        onToggleBlack={toggleBlack}
-        onToggleStopDown={toggleStopDown}
-        onToggleStopRight={toggleStopRight}
       />
     </div>
   );

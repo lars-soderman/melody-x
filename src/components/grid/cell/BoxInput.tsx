@@ -17,6 +17,7 @@ type BoxInputProps = {
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
   onStopDown: () => void;
   onStopRight: () => void;
+  showOptions: boolean;
   toggleHint: (id: string) => void;
 };
 
@@ -33,6 +34,7 @@ export function BoxInput({
   onStopDown,
   onStopRight,
   toggleHint,
+  showOptions,
 }: BoxInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -93,7 +95,7 @@ export function BoxInput({
           }
         }}
       />
-      {isSelected && (
+      {isSelected && showOptions && (
         <OptionsButton
           toggleHint={() => toggleHint(id)}
           onArrowDown={onArrowDown}

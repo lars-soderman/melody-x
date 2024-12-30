@@ -11,12 +11,13 @@ type GridCellProps = {
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
-  onToggleArrowDown: (id: string) => void;
-  onToggleArrowRight: (id: string) => void;
-  onToggleBlack: (id: string, isBlack: boolean) => void;
-  onToggleStopDown: (id: string) => void;
-  onToggleStopRight: (id: string) => void;
-  toggleHint: (id: string) => void;
+  onToggleArrowDown?: (id: string) => void;
+  onToggleArrowRight?: (id: string) => void;
+  onToggleBlack?: (id: string, isBlack: boolean) => void;
+  onToggleStopDown?: (id: string) => void;
+  onToggleStopRight?: (id: string) => void;
+  showOptions: boolean;
+  toggleHint?: (id: string) => void;
 };
 
 export const GridCell = memo(function GridCell({
@@ -31,6 +32,7 @@ export const GridCell = memo(function GridCell({
   onToggleStopDown,
   onToggleStopRight,
   toggleHint,
+  showOptions = true,
 }: GridCellProps) {
   const boxSize = INITIAL_BOX_SIZE;
   return (
@@ -50,14 +52,15 @@ export const GridCell = memo(function GridCell({
           id={getId(box)}
           isSelected={editingBox === box}
           letter={box.letter}
-          toggleHint={toggleHint}
-          onArrowDown={() => onToggleArrowDown(getId(box))}
-          onArrowRight={() => onToggleArrowRight(getId(box))}
-          onBlack={() => onToggleBlack(getId(box), !box.black)}
+          showOptions={showOptions}
+          toggleHint={toggleHint ?? (() => null)}
+          onArrowDown={() => onToggleArrowDown?.(getId(box))}
+          onArrowRight={() => onToggleArrowRight?.(getId(box))}
+          onBlack={() => onToggleBlack?.(getId(box), !box.black)}
           onLetterChange={onLetterChange}
           onNavigate={(direction) => onNavigate(box, direction)}
-          onStopDown={() => onToggleStopDown(getId(box))}
-          onStopRight={() => onToggleStopRight(getId(box))}
+          onStopDown={() => onToggleStopDown?.(getId(box))}
+          onStopRight={() => onToggleStopRight?.(getId(box))}
         />
       ) : (
         <ShowBox
