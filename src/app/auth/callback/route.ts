@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-
-const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
@@ -54,9 +52,19 @@ export async function GET(request: Request) {
         },
       });
 
+      if (!user) {
+        console.error('❌ User creation failed - no user returned');
+        return NextResponse.redirect(
+          new URL('/?error=user_creation_failed', requestUrl.origin)
+        );
+      }
+
       console.log('✅ User upserted:', user);
     } catch (error) {
       console.error('❌ Error upserting user:', error);
+      return NextResponse.redirect(
+        new URL('/?error=user_creation_failed', requestUrl.origin)
+      );
     }
 
     // Create response with redirect
