@@ -6,13 +6,15 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  console.log('🔍 Auth callback started');
+
   try {
-    const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get('code');
     const cookieStore = cookies();
 
     if (!code) {
-      console.error('No code in callback');
+      console.error('❌ No code in callback');
       return NextResponse.redirect(
         new URL('/?error=auth_failed', requestUrl.origin)
       );
@@ -28,18 +30,31 @@ export async function GET(request: Request) {
     } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error || !session) {
-      console.error('Session error:', error || 'No session created');
+      console.error('❌ Session error:', error || 'No session created');
       return NextResponse.redirect(
         new URL('/?error=auth_failed', requestUrl.origin)
       );
     }
 
-    console.log('🔍 Auth callback - creating/updating user:', {
+    console.log('✅ Session created:', {
       id: session.user.id,
       email: session.user.email,
+      metadata: session.user.user_metadata,
+    });
+
+    console.log('🕒 Auth timing:', {
+      start: new Date().toISOString(),
+      userId: session.user.id,
     });
 
     try {
+      // Create response with redirect first
+      const response = NextResponse.redirect(new URL('/', requestUrl.origin));
+
+      // Let Supabase handle the cookie setting
+      await supabase.auth.setSession(session);
+
+      // Then try to create/update the user
       const user = await prisma.user.upsert({
         where: { id: session.user.id },
         update: {
@@ -60,23 +75,25 @@ export async function GET(request: Request) {
       }
 
       console.log('✅ User upserted:', user);
+      console.log('✅ User creation completed:', {
+        end: new Date().toISOString(),
+        userId: session.user.id,
+      });
+      return response;
     } catch (error) {
-      console.error('❌ Error upserting user:', error);
+      console.error('❌ Database error:', {
+        name: (error as Error).name,
+        message: (error as Error).message,
+        code: (error as unknown as { code: string }).code,
+      });
       return NextResponse.redirect(
         new URL('/?error=user_creation_failed', requestUrl.origin)
       );
     }
-
-    // Create response with redirect
-    const response = NextResponse.redirect(new URL('/', requestUrl.origin));
-
-    // Let Supabase handle the cookie setting
-    await supabase.auth.setSession(session);
-
-    console.log('Callback successful - session set');
-    return response;
   } catch (error) {
-    console.error('Callback error:', error);
-    return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
+    console.error('❌ Unexpected error in auth callback:', error);
+    return NextResponse.redirect(
+      new URL('/?error=auth_failed', requestUrl.origin)
+    );
   }
 }

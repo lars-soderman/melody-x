@@ -20,7 +20,25 @@ export async function createProject(
       throw new Error('Not authenticated');
     }
 
-    // Assume user exists in DB since we create it in auth callback
+    // Ensure user exists in DB before creating project
+    await prisma.user.upsert({
+      where: { id: supabaseUser.id },
+      update: {
+        rawUserMetaData: supabaseUser.user_metadata,
+      },
+      create: {
+        id: supabaseUser.id,
+        email: supabaseUser.email!,
+        rawUserMetaData: supabaseUser.user_metadata || {},
+      },
+    });
+
+    console.log('🕒 Project creation attempt:', {
+      time: new Date().toISOString(),
+      userId: supabaseUser.id,
+    });
+
+    // Now create the project
     const project = await prisma.project.create({
       data: {
         ...data,
