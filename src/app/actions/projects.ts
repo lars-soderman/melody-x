@@ -72,13 +72,16 @@ export async function updateProject(
   try {
     // If only updating name, use simple update
     if (Object.keys(data).length === 1 && 'name' in data) {
-      return await prisma.project.update({
+      const updated = await prisma.project.update({
         where: { id: projectId },
         data: { name: data.name },
         include: {
           owner: true,
         },
       });
+      revalidatePath('/');
+      revalidatePath(`/editor/${projectId}`);
+      return updated;
     }
 
     // For grid updates, reconstruct the gridData object
@@ -110,8 +113,8 @@ export async function updateProject(
       },
     });
 
-    // Remove revalidatePath call since we don't want to trigger a re-render
-    // revalidatePath(`/editor/${projectId}`);
+    revalidatePath('/');
+    revalidatePath(`/editor/${projectId}`);
     return updatedProject;
   } catch (error) {
     console.error('Update project error:', error);
