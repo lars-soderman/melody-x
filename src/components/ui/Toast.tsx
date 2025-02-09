@@ -1,35 +1,57 @@
-import { useEffect } from 'react';
+'use client';
+import { useTranslations } from '@/hooks/useTranslations';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-type ToastProps = {
-  duration?: number;
-  message: string;
-  onClose: () => void;
-};
+type ToastType = 'error' | 'success' | 'info';
 
-export function Toast({ message, onClose, duration = 3000 }: ToastProps) {
+// TODO: Add more error messages
+// not_authenticated
+
+export const Toast = () => {
+  const t = useTranslations();
+  const searchParams = useSearchParams();
+
+  const error = searchParams.get('error');
+  const errorMessage = error === 'not_authenticated' ? t.auth.error : error;
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const message =
+    searchParams.get('error') ||
+    searchParams.get('success') ||
+    searchParams.get('info');
+  const type = searchParams.get('error')
+    ? 'error'
+    : searchParams.get('success')
+      ? 'success'
+      : 'info';
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, duration);
+    if (message) {
+      setIsVisible(true);
+      const timeout = setTimeout(() => {
+        setIsVisible(false);
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 5000);
 
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
+      return () => clearTimeout(timeout);
+    }
+  }, [message]);
+
+  if (!isVisible || !message) return null;
+
+  const textColor = {
+    error: 'text-red-600',
+    success: 'text-green-600',
+    info: 'text-blue-600',
+  }[type];
 
   return (
-    <div className="fixed right-1/2 top-4 z-50 flex translate-x-1/2 items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-white shadow-lg">
-      <svg
-        className="h-4 w-4 text-green-400"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-        <polyline points="22 4 12 14.01 9 11.01" />
-      </svg>
-      <span>{message}</span>
+    <div
+      className={`fixed left-1/2 top-4 -translate-x-1/2 transform rounded-lg bg-white px-6 py-3 shadow-lg transition-opacity duration-300 ${textColor}`}
+    >
+      {errorMessage}
     </div>
   );
-}
+};

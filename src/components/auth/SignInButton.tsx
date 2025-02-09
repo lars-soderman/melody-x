@@ -29,7 +29,7 @@ export function SignInButton() {
       onClick={handleSignIn}
     >
       <GoogleLogo />
-      {isLoading ? t.auth.signingIn : t.auth.signInWithGoogle}
+      {isLoading ? t.auth.signingIn : t.auth.signIn}
     </button>
   );
 }

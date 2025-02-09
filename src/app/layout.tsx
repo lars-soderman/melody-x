@@ -5,6 +5,7 @@ import { Creepster } from 'next/font/google';
 import localFont from 'next/font/local';
 
 import { Topnav } from '@/components/layout/Topnav';
+import { Toast } from '@/components/ui/Toast';
 import './globals.css';
 
 const geistMono = localFont({
@@ -39,6 +40,7 @@ export default function RootLayout({
           <div className="flex flex-col">
             <Topnav />
             <div className="flex-1">{children}</div>
+            <Toast />
           </div>
         </AuthProvider>
       </body>
