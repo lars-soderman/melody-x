@@ -17,7 +17,7 @@ export const translations = {
     signOut: 'Logga ut',
     signingOut: 'Loggar ut...',
     signUp: 'Skapa konto',
-    signI: 'Logga in',
+    signInWithGoogle: 'Logga in med Google',
     error: 'Inloggningen misslyckades. Försök igen.',
   },
   project: {

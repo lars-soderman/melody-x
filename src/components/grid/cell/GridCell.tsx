@@ -11,28 +11,32 @@ type GridCellProps = {
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (box: Box, direction: 'up' | 'down' | 'left' | 'right') => void;
   onSetEditingBox: (box: Box) => void;
-  onToggleArrowDown?: (id: string) => void;
-  onToggleArrowRight?: (id: string) => void;
-  onToggleBlack?: (id: string, isBlack: boolean) => void;
-  onToggleStopDown?: (id: string) => void;
-  onToggleStopRight?: (id: string) => void;
+  onToggleArrowDown: (id: string) => void;
+  onToggleArrowRight: (id: string) => void;
+  onToggleBlack: (id: string, isBlack: boolean) => void;
+  onToggleHint: (id: string) => void;
+  onToggleHyphenBottom: (id: string) => void;
+  onToggleHyphenRight: (id: string) => void;
+  onToggleStopDown: (id: string) => void;
+  onToggleStopRight: (id: string) => void;
   showOptions: boolean;
-  toggleHint?: (id: string) => void;
 };
 
 export const GridCell = memo(function GridCell({
   box,
   editingBox,
   onLetterChange,
+  onNavigate,
+  onSetEditingBox,
   onToggleArrowDown,
   onToggleArrowRight,
   onToggleBlack,
-  onNavigate,
-  onSetEditingBox,
+  onToggleHyphenBottom,
+  onToggleHyphenRight,
   onToggleStopDown,
   onToggleStopRight,
-  toggleHint,
   showOptions = true,
+  onToggleHint,
 }: GridCellProps) {
   const boxSize = INITIAL_BOX_SIZE;
   return (
@@ -53,14 +57,16 @@ export const GridCell = memo(function GridCell({
           isSelected={editingBox === box}
           letter={box.letter}
           showOptions={showOptions}
-          toggleHint={toggleHint ?? (() => null)}
           onArrowDown={() => onToggleArrowDown?.(getId(box))}
           onArrowRight={() => onToggleArrowRight?.(getId(box))}
           onBlack={() => onToggleBlack?.(getId(box), !box.black)}
+          onHyphenBottom={() => onToggleHyphenBottom?.(getId(box))}
+          onHyphenRight={() => onToggleHyphenRight?.(getId(box))}
           onLetterChange={onLetterChange}
           onNavigate={(direction) => onNavigate(box, direction)}
           onStopDown={() => onToggleStopDown?.(getId(box))}
           onStopRight={() => onToggleStopRight?.(getId(box))}
+          onToggleHint={onToggleHint}
         />
       ) : (
         <ShowBox
@@ -70,6 +76,8 @@ export const GridCell = memo(function GridCell({
           boxSize={boxSize}
           col={box.col}
           hint={box.hint}
+          hyphenBottom={box.hyphenBottom}
+          hyphenRight={box.hyphenRight}
           id={getId(box)}
           letter={box.letter}
           row={box.row}

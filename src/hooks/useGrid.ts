@@ -153,7 +153,7 @@ export function useGrid(
     [project, onProjectChange, state.boxes]
   );
 
-  const toggleHint = useCallback(
+  const onToggleHint = useCallback(
     (id: string) => {
       const box = state.boxes.find((box) => getId(box) === id);
       if (!box) return;
@@ -218,6 +218,14 @@ export function useGrid(
     dispatch({ type: 'TOGGLE_STOP_RIGHT', id });
   }, []);
 
+  const toggleHyphenBottom = useCallback((id: string) => {
+    dispatch({ type: 'TOGGLE_HYPHEN_BOTTOM', id });
+  }, []);
+
+  const toggleHyphenRight = useCallback((id: string) => {
+    dispatch({ type: 'TOGGLE_HYPHEN_RIGHT', id });
+  }, []);
+
   const updateFont = (font: string) => dispatch({ type: 'UPDATE_FONT', font });
 
   const getNextAvailableNumber = useCallback(() => {
@@ -238,22 +246,24 @@ export function useGrid(
 
   return {
     ...state,
-    updateGridSize,
-    toggleHint,
-    updateBoxSize,
-    updateLetter,
+    addColumn,
+    addRow,
+    getNextAvailableNumber,
+    onToggleHint,
+    removeColumn,
+    removeRow,
+    reset,
     toggleArrowDown,
     toggleArrowRight,
-    removeRow,
-    removeColumn,
-    addRow,
-    addColumn,
-    reset,
     toggleBlack,
+    toggleHyphenBottom,
+    toggleHyphenRight,
     toggleStopDown,
     toggleStopRight,
+    updateBoxSize,
     updateFont,
-    getNextAvailableNumber,
+    updateGridSize,
     updateHintText,
+    updateLetter,
   };
 }

@@ -13,12 +13,14 @@ type BoxInputProps = {
   onArrowDown: () => void;
   onArrowRight: () => void;
   onBlack: () => void;
+  onHyphenBottom: () => void;
+  onHyphenRight: () => void;
   onLetterChange: (id: string, letter: string) => void;
   onNavigate: (direction: 'up' | 'down' | 'left' | 'right') => void;
   onStopDown: () => void;
   onStopRight: () => void;
+  onToggleHint: (id: string) => void;
   showOptions: boolean;
-  toggleHint: (id: string) => void;
 };
 
 export function BoxInput({
@@ -30,10 +32,12 @@ export function BoxInput({
   black,
   isSelected,
   id,
+  onHyphenBottom,
+  onHyphenRight,
   onNavigate,
   onStopDown,
   onStopRight,
-  toggleHint,
+  onToggleHint,
   showOptions,
 }: BoxInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,12 +101,14 @@ export function BoxInput({
       />
       {isSelected && showOptions && (
         <OptionsButton
-          toggleHint={() => toggleHint(id)}
           onArrowDown={onArrowDown}
           onArrowRight={onArrowRight}
           onBlack={onBlack}
+          onHyphenBottom={onHyphenBottom}
+          onHyphenRight={onHyphenRight}
           onStopDown={onStopDown}
           onStopRight={onStopRight}
+          onToggleHint={() => onToggleHint(id)}
         />
       )}
     </>

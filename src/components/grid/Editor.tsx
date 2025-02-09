@@ -49,9 +49,11 @@ export function Editor({
     toggleArrowDown,
     toggleArrowRight,
     toggleBlack,
-    toggleHint,
+    onToggleHint,
     toggleStopDown,
     toggleStopRight,
+    toggleHyphenBottom,
+    toggleHyphenRight,
   } = useGrid(initialProject, onProjectChange);
 
   const {
@@ -116,9 +118,11 @@ export function Editor({
     onToggleArrowDown: toggleArrowDown,
     onToggleArrowRight: toggleArrowRight,
     onToggleBlack: toggleBlack,
+    onToggleHyphenBottom: toggleHyphenBottom,
+    onToggleHyphenRight: toggleHyphenRight,
     onToggleStopDown: toggleStopDown,
     onToggleStopRight: toggleStopRight,
-    toggleHint: toggleHint,
+    onToggleHint: onToggleHint,
   };
 
   return (

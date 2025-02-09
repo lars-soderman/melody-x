@@ -20,7 +20,6 @@ export function Popover({
   trigger,
 }: PopoverProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-  console.log(positionX, positionY);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {

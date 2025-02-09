@@ -230,7 +230,7 @@ getId(box) === action.boxId
 
 ````typescript
 // Example of logic orchestration in hook
-const toggleHint = useCallback((id: string) => {
+const onToggleHint = useCallback((id: string) => {
 const box = state.boxes.find(box => getId(box) === id);
 if (!box) return;
 if (box.hint) {

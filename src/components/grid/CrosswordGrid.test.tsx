@@ -28,7 +28,7 @@ describe('CrosswordGrid', () => {
     onUpdateArrow: jest.fn(),
     onToggleBlack: jest.fn(),
     onUpdateStop: jest.fn(),
-    toggleHint: jest.fn(),
+    onToggleHint: jest.fn(),
     handleRemoveColumn: jest.fn(),
     handleRemoveRow: jest.fn(),
     onToggleArrowDown: jest.fn(),

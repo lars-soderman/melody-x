@@ -6,9 +6,11 @@ export type GridOptionHandlers = {
   onToggleArrowDown: (id: string) => void;
   onToggleArrowRight: (id: string) => void;
   onToggleBlack: (id: string) => void;
+  onToggleHint: (id: string) => void;
+  onToggleHyphenBottom: (id: string) => void;
+  onToggleHyphenRight: (id: string) => void;
   onToggleStopDown: (id: string) => void;
   onToggleStopRight: (id: string) => void;
-  toggleHint: (id: string) => void;
 };
 
 type CrosswordGridProps = {
@@ -42,6 +44,16 @@ export function CrosswordGrid({
   optionHandlers,
   showOptions = true,
 }: CrosswordGridProps) {
+  const {
+    onToggleArrowDown,
+    onToggleArrowRight,
+    onToggleBlack,
+    onToggleHyphenBottom,
+    onToggleHyphenRight,
+    onToggleStopDown,
+    onToggleStopRight,
+    onToggleHint,
+  } = optionHandlers ?? {};
   const cols = maxCol - minCol + 1;
   const rows = grid.length;
 
@@ -65,15 +77,17 @@ export function CrosswordGrid({
                 box={box}
                 editingBox={editingBox}
                 showOptions={showOptions}
-                toggleHint={optionHandlers?.toggleHint}
                 onLetterChange={onLetterChange}
                 onNavigate={onNavigate}
                 onSetEditingBox={onSetEditingBox}
-                onToggleArrowDown={optionHandlers?.onToggleArrowDown}
-                onToggleArrowRight={optionHandlers?.onToggleArrowRight}
-                onToggleBlack={optionHandlers?.onToggleBlack}
-                onToggleStopDown={optionHandlers?.onToggleStopDown}
-                onToggleStopRight={optionHandlers?.onToggleStopRight}
+                onToggleArrowDown={onToggleArrowDown ?? (() => {})}
+                onToggleArrowRight={onToggleArrowRight ?? (() => {})}
+                onToggleBlack={onToggleBlack ?? (() => {})}
+                onToggleHint={onToggleHint ?? (() => {})}
+                onToggleHyphenBottom={onToggleHyphenBottom ?? (() => {})}
+                onToggleHyphenRight={onToggleHyphenRight ?? (() => {})}
+                onToggleStopDown={onToggleStopDown ?? (() => {})}
+                onToggleStopRight={onToggleStopRight ?? (() => {})}
               />
             ))
           )}

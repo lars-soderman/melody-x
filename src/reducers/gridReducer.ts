@@ -211,6 +211,26 @@ export function gridReducer(state: GridState, action: GridAction): GridState {
       return action.state;
     }
 
+    case 'TOGGLE_HYPHEN_RIGHT':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id
+            ? { ...box, hyphenRight: !box.hyphenRight }
+            : box
+        ),
+      };
+
+    case 'TOGGLE_HYPHEN_BOTTOM':
+      return {
+        ...state,
+        boxes: state.boxes.map((box) =>
+          getId(box) === action.id
+            ? { ...box, hyphenBottom: !box.hyphenBottom }
+            : box
+        ),
+      };
+
     default:
       return state;
   }

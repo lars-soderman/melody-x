@@ -6,6 +6,8 @@ import { Box } from '@types';
 type ShowBoxProps = Box & {
   black?: boolean;
   boxSize: number;
+  hyphenBottom?: boolean;
+  hyphenRight?: boolean;
   id: string;
   isSelected?: boolean;
   onClick: () => void;
@@ -22,6 +24,8 @@ export function ShowBox({
   stopDown,
   stopRight,
   hint,
+  hyphenBottom,
+  hyphenRight,
 }: ShowBoxProps) {
   return (
     <>
@@ -69,6 +73,18 @@ export function ShowBox({
           <div
             className="absolute right-0 top-0 h-full w-[3px] bg-black"
             data-stop="right"
+          />
+        )}
+        {hyphenBottom && (
+          <div
+            className="absolute -bottom-[2px] left-1/2 z-10 h-5 w-1 translate-y-1/2 bg-black"
+            data-hyphen="bottom"
+          />
+        )}
+        {hyphenRight && (
+          <div
+            className="absolute -right-[2px] top-1/2 z-10 h-1 w-5 translate-x-1/2 bg-black"
+            data-hyphen="right"
           />
         )}
         {arrowRight && (

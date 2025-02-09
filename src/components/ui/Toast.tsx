@@ -11,24 +11,24 @@ type ToastType = 'error' | 'success' | 'info';
 export const Toast = () => {
   const t = useTranslations();
   const searchParams = useSearchParams();
-
-  const error = searchParams.get('error');
-  const errorMessage = error === 'not_authenticated' ? t.auth.error : error;
-
   const [isVisible, setIsVisible] = useState(false);
 
-  const message =
-    searchParams.get('error') ||
-    searchParams.get('success') ||
-    searchParams.get('info');
-  const type = searchParams.get('error')
-    ? 'error'
-    : searchParams.get('success')
-      ? 'success'
-      : 'info';
+  const error = searchParams.get('error');
+  const success = searchParams.get('success');
+  const info = searchParams.get('info');
+
+  const type: ToastType = error ? 'error' : success ? 'success' : 'info';
+
+  const displayMessage = error
+    ? error === 'not_authenticated'
+      ? t.auth.error
+      : error
+    : success
+      ? success
+      : info;
 
   useEffect(() => {
-    if (message) {
+    if (displayMessage) {
       setIsVisible(true);
       const timeout = setTimeout(() => {
         setIsVisible(false);
@@ -37,9 +37,9 @@ export const Toast = () => {
 
       return () => clearTimeout(timeout);
     }
-  }, [message]);
+  }, [displayMessage]);
 
-  if (!isVisible || !message) return null;
+  if (!isVisible || !displayMessage) return null;
 
   const textColor = {
     error: 'text-red-600',
@@ -51,7 +51,7 @@ export const Toast = () => {
     <div
       className={`fixed left-1/2 top-4 -translate-x-1/2 transform rounded-lg bg-white px-6 py-3 shadow-lg transition-opacity duration-300 ${textColor}`}
     >
-      {errorMessage}
+      {displayMessage}
     </div>
   );
 };

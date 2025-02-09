@@ -6,6 +6,8 @@ export type Box = {
   black?: boolean;
   col: number;
   hint?: number;
+  hyphenBottom?: boolean;
+  hyphenRight?: boolean;
   letter: string | null;
   row: number;
   stopDown?: boolean;
@@ -65,3 +67,14 @@ export type ProjectCollaborator = {
 };
 
 export type ProjectAccess = 'owner' | 'collaborator' | 'none';
+
+export type GridOptionHandlers = {
+  onToggleArrowDown: (id: string) => void;
+  onToggleArrowRight: (id: string) => void;
+  onToggleBlack: (id: string, value?: boolean) => void;
+  onToggleHyphenBottom: (id: string) => void;
+  onToggleHyphenRight: (id: string) => void;
+  onToggleStopDown: (id: string) => void;
+  onToggleStopRight: (id: string) => void;
+  onToggleHint: (id: string) => void;
+};

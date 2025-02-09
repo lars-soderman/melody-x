@@ -26,4 +26,6 @@ export type GridAction =
   | { id: string; text: string; type: 'UPDATE_HINT_TEXT' }
   | { id: string; type: 'REMOVE_HINT' }
   | { id: string; number: number; type: 'UPDATE_HINT_NUMBER' }
-  | { hint?: number; id: string; type: 'SET_HINT' };
+  | { hint?: number; id: string; type: 'SET_HINT' }
+  | { id: string; type: 'TOGGLE_HYPHEN_RIGHT' }
+  | { id: string; type: 'TOGGLE_HYPHEN_BOTTOM' };
