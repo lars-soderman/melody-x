@@ -3,6 +3,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import type { Metadata } from 'next';
 import { Creepster } from 'next/font/google';
 import localFont from 'next/font/local';
+import { Suspense } from 'react';
 
 import { Topnav } from '@/components/layout/Topnav';
 import { Toast } from '@/components/ui/Toast';
@@ -40,7 +41,9 @@ export default function RootLayout({
           <div className="flex flex-col">
             <Topnav />
             <div className="flex-1">{children}</div>
-            <Toast />
+            <Suspense>
+              <Toast />
+            </Suspense>
           </div>
         </AuthProvider>
       </body>

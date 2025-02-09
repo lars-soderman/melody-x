@@ -72,9 +72,9 @@ export type GridOptionHandlers = {
   onToggleArrowDown: (id: string) => void;
   onToggleArrowRight: (id: string) => void;
   onToggleBlack: (id: string, value?: boolean) => void;
+  onToggleHint: (id: string) => void;
   onToggleHyphenBottom: (id: string) => void;
   onToggleHyphenRight: (id: string) => void;
   onToggleStopDown: (id: string) => void;
   onToggleStopRight: (id: string) => void;
-  onToggleHint: (id: string) => void;
 };
